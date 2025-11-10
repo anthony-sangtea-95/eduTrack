@@ -9,7 +9,7 @@ import {
 
 const router = express.Router();
 
-router.use(protect); // all routes protected
+router.use(protect);
 
 router.post("/tests", createTest);
 router.get("/tests", getMyTests);

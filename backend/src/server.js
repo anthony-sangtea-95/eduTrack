@@ -5,7 +5,7 @@ import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import teacherRoutes from "./routes/teacherRoutes.js";
 
-dotenv.config();
+dotenv.config({ path: '../.env' });
 connectDB();
 
 const app = express();
