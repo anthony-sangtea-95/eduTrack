@@ -15,10 +15,11 @@ const navigate = useNavigate()
 
 
 const login = async (email, password) => {
-const res = await API.post('/auth/login', { email, password })
+const res = await API.post('/auth/login', { email, password, role: "admin" })
 const payload = res.data
 // expected { token, role, id, name }
 localStorage.setItem('token', payload.token)
+localStorage.setItem('role', payload.role)
 localStorage.setItem('edu_user', JSON.stringify(payload))
 setUser(payload)
 return payload
@@ -27,6 +28,7 @@ return payload
 
 const logout = () => {
 localStorage.removeItem('token')
+localStorage.removeItem('role')
 localStorage.removeItem('edu_user')
 setUser(null)
 navigate('/login')

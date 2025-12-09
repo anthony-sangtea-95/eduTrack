@@ -11,13 +11,11 @@ return raw ? JSON.parse(raw) : null
 })
 const navigate = useNavigate()
 
-
 const login = async (email, password) => {
-const res = await API.post('/auth/login', { email, password, role: "teacher" })
+const res = await API.post('/auth/login', { email, password, role: "student" })
 const payload = res.data
-// expected { token, role, id, name }
 localStorage.setItem('token', payload.token)
-localStorage.setItem('role',payload.role)
+localStorage.setItem('role', payload.role);
 localStorage.setItem('edu_user', JSON.stringify(payload))
 setUser(payload)
 return payload
