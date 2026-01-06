@@ -6,6 +6,7 @@ import API from '../services/api'
 export default function TakeTest(){
   const { testId } = useParams()
   const [test, setTest] = useState(null)
+  const [questions, setQuestions] = useState(null)
   const [answers, setAnswers] = useState({})
   const [timeLeft, setTimeLeft] = useState(null)
   const timerRef = useRef(null)
@@ -16,6 +17,7 @@ export default function TakeTest(){
       try{
         const res = await API.get(`/student/tests/${testId}`)
         setTest(res.data.test)
+        setQuestions(res.data.questions)
         // default 30 minutes if not provided
         const minutes = res.data.test?.durationMinutes || 30
         setTimeLeft(minutes * 60)
@@ -65,7 +67,7 @@ export default function TakeTest(){
         </div>
 
         <div className="card">
-          {test.questions.map(q => (
+          {questions.map(q => (
             <div key={q._id} style={{marginBottom:12}}>
               <div><strong>{q.questionText}</strong></div>
               <div className="small">A: <label><input type="radio" name={q._id} checked={answers[q._id]==='a'} onChange={()=>selectAnswer(q._id,'a')} /> {q.options?.a}</label></div>

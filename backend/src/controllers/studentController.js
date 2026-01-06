@@ -6,7 +6,14 @@ import Submission from "../models/Submission.js";
 export const getAssignedTests = async (req, res) => {
   try {
     const tests = await Test.find({ assignedStudents: req.user._id }).select("-__v").populate("teacher", "name email");
-    res.json(tests);
+    const submittedTestIds = await Submission.find({
+      student: req.user._id
+    }).distinct("test");
+    const result = tests.map(test => ({
+      ...test.toObject(),
+      completed: submittedTestIds.includes(test._id.toString())
+    }));
+    res.json(result);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
