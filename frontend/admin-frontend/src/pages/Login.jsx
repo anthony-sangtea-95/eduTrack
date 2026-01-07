@@ -21,7 +21,6 @@ setErr(error.response?.data?.message || 'Login failed')
 }
 }
 
-
 return (
 <div className="form card">
 <h2>Admin Login</h2>

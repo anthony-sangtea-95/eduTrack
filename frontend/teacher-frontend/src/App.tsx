@@ -5,6 +5,8 @@ import Dashboard from './pages/Dashboard.jsx'
 // import ManageUsers from './pages/ManageUsers.jsx'
 import { AuthProvider } from './context/AuthContext.jsx'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
+import CreateQuestion from './pages/CreateQuestion.jsx'
+import Tests from './pages/Tests.jsx'
 
 
 export default function App() {
@@ -22,6 +24,9 @@ element={
 }
 />
 
+<Route path="/tests" element={<Tests />} />
+
+<Route path="/questions/create" element={<CreateQuestion />} />
 
 <Route
 path="/dashboard"
@@ -31,16 +36,6 @@ element={
 </ProtectedRoute>
 }
 />
-
-{/* 
-<Route
-path="/manage-users"
-element={
-<ProtectedRoute>
-<ManageUsers />
-</ProtectedRoute>
-}
-/> */}
 
 <Route path="*" element={<Navigate to="/login" replace />} />
 </Routes>

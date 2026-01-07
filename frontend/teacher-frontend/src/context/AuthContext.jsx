@@ -11,18 +11,15 @@ return raw ? JSON.parse(raw) : null
 })
 const navigate = useNavigate()
 
-
 const login = async (email, password) => {
 const res = await API.post('/auth/login', { email, password, role: "teacher" })
 const payload = res.data
-// expected { token, role, id, name }
 localStorage.setItem('token', payload.token)
 localStorage.setItem('role',payload.role)
 localStorage.setItem('edu_user', JSON.stringify(payload))
 setUser(payload)
 return payload
 }
-
 
 const logout = () => {
 localStorage.removeItem('token')
@@ -32,9 +29,7 @@ setUser(null)
 navigate('/login')
 }
 
-
 return <AuthContext.Provider value={{ user, login, logout }}>{children}</AuthContext.Provider>
 }
-
 
 export const useAuth = () => useContext(AuthContext)
