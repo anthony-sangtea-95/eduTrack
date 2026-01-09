@@ -1,22 +1,59 @@
 import Test from "../models/Test.js";
 import Question from "../models/Question.js";
 import User from "../models/User.js";
+import TestType from "../models/TestType.js";
+import mongoose from "mongoose";
 
 // @desc Create a new test
 export const createTest = async (req, res) => {
     try {
-        const { title, description, dueDate } = req.body;
+        const { title, description, dueDate, testType, assignedStudents } = req.body;
         const test = await Test.create({
             title,
             description,
             dueDate,
+            testType,
             teacher: req.user._id,
+            assignedStudents
         });
         res.status(201).json(test);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        return res.status(500).json({ message: error.message });
     }
 };
+
+export const getTestTypes = async (req, res) => {
+    try {
+        const testTypes = await TestType.find().select("_id typeName");
+        res.json(testTypes);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+}
+
+// get all students to assign to test
+export const getAllStudents = async (req, res) => {
+    try {
+        const students = await User.find({ role: 'student' });
+        res.json(students);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+}
+
+// get all questions by testId
+export const getQuestionsByTest = async (req, res) => {
+    try {
+        const { testId } = req.params;
+        if (!mongoose.Types.ObjectId.isValid(testId)) {
+            return res.status(400).json({ message: "Invalid test ID" });
+        }
+        const questions = await Question.find({ test: testId }).populate("test");
+        res.json(questions);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+}
 
 // @desc Add question to a test
 export const addQuestion = async (req, res) => {
@@ -37,7 +74,7 @@ export const addQuestion = async (req, res) => {
 
         res.status(201).json(question);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        return res.status(500).json({ message: error.message });
     }
 };
 
@@ -64,7 +101,7 @@ export const assignTest = async (req, res) => {
 
         res.json({ message: "Test assigned successfully", test });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        return res.status(500).json({ message: error.message });
     }
 };
 
@@ -77,6 +114,6 @@ export const getMyTests = async (req, res) => {
         );
         res.json(tests);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        return res.status(500).json({ message: error.message });
     }
 };

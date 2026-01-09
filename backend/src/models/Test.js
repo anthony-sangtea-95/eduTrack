@@ -5,6 +5,11 @@ const testSchema = new mongoose.Schema(
         title: { type: String, required: true },
         description: String,
         dueDate: Date,
+        testType: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "TestType",
+            required: true,
+        },
         teacher: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",

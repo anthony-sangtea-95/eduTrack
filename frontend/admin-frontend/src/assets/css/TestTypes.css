@@ -1,0 +1,29 @@
+.test-type-page {
+  max-width: 600px;
+  margin: auto;
+}
+
+.add-test-type {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.test-type-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.test-type-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border-radius: 6px;
+  background: #f5f5f5;
+}
+
+.test-type-item button {
+  margin-left: 5px;
+}

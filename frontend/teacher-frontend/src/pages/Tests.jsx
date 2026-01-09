@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import  API  from '../services/api'
+import Loading from '../components/Loading.jsx'
 
 export default function Tests() {
   const [tests, setTests] = useState([])
@@ -23,26 +24,25 @@ export default function Tests() {
     }
   }
 
-  if (loading) return <p>Loading tests...</p>
+  if (loading) return <Loading />
   if (error) return <p className="error">Failed to load tests</p>
 
   return (
-    <div className="page" style={{ margin: '0 20px'}}>
-      <div style={{ display: 'flex', justifyContent: 'space-between'}}>
-        <h2>My Tests</h2>
-
-        <Link to="/tests/create">
-          + Create Test
-        </Link>
-      </div>
-
+      <div className='main'>
+         <div className="page" style={{ margin: '0 20px'}}>
+        <h2 className='text-align-c'>My Tests</h2>
+        <div className='text-align-r'>
+          <Link className='create-button no-underline' to="/tests/create">
+           + New Test
+          </Link>
+        </div>
       {tests.length === 0 ? (
         <p style={{ opacity: 0.7 }}>No tests created yet.</p>
       ) : (
         <ul className="card">
           {tests.map(test => (
             <li
-              key={test.id}
+              key={test._id}
               style={{
                 display: 'flex',
                 justifyContent: 'space-between',
@@ -58,8 +58,7 @@ export default function Tests() {
               </div>
 
               <Link
-                className="button small"
-                to={`/tests/${test.id}/questions`}
+                to={`/tests/${test._id}/questions`}
               >
                 Manage Questions
               </Link>
@@ -67,6 +66,7 @@ export default function Tests() {
           ))}
         </ul>
       )}
+    </div>
     </div>
   )
 }

@@ -1,44 +1,40 @@
-import React from 'react'
-import { Routes, Route, Navigate } from 'react-router-dom'
-import Login from './pages/Login.jsx'
-import Dashboard from './pages/Dashboard.jsx'
-// import ManageUsers from './pages/ManageUsers.jsx'
-import { AuthProvider } from './context/AuthContext.jsx'
-import ProtectedRoute from './components/ProtectedRoute.jsx'
-import CreateQuestion from './pages/CreateQuestion.jsx'
-import Tests from './pages/Tests.jsx'
-
+import { Routes, Route, Navigate } from "react-router-dom";
+import Login from "./pages/Login.jsx";
+import Dashboard from "./pages/Dashboard.jsx";
+import Tests from "./pages/Tests.jsx";
+import CreateTest from "./pages/CreateTest.jsx";
+import Questions from "./pages/Questions.jsx";
+import { AuthProvider } from "./context/AuthContext.jsx";
+import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import MainLayout from "./layouts/MainLayout.jsx";
 
 export default function App() {
-return (
-<AuthProvider>
-<Routes>
-<Route path="/login" element={<Login />} />
+  return (
+    <AuthProvider>
+      <Routes>
+        {/* Public */}
+        <Route path="/login" element={<Login />} />
 
-<Route
-path="/"
-element={
-<ProtectedRoute>
-<Navigate to="/dashboard" replace />
-</ProtectedRoute>
-}
-/>
+        {/* Protected + Layout */}
+        <Route
+          element={
+            <ProtectedRoute>
+              <MainLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/tests" element={<Tests />} />
+          <Route path="/tests/create" element={<CreateTest />} />
+          <Route path="/tests/:testId/questions" element={<Questions />} />
+          <Route path="/tests/:testId/question/create" element={<Questions />}
+        />
+        </Route>
 
-<Route path="/tests" element={<Tests />} />
-
-<Route path="/questions/create" element={<CreateQuestion />} />
-
-<Route
-path="/dashboard"
-element={
-<ProtectedRoute>
-<Dashboard />
-</ProtectedRoute>
-}
-/>
-
-<Route path="*" element={<Navigate to="/login" replace />} />
-</Routes>
-</AuthProvider>
-)
+        {/* Fallback */}
+        <Route path="*" element={<Navigate to="/login" replace />} />
+      </Routes>
+    </AuthProvider>
+  );
 }

@@ -1,0 +1,145 @@
+.create-test-container {
+  min-height: auto;
+  display: flex;
+  position: relative;
+  justify-content: center;
+}
+
+.back-btn {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: transparent;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  color: #4f46e5;
+}
+
+.back-btn:hover {
+  text-decoration: underline;
+}
+
+.create-test-card {
+  background: #ffffff;
+  margin-top: 30px;
+  padding: 32px;
+  width: 420px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.create-test-card h2 {
+  margin-bottom: 20px;
+  text-align: center;
+  color: #333;
+}
+
+.create-test-card label {
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: 14px;
+  display: block;
+  color: #555;
+}
+
+.create-test-card input,
+.create-test-card textarea {
+  width: 100%;
+  padding: 10px 12px;
+  margin-top: 6px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  transition: border-color 0.2s;
+}
+
+.create-test-card textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.create-test-card input:focus,
+.create-test-card textarea:focus {
+  outline: none;
+  border-color: #4f46e5;
+}
+
+.students-list {
+  margin-top: 10px;
+  max-height: 150px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 6px;
+}
+
+.student-item {
+  padding: 8px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.student-item:hover {
+  background: #f0f0ff;
+}
+
+.student-item.selected {
+  background: #4f46e5;
+  color: white;
+}
+
+.create-test-card button {
+  width: 100%;
+  margin-top: 20px;
+  padding: 12px;
+  background: #4f46e5;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.create-test-card button:hover {
+  background: #4338ca;
+}
+
+.test-type-grid {
+  display: grid;
+  /* grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); */
+  /* grid-template-columns: 1fr 1fr 1fr; */
+  grid-template-columns: auto auto auto;
+  gap: 5px;
+  margin-bottom: 20px;
+}
+
+.test-type-card {
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 3px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: #fff;
+}
+
+.test-type-card p {
+  margin-top: 6px;
+  font-size: 13px;
+  color: #6b7280;
+  text-align: center;
+}
+
+.test-type-card:hover {
+  border-color: #3b82f6;
+}
+
+.test-type-card.active {
+  border-color: #3b82f6;
+  background: #eff6ff;
+}

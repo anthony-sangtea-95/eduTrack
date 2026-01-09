@@ -11,6 +11,7 @@ return (
 <nav style={{marginTop:20}}>
 <NavLink to="/dashboard" className={({isActive}) => `side-link ${isActive? 'active':''}`}>Dashboard</NavLink>
 <NavLink to="/manage-users" className={({isActive}) => `side-link ${isActive? 'active':''}`}>Manage Users</NavLink>
+<NavLink to="/test-types" className={({isActive}) => `side-link ${isActive? 'active':''}`}>Test Types</NavLink>
 </nav>
 <div style={{marginTop:20}}>
 <button onClick={logout} className="button">Logout</button>

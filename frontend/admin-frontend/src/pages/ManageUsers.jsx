@@ -17,8 +17,6 @@ useEffect(()=>{ load() }, [])
 
 
 return (
-<div className="app-shell">
-<Sidebar />
 <main className="main">
 <div className="header"><h1>Manage Users</h1></div>
 <div className="card">
@@ -32,6 +30,5 @@ return (
 </table>
 </div>
 </main>
-</div>
 )
 }
