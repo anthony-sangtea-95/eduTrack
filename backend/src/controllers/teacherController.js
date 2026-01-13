@@ -41,7 +41,7 @@ export const getAllStudents = async (req, res) => {
     }
 }
 
-// get all questions by testId
+// get questions by testId
 export const getQuestionsByTest = async (req, res) => {
     try {
         const { testId } = req.params;
@@ -117,3 +117,18 @@ export const getMyTests = async (req, res) => {
         return res.status(500).json({ message: error.message });
     }
 };
+
+// get questions by teacher
+export const getQuestionsByTeacher = async (req, res) => {
+    try {
+        const questions = await Question.find({
+            $or: [
+                { createdBy: req.user._id },
+                { allowedTeachers: req.user._id }
+            ]
+        }).distinct('_id');
+        res.json(questions);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+}

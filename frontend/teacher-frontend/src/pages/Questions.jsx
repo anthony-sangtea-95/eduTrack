@@ -8,7 +8,6 @@ export default function Questions() {
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const {testId} = useParams()
 
   useEffect(() => {
     fetchQuestions();
@@ -17,7 +16,7 @@ export default function Questions() {
   const fetchQuestions = async () => {
     try {
       setLoading(true);
-      const res = await API.get(`/teacher/tests/${testId}/questions`);
+      const res = await API.get(`/teacher/questions`);
       setQuestions(res.data);
     } catch (err) {
       setError(err.message);
@@ -44,7 +43,7 @@ export default function Questions() {
     <div className="page">
       <div className="page-header">
         <h2>Questions</h2>
-        <Link to={`/teacher/tests/${testId}/question/create`} className="btn">
+        <Link to="/questions/create" className="btn">
           + Add New Question
         </Link>
       </div>

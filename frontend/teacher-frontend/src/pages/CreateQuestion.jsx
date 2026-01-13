@@ -1,93 +1,169 @@
-import { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import API from "../services/api";
+import { useEffect, useState } from "react"
+import "../assets/css/CreateQuestion.css"
 
 export default function CreateQuestion() {
-  const { testId } = useParams();
-  const navigate = useNavigate();
+  const [form, setForm] = useState({
+    test: "",
+    questionType: "",
+    questionText: "",
+    options: { a: "", b: "", c: "", d: "" },
+    correctOption: "",
+    allowedTeachers: [],
+  })
 
-  const [questionText, setQuestionText] = useState("");
-  const [options, setOptions] = useState({
-    a: "",
-    b: "",
-    c: "",
-    d: "",
-  });
-  const [correctOption, setCorrectOption] = useState("a");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [tests, setTests] = useState([])
+  const [types, setTypes] = useState([])
+  const [teachers, setTeachers] = useState([])
+  const [loading, setLoading] = useState(false)
 
-  const handleOptionChange = (key, value) => {
-    setOptions(prev => ({ ...prev, [key]: value }));
-  };
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const [testsRes, typesRes, teachersRes] = await Promise.all([
+          API.get("/teacher/tests"),
+          API.get("/teacher/test-types"),
+          API.get("/users?role=teacher"),
+        ])
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-
-    if (!questionText || !options.a || !options.b || !options.c || !options.d) {
-      return setError("All fields are required");
+        setTests(testsRes.data)
+        setTypes(typesRes.data)
+        setTeachers(teachersRes.data)
+      } catch (err) {
+        console.error(err)
+        alert("Failed to load data")
+      }
     }
 
-    try {
-      setLoading(true);
+    loadData()
+  }, [])
 
-      await API.post(`/teacher/tests/${testId}/questions`, {
-        questionText,
-        options,
-        correctOption,
-      });
+  const updateOption = (key, value) => {
+    setForm({ ...form, options: { ...form.options, [key]: value } })
+  }
 
-      navigate(`/tests/${testId}/questions`);
-    } catch (err) {
-      setError(err.response?.data?.message || "Failed to create question");
-    } finally {
-      setLoading(false);
+  const toggleTeacher = (id) => {
+    setForm({
+      ...form,
+      allowedTeachers: form.allowedTeachers.includes(id)
+        ? form.allowedTeachers.filter((t) => t !== id)
+        : [...form.allowedTeachers, id],
+    })
+  }
+
+  const submitHandler = async (e) => {
+    e.preventDefault()
+    setLoading(true)
+
+    const res = await fetch("/api/questions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("TOKEN")}`,
+      },
+      body: JSON.stringify(form),
+    })
+
+    setLoading(false)
+
+    if (res.ok) {
+      alert("Question created successfully ✔")
+      setForm({
+        test: "",
+        questionType: "",
+        questionText: "",
+        options: { a: "", b: "", c: "", d: "" },
+        correctOption: "",
+        allowedTeachers: [],
+      })
+    } else {
+      alert("Failed to create question")
     }
-  };
+  }
 
   return (
-    <div className="page">
-      <h2>Add New Question</h2>
+    <div className="cq-container">
+      <div className="cq-card">
+        <h2>Create Question</h2>
 
-      {error && <p className="error">{error}</p>}
-
-      <form onSubmit={handleSubmit} className="form">
-        <label>Question</label>
-        <textarea
-          value={questionText}
-          onChange={(e) => setQuestionText(e.target.value)}
-          placeholder="Enter question"
-          required
-        />
-
-        {["a", "b", "c", "d"].map((key) => (
-          <div key={key}>
-            <label>Option {key.toUpperCase()}</label>
-            <input
-              type="text"
-              value={options[key]}
-              onChange={(e) => handleOptionChange(key, e.target.value)}
+        <form onSubmit={submitHandler}>
+          <div className="row">
+            <select
               required
-            />
+              value={form.questionType}
+              onChange={(e) =>
+                setForm({ ...form, questionType: e.target.value })
+              }
+            >
+              <option value="">Question Type</option>
+              {types.map((t) => (
+                <option key={t._id} value={t._id}>{t.name}</option>
+              ))}
+            </select>
+
+            <select
+              value={form.test}
+              onChange={(e) => setForm({ ...form, test: e.target.value })}
+            >
+              <option value="">No Test (Optional)</option>
+              {tests.map((t) => (
+                <option key={t._id} value={t._id}>{t.title}</option>
+              ))}
+            </select>
           </div>
-        ))}
 
-        <label>Correct Option</label>
-        <select
-          value={correctOption}
-          onChange={(e) => setCorrectOption(e.target.value)}
-        >
-          <option value="a">A</option>
-          <option value="b">B</option>
-          <option value="c">C</option>
-          <option value="d">D</option>
-        </select>
+          <textarea
+            placeholder="Enter question text..."
+            required
+            value={form.questionText}
+            onChange={(e) =>
+              setForm({ ...form, questionText: e.target.value })
+            }
+          />
 
-        <button disabled={loading}>
-          {loading ? "Saving..." : "Create Question"}
-        </button>
-      </form>
+          <div className="options">
+            {["a", "b", "c", "d"].map((k) => (
+              <input
+                key={k}
+                placeholder={`Option ${k.toUpperCase()}`}
+                required
+                value={form.options[k]}
+                onChange={(e) => updateOption(k, e.target.value)}
+              />
+            ))}
+          </div>
+
+          <select
+            required
+            value={form.correctOption}
+            onChange={(e) =>
+              setForm({ ...form, correctOption: e.target.value })
+            }
+          >
+            <option value="">Correct Option</option>
+            {["a", "b", "c", "d"].map((k) => (
+              <option key={k} value={k}>{k.toUpperCase()}</option>
+            ))}
+          </select>
+
+          <div className="teachers">
+            <p>Allow other teachers</p>
+            {teachers.map((t) => (
+              <label key={t._id}>
+                <input
+                  type="checkbox"
+                  checked={form.allowedTeachers.includes(t._id)}
+                  onChange={() => toggleTeacher(t._id)}
+                />
+                {t.name}
+              </label>
+            ))}
+          </div>
+
+          <button disabled={loading}>
+            {loading ? "Saving..." : "Create Question"}
+          </button>
+        </form>
+      </div>
     </div>
-  );
+  )
 }

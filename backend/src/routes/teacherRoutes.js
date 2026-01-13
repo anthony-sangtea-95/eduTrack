@@ -9,6 +9,7 @@ import {
     getMyTests,
     getAllStudents,
     getQuestionsByTest,
+    getQuestionsByTeacher,
 } from "../controllers/teacherController.js";
 
 const router = express.Router();
@@ -20,7 +21,10 @@ router.get("/test-types", getTestTypes);
 router.get("/tests/students", getAllStudents);
 router.get("/tests", getMyTests);
 router.get("/tests/:testId/questions", getQuestionsByTest);
-router.post("/tests/:testId/questions", addQuestion);
+router.post("/tests/:testId/questions", addQuestion);  //add question to a specific test
 router.post("/tests/:testId/assign", assignTest);
+
+router.get("/questions", getQuestionsByTeacher);
+// router.post("/questions", createQuestion);
 
 export default router;
