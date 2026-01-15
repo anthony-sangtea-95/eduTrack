@@ -5,9 +5,9 @@ const testSchema = new mongoose.Schema(
         title: { type: String, required: true },
         description: String,
         dueDate: Date,
-        testType: {
+        subject: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "TestType",
+            ref: "Subject",
             required: true,
         },
         teacher: {

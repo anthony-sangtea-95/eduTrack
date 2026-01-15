@@ -10,12 +10,12 @@ const navigate = useNavigate();
   const [dueDate, setDueDate] = useState("");
   const [students, setStudents] = useState([]);
   const [selectedStudents, setSelectedStudents] = useState([]);
-  const [testTypes, setTestTypes] = useState([]);
-  const [selectedTestType, setSelectedTestType] = useState("");
+  const [subjects, setSubjects] = useState([]);
+  const [selectedSubject, setSelectedSubject] = useState("");
 
   useEffect(() => {
     API.get("/teacher/tests/students").then(res => setStudents(res.data)).catch(err => console.error(err));
-    API.get("/teacher/test-types").then(res => setTestTypes(res.data)).catch(err => console.error(err));
+    API.get("/teacher/subjects").then(res => setSubjects(res.data)).catch(err => console.error(err));
   }, []);
 
   const toggleStudent = (id) => {
@@ -31,7 +31,7 @@ const navigate = useNavigate();
       title,
       description,
       dueDate,
-      testType: selectedTestType,
+      subject: selectedSubject,
       assignedStudents: selectedStudents
     });
     alert("Test created successfully");
@@ -69,17 +69,17 @@ const navigate = useNavigate();
           onChange={e => setDueDate(e.target.value)}
         />
 
-        <label>Test Type</label>
-        <div className="test-type-grid">
-          {testTypes.map(type => (
+        <label>Subjects</label>
+        <div className="subject-grid">
+          {subjects.map(subject => (
             <div
-              key={type._id}
-              className={`test-type-card ${
-                selectedTestType === type._id ? "active" : ""
+              key={subject._id}
+              className={`subject-card ${
+                selectedSubject === subject._id ? "active" : ""
               }`}
-              onClick={() => setSelectedTestType(type._id)}
+              onClick={() => setSelectedSubject(subject._id)}
             >
-              <p>{type.typeName}</p>
+              <p>{subject.subjectName}</p>
             </div>
           ))}
         </div>

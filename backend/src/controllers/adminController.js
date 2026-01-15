@@ -1,5 +1,5 @@
 import User from "../models/User.js";
-import TestType from "../models/TestType.js";
+import Subject from "../models/Subject.js";
 
 export const getAllUsers = async (req, res) => {
   try {
@@ -22,20 +22,20 @@ export const createUser = async (req, res) => {
   }
 };
 
-export const getTestTypes = async (req, res) => {
+export const getSubjects = async (req, res) => {
   try {
-    const testTypes = await TestType.find().select("_id typeName");
-    res.json(testTypes);
+    const subjects = await Subject.find().select("_id subjectName");
+    res.json(subjects);
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }
 };
 
-export const createTestType = async (req, res) => {
+export const createSubject = async (req, res) => {
   try {
-    const { typeName } = req.body;
-    const testType = await TestType.create({ typeName, createdBy: req.user._id });
-    res.status(201).json(testType);
+    const { subjectName } = req.body;
+    const subject = await Subject.create({ subjectName, createdBy: req.user._id });
+    res.status(201).json(subject);
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }

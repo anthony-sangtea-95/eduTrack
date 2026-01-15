@@ -56,7 +56,7 @@ export default function Questions() {
             <tr>
               <th>#</th>
               <th>Question</th>
-              <th>Type</th>
+              <th>Subject</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -64,8 +64,8 @@ export default function Questions() {
             {questions.map((q, index) => (
               <tr key={q._id}>
                 <td>{index + 1}</td>
-                <td>{q.text}</td>
-                <td>{q.type}</td>
+                <td>{q.questionText}</td>
+                <td>{q.subject.subjectName}</td>
                 <td className="actions">
                   <Link
                     to={`/teacher/questions/${q._id}/edit`}

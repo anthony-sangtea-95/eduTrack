@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
 
-const testTypeSchema = new mongoose.Schema(
+const subjectSchema = new mongoose.Schema(
     {
-        typeName: {
+        subjectName: {
             type: String,
             required: true,
             trim: true,
@@ -20,5 +20,5 @@ const testTypeSchema = new mongoose.Schema(
     }
 );
 
-const TestType = mongoose.model("TestType", testTypeSchema);
-export default TestType;
+const Subject = mongoose.model("Subject", subjectSchema);
+export default Subject;

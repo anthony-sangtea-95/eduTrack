@@ -110,7 +110,7 @@
   background: #4338ca;
 }
 
-.test-type-grid {
+.subject-grid {
   display: grid;
   /* grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); */
   /* grid-template-columns: 1fr 1fr 1fr; */
@@ -119,7 +119,7 @@
   margin-bottom: 20px;
 }
 
-.test-type-card {
+.subject-card {
   border: 2px solid #e5e7eb;
   border-radius: 10px;
   padding: 3px;
@@ -128,18 +128,18 @@
   background: #fff;
 }
 
-.test-type-card p {
+.subject-card p {
   margin-top: 6px;
   font-size: 13px;
   color: #6b7280;
   text-align: center;
 }
 
-.test-type-card:hover {
+.subject-card:hover {
   border-color: #3b82f6;
 }
 
-.test-type-card.active {
+.subject-card.active {
   border-color: #3b82f6;
   background: #eff6ff;
 }

@@ -1,0 +1,129 @@
+.subjects-container {
+  max-width: 480px;
+  margin: 40px auto;
+  padding: 24px;
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.subjects-container h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* Error message */
+.error {
+  color: #d32f2f;
+  background: #fdecea;
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 15px;
+  font-size: 14px;
+}
+
+/* Form */
+.subject-form {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.subject-form input {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+.subject-form input:focus {
+  outline: none;
+  border-color: #66bb6a;
+  box-shadow: 0 0 0 2px rgba(102, 187, 106, 0.25);
+}
+
+.subject-form button {
+  padding: 10px 14px;
+  border-radius: 6px;
+  border: none;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* Buttons */
+.btn-primary {
+  background: #66bb6a;
+  color: #fff;
+}
+
+.btn-secondary {
+  background: #e0e0e0;
+  color: #333;
+}
+
+.btn-primary:hover {
+  background: rgb(54, 145, 58);
+}
+
+.btn-secondary:hover {
+  background: #d5d5d5;
+}
+
+/* List */
+.subject-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.subject-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border-radius: 6px;
+  background: #f9f9f9;
+  margin-bottom: 8px;
+}
+
+.subject-name {
+  font-weight: 500;
+  color: #333;
+}
+
+.subject-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.btn-edit {
+  background: #2482e0;
+  color: #fff;
+  border: none;
+  padding: 8px 5px;
+}
+
+.btn-delete {
+  background: #d32f2f;
+  color: #fff;
+  border: none;
+  padding: 8px 5px;
+}
+
+.btn-edit:hover {
+  background: #145ea8;
+}
+
+.btn-delete:hover {
+  background: #c52424;
+}
+
+/* Loading */
+.loading {
+  text-align: center;
+  color: #777;
+}
+

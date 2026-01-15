@@ -8,6 +8,12 @@ const questionSchema = new mongoose.Schema(
             default: null,
         },
 
+        subject: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Subject",
+            required: true,
+        },
+
         questionText: {
             type: String,
             required: true,
