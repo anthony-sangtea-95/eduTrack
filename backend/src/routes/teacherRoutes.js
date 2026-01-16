@@ -12,6 +12,8 @@ import {
     getQuestionsByTest,
     getQuestionsByTeacher,
     createQuestion,
+    getQuestionById,
+    updateQuestion,
 } from "../controllers/teacherController.js";
 
 const router = express.Router();
@@ -31,5 +33,6 @@ router.post("/tests/:testId/assign", assignTest);
 
 router.get("/questions", getQuestionsByTeacher);
 router.post("/questions", createQuestion);
-
+router.get("/questions/:questionId", getQuestionById);
+router.put("/questions/:questionId", updateQuestion);
 export default router;
