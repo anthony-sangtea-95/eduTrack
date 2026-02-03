@@ -166,3 +166,30 @@ export const getQuestionsByTeacher = async (req, res) => {
         return res.status(500).json({ message: error.message });
     }
 }
+
+export const getQuestionById = async (req, res) => {
+    try {
+        const { questionId } = req.params;
+        if (!mongoose.Types.ObjectId.isValid(questionId)) {
+            return res.status(400).json({ message: "Invalid question ID" });
+        }
+        const question = await Question.findById(questionId);
+        res.json(question);
+    } catch (error) {
+        return res.status(500).json({ message: error.message })
+    }
+}
+
+export const updateQuestion = async (req, res) => {
+    try {
+        const { questionText, options, correctOption } = req.body;
+        const { questionId } = req.params;
+        const question = await Question.findById(questionId);
+        question.questionText = questionText;
+        question.options = options;
+        question.correctOption = correctOption;
+        question.save()
+    } catch (error) {
+        return res.status(500).json({ message: error.message })
+    }
+}
