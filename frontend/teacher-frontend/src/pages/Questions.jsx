@@ -8,6 +8,7 @@ export default function Questions() {
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   useEffect(() => {
     fetchQuestions();
@@ -29,10 +30,15 @@ export default function Questions() {
     if (!window.confirm("Are you sure you want to delete this question?")) return;
 
     try {
-      await API.delete(`/teacher/questions/${id}`);
+      const { data } = await API.delete(`/teacher/questions/${id}`);
+      if (data.success) {
+        setSuccess("Success Delete...");
+      } else {
+        setError(data.message);
+      }
       setQuestions(prev => prev.filter(q => q._id !== id));
     } catch (err) {
-      alert("Failed to delete question");
+      setError(`Error : ${err.message}`)
     }
   };
 
@@ -41,6 +47,7 @@ export default function Questions() {
 
   return (
     <div className="page">
+      { (error || success) && (<p className={error ? "error" : "success"}>{error ? error : success}</p>) }
       <div className="page-header">
         <h2>Questions</h2>
         <Link to="/questions/create" className="btn">

@@ -24,6 +24,23 @@ export default function Tests() {
     }
   }
 
+  const handleDelete = async (id) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this test?");
+    if (!confirmDelete) return;
+
+    try {
+      const { data } = await API.delete(`/teacher/tests/${id}`);
+
+      if (data.success) {
+        // remove deleted test from UI without refresh
+        setTests(prev => prev.filter(test => test._id !== id));
+      }
+    } catch (err) {
+      console.error("Delete failed", err);
+      alert("Failed to delete test");
+    }
+};
+
   if (loading) return <Loading />
   if (error) return <p className="error">Failed to load tests</p>
 
@@ -57,11 +74,20 @@ export default function Tests() {
                 </div>
               </div>
 
-              <Link
-                to={`/tests/${test._id}/questions`}
-              >
-                Manage Questions
-              </Link>
+                <Link to={`/tests/update/${test._id}`} className="edit-link">
+                  Edit
+                </Link>
+
+                <button
+                  onClick={() => handleDelete(test._id)}
+                  className="delete-button"
+                >
+                  Delete
+                </button>
+
+                <Link to={`/tests/update/${test._id}`} className="manage-link">
+                  Manage Questions
+                </Link>
             </li>
           ))}
         </ul>

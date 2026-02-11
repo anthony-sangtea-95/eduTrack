@@ -152,6 +152,20 @@ export const getMyTestsBySubject = async (req, res) => {
     }
 }
 
+// delete test
+export const deleteTest = async (req, res) => {
+    try {
+        const { testId } = req.params;
+        const deletedTest = await Question.findByIdAndDelete(testId);
+        if (!deletedTest) {
+            return res.status(404).json({ success: false, message: "Test not found" });
+        }
+        res.status(200).json({ success: true, deletedTest });
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+}
+
 // get questions by teacher
 export const getQuestionsByTeacher = async (req, res) => {
     try {
@@ -188,8 +202,22 @@ export const updateQuestion = async (req, res) => {
         question.questionText = questionText;
         question.options = options;
         question.correctOption = correctOption;
-        question.save()
+        question.save();
+        res.status(200).json({ success: true });
     } catch (error) {
         return res.status(500).json({ message: error.message })
+    }
+}
+
+export const deleteQuestion = async (req, res) => {
+    try {
+        const { questionId } = req.params;
+        const deletedQuestion = await Question.findByIdAndDelete(questionId);
+        if (!deletedQuestion) {
+            return res.status(404).json({ success: false, message: "Question not found" });
+        }
+        res.status(200).json({ success: true, deletedQuestion });
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
     }
 }

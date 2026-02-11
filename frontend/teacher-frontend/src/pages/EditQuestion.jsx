@@ -11,6 +11,7 @@ export default function EditQuestion() {
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   const [form, setForm] = useState({
     questionText: "",
@@ -54,19 +55,22 @@ export default function EditQuestion() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await API.put(`/teacher/questions/${id}`, form);
-      navigate("/questions");
+      const {data} = await API.put(`/teacher/questions/${questionId}`, form);
+      if (data.success) {
+        setSuccess("Updated Success...");
+      }
     } catch (err) {
-      setError("Failed to update question");
+      setError("Error : " + err.message);
     }
   };
 
   if (loading) return <Loading />;
-  if (error) return <p className="error">{error}</p>;
 
   return (
+      <>
         <div className="edit-page">
             <div className="card">
+              { (error || success) && (<p className={ error ? "error" : "success"}>{ error ? error : success }</p> )}
                 <h2 className="page-title">Edit Question</h2>
 
                 <form onSubmit={handleSubmit} className="question-form">
@@ -132,5 +136,6 @@ export default function EditQuestion() {
                 </form>
             </div>
         </div>
+      </>
   );
 }

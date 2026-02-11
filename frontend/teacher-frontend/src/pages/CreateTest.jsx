@@ -4,7 +4,7 @@ import "../assets/css/CreateTest.css";
 import { useNavigate } from "react-router-dom";
 
 export default function CreateTest() {
-const navigate = useNavigate();
+  const navigate = useNavigate();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [dueDate, setDueDate] = useState("");
@@ -41,7 +41,7 @@ const navigate = useNavigate();
   return (
       <div className="main">
       <div className="create-test-container">
-        <button className="back-btn" onClick={() => navigate("/tests")}>
+        <button className="test-back" onClick={() => navigate("/tests")}>
         ← Back
       </button>
       <div className="create-test-card">

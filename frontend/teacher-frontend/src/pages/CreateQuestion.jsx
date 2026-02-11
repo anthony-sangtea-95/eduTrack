@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import API from "../services/api";
 import "../assets/css/CreateQuestion.css";
+import { useNavigate } from "react-router-dom";
 
 export default function CreateQuestion() {
+  const navigate = useNavigate();
   const [subjects, setSubjects] = useState([]);
   const [tests, setTests] = useState([]);
   const [isTestDisabled, setIsTestDisabled] = useState(true);
@@ -108,94 +110,100 @@ export default function CreateQuestion() {
   };
 
   return (
-    <div className="question-container">
-      <h2>Create Question</h2>
+    <div className="main">
+      <div className="question-container">
+        <button className="question-back" onClick={() => navigate("/questions")}>
+          ← Back
+        </button>
+        <div className="create-question-card">
+          <h2>Create Question</h2>
+          {error && <div className="error">{error}</div>}
+          {success && <div className="success">{success}</div>}
 
-      {error && <div className="error">{error}</div>}
-      {success && <div className="success">{success}</div>}
+          <form className="question-form" onSubmit={handleSubmit}>
+            {/* SUBJECT */}
+            <select value={form.subject} onChange={handleSubjectChange} required>
+              <option value="">Select Subject</option>
+              {subjects.map((s) => (
+                <option key={s._id} value={s._id}>
+                  {s.subjectName}
+                </option>
+              ))}
+            </select>
 
-      <form className="question-form" onSubmit={handleSubmit}>
-        {/* SUBJECT */}
-        <select value={form.subject} onChange={handleSubjectChange} required>
-          <option value="">Select Subject</option>
-          {subjects.map((s) => (
-            <option key={s._id} value={s._id}>
-              {s.subjectName}
-            </option>
-          ))}
-        </select>
+            {/* TEST (optional) */}
+            <select
+              name="test"
+              value={form.test}
+              onChange={handleChange}
+              disabled={isTestDisabled}
+            >
+              <option value="">No Test (Question Bank)</option>
+              {tests.map((t) => (
+                <option key={t._id} value={t._id}>
+                  {t.title}
+                </option>
+              ))}
+            </select>
 
-        {/* TEST (optional) */}
-        <select
-          name="test"
-          value={form.test}
-          onChange={handleChange}
-          disabled={isTestDisabled}
-        >
-          <option value="">No Test (Question Bank)</option>
-          {tests.map((t) => (
-            <option key={t._id} value={t._id}>
-              {t.title}
-            </option>
-          ))}
-        </select>
+            {/* QUESTION TEXT */}
+            <textarea
+              name="questionText"
+              placeholder="Enter question text"
+              value={form.questionText}
+              onChange={handleChange}
+              required
+            />
 
-        {/* QUESTION TEXT */}
-        <textarea
-          name="questionText"
-          placeholder="Enter question text"
-          value={form.questionText}
-          onChange={handleChange}
-          required
-        />
-
-        {/* OPTIONS */}
-        {["a", "b", "c", "d"].map((key) => (
-          <input
-            key={key}
-            type="text"
-            placeholder={`Option ${key.toUpperCase()}`}
-            value={form.options[key]}
-            onChange={(e) => handleOptionChange(key, e.target.value)}
-            required
-          />
-        ))}
-
-        {/* CORRECT OPTION */}
-        <div className="correct-options">
-          {["a", "b", "c", "d"].map((key) => (
-            <label key={key}>
+            {/* OPTIONS */}
+            {["a", "b", "c", "d"].map((key) => (
               <input
-                type="radio"
-                name="correctOption"
-                value={key}
-                checked={form.correctOption === key}
-                onChange={handleChange}
+                key={key}
+                type="text"
+                placeholder={`Option ${key.toUpperCase()}`}
+                value={form.options[key]}
+                onChange={(e) => handleOptionChange(key, e.target.value)}
                 required
               />
-              {key.toUpperCase()}
-            </label>
-          ))}
+            ))}
+
+            {/* CORRECT OPTION */}
+            <div className="correct-options">
+              {["a", "b", "c", "d"].map((key) => (
+                <label key={key}>
+                  <input
+                    type="radio"
+                    name="correctOption"
+                    value={key}
+                    checked={form.correctOption === key}
+                    onChange={handleChange}
+                    required
+                  />
+                  {key.toUpperCase()}
+                </label>
+              ))}
+            </div>
+
+            {/* ALLOWED TEACHERS */}
+            <label>Allowed Teachers:</label>
+            <select
+            multiple
+            value={form.allowedTeachers}
+            onChange={handleAllowedTeachersChange}
+            >
+            {teachers.map((t) => (
+              <option key={t._id} value={t._id}>
+                {t.name}
+              </option>
+            ))}
+          </select>
+
+            <button type="submit" disabled={loading}>
+              {loading ? "Saving..." : "Create Question"}
+            </button>
+          </form>
         </div>
-
-        {/* ALLOWED TEACHERS */}
-        <label>Allowed Teachers:</label>
-        <select
-        multiple
-        value={form.allowedTeachers}
-        onChange={handleAllowedTeachersChange}
-        >
-        {teachers.map((t) => (
-          <option key={t._id} value={t._id}>
-            {t.name}
-          </option>
-        ))}
-      </select>
-
-        <button type="submit" disabled={loading}>
-          {loading ? "Saving..." : "Create Question"}
-        </button>
-      </form>
+      </div>
     </div>
   );
 }

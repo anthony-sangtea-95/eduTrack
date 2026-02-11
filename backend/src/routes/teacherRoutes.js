@@ -8,31 +8,40 @@ import {
     assignTest,
     getMyTests,
     getMyTestsBySubject,
+    deleteTest,
     getAllStudents,
     getQuestionsByTest,
     getQuestionsByTeacher,
     createQuestion,
     getQuestionById,
     updateQuestion,
+    deleteQuestion,
 } from "../controllers/teacherController.js";
 
 const router = express.Router();
-
 router.use(protect, requireRole("teacher"));
 
+//Teacher
 router.get("/users", getTeachers);
-router.post("/tests", createTest);
+
+//Subject
 router.get("/subjects", getSubjects);
 
+//Student
 router.get("/tests/students", getAllStudents);
+
+//Test
+router.post("/tests", createTest);
 router.get("/tests", getMyTests);
 router.get("/tests/:subjectId", getMyTestsBySubject);
-router.get("/tests/:testId/questions", getQuestionsByTest);
-// router.post("/tests/:testId/questions", addQuestion);  //add question to a specific test
-router.post("/tests/:testId/assign", assignTest);
+router.delete("/tests/:testId", deleteTest);
+router.post("/tests/:testId/assign", assignTest); // Assign test to specific students
 
-router.get("/questions", getQuestionsByTeacher);
+//Question
 router.post("/questions", createQuestion);
+router.get("/tests/:testId/questions", getQuestionsByTest);
+router.get("/questions", getQuestionsByTeacher);
 router.get("/questions/:questionId", getQuestionById);
 router.put("/questions/:questionId", updateQuestion);
+router.delete("/questions/:questionId", deleteQuestion);
 export default router;

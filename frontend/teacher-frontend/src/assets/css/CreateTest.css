@@ -5,7 +5,7 @@
   justify-content: center;
 }
 
-.back-btn {
+.test-back {
   position: absolute;
   top: 20px;
   left: 20px;
@@ -17,7 +17,7 @@
   color: #4f46e5;
 }
 
-.back-btn:hover {
+.test-back:hover {
   text-decoration: underline;
 }
 
