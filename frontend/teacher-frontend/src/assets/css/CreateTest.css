@@ -113,24 +113,20 @@
 
 .subject-grid {
   display: grid;
-  /* grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); */
-  /* grid-template-columns: 1fr 1fr 1fr; */
   grid-template-columns: auto auto auto;
   gap: 5px;
   margin-bottom: 20px;
 }
 
 .subject-card {
-  border: 2px solid #e5e7eb;
+  border: 1px solid #e5e7eb;
   border-radius: 10px;
-  padding: 3px;
   cursor: pointer;
   transition: all 0.2s ease;
   background: #fff;
 }
 
 .subject-card p {
-  margin-top: 6px;
   font-size: 13px;
   color: #6b7280;
   text-align: center;
@@ -141,8 +137,8 @@
 }
 
 .subject-card.active {
-  border-color: #61c066;
-  background: #eff6ff;
+  background: #bef2c1ba;
+  border: none;
 }
 
 .error {

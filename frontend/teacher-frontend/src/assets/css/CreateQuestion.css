@@ -45,7 +45,6 @@
 .question-form textarea:focus {
   outline: none;
   border-color: #61c066;
-  box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.2);
 }
 
 /* Correct option */
@@ -114,4 +113,29 @@
 
 .question-back:hover {
   text-decoration: underline;
+}
+
+.teachers-list {
+  margin-top: 10px;
+  max-height: 150px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 6px;
+}
+
+.teacher-item {
+  padding: 8px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.teacher-item:hover {
+  background-color: #bef2c1ba;
+}
+
+.teacher-item.selected {
+  background-color: #9ddea1ba;
 }

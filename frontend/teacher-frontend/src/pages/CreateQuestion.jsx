@@ -56,6 +56,19 @@ export default function CreateQuestion() {
   }
 };
 
+const toggleTeacher = (teacherId) => {
+  setForm((prev) => {
+    const alreadySelected = prev.allowedTeachers.includes(teacherId);
+
+    return {
+      ...prev,
+      allowedTeachers: alreadySelected
+        ? prev.allowedTeachers.filter((id) => id !== teacherId)
+        : [...prev.allowedTeachers, teacherId],
+    };
+  });
+};
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -185,7 +198,7 @@ export default function CreateQuestion() {
             </div>
 
             {/* ALLOWED TEACHERS */}
-            <label>Allowed Teachers:</label>
+            {/* <label>Allowed Teachers:</label>
             <select
             multiple
             value={form.allowedTeachers}
@@ -196,7 +209,21 @@ export default function CreateQuestion() {
                 {t.name}
               </option>
             ))}
-          </select>
+          </select> */}
+          <label>Allowed Teachers:</label>
+          <div className="teachers-list">
+            {teachers.map((t) => (
+              <div
+                key={t._id}
+                className={`teacher-item ${
+                  form.allowedTeachers.includes(t._id) ? "selected" : ""
+                }`}
+                onClick={() => toggleTeacher(t._id)}
+              >
+                {t.name}
+              </div>
+            ))}
+          </div>
 
             <button type="submit" disabled={loading}>
               {loading ? "Saving..." : "Create Question"}
