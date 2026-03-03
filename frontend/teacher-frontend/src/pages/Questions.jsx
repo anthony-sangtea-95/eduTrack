@@ -51,7 +51,7 @@ export default function Questions() {
       <div className="page-header">
         <h2>Questions</h2>
         <Link to="/questions/create" className="btn">
-          + Add New Question
+          + New Question
         </Link>
       </div>
 
@@ -76,13 +76,13 @@ export default function Questions() {
                 <td className="actions">
                   <Link
                     to={`/teacher/questions/${q._id}/edit`}
-                    className="btn btn-sm"
+                    className="btn-question btn-question-edit"
                   >
                     Edit
                   </Link>
                   <button
                     onClick={() => deleteQuestion(q._id)}
-                    className="btn btn-sm btn-danger"
+                    className="btn-question btn-question-delete"
                   >
                     Delete
                   </button>

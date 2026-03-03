@@ -3,6 +3,7 @@ import Login from "./pages/Login.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import Tests from "./pages/Tests.jsx";
 import CreateTest from "./pages/CreateTest.jsx";
+import EditTest from "./pages/EditTest.jsx";
 import Questions from "./pages/Questions.jsx";
 import CreateQuestion from "./pages/CreateQuestion.jsx";
 import EditQuestion from "./pages/EditQuestion.jsx";
@@ -29,6 +30,7 @@ export default function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/tests" element={<Tests />} />
           <Route path="/tests/create" element={<CreateTest />} />
+          <Route path="/tests/edit/:testId" element={<EditTest />} />
           <Route path="/questions" element={<Questions />} />
           <Route path="/questions/create" element={<CreateQuestion />} />
           <Route path="/teacher/questions/:questionId/edit" element={<EditQuestion />} />

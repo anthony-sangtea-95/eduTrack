@@ -4,9 +4,11 @@ import { requireRole } from "../middleware/roleMiddleware.js";
 import {
     getTeachers,
     createTest,
+    updateTest,
     getSubjects,
     assignTest,
     getMyTests,
+    getTestById,
     getMyTestsBySubject,
     deleteTest,
     getAllStudents,
@@ -33,9 +35,11 @@ router.get("/tests/students", getAllStudents);
 //Test
 router.post("/tests", createTest);
 router.get("/tests", getMyTests);
-router.get("/tests/:subjectId", getMyTestsBySubject);
+router.get("/tests/:testId", getTestById);
+router.get("/subjects/:subjectId/tests", getMyTestsBySubject);
 router.delete("/tests/:testId", deleteTest);
 router.post("/tests/:testId/assign", assignTest); // Assign test to specific students
+router.put("/tests/:testId", updateTest);
 
 //Question
 router.post("/questions", createQuestion);

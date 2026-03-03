@@ -1,0 +1,76 @@
+.create-test-button {
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  background: #61c066;
+  color: rgb(240, 236, 236);
+}
+
+.test-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 0;
+  border-bottom: 1px solid #eee;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.test-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.test-date {
+  font-size: 12px;
+  opacity: 0.6;
+  margin-top: 4px;
+}
+
+.test-actions { 
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btn-test {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  text-decoration: none;
+  border: none;
+  transition: 0.2s ease;
+}
+
+/* Manage */
+.btn-test-manage {
+  background: #e3f2fd;
+  color: #1976d2;
+}
+
+.btn-test-manage:hover {
+  background: #bbdefb;
+}
+
+/* Edit */
+.btn-test-edit {
+  background: #fff3e0;
+  color: #f57c00;
+}
+
+.btn-test-edit:hover {
+  background: #ffe0b2;
+}
+
+/* Delete */
+.btn-test-delete {
+  background: #ffebee;
+  color: #d32f2f;
+}
+
+.btn-test-delete:hover {
+  background: #ffcdd2;
+}

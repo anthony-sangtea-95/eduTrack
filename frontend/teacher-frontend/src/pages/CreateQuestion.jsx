@@ -39,7 +39,7 @@ export default function CreateQuestion() {
 
   const fetchTests = async (subjectId) => {
     try {
-      const res = await API.get(`/teacher/tests/${subjectId}`);
+      const res = await API.get(`/teacher/subjects/${subjectId}/tests`);
       setTests(res.data);
       setIsTestDisabled(res.data.length === 0);
     } catch {

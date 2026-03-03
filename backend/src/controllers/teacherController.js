@@ -32,6 +32,57 @@ export const createTest = async (req, res) => {
     }
 };
 
+// GET /api/teacher/tests/:id @get Test By TestId
+export const getTestById = async (req, res) => {
+    try {
+        const { testId } = req.params;
+
+        if (!mongoose.Types.ObjectId.isValid(testId)) {
+            return res.status(400).json({ message: "Invalid test ID" });
+        }
+
+        const test = await Test.findOne({ _id: testId, teacher: req.user._id })
+            .populate("assignedStudents", "name")
+            .populate("subject", "subjectName");
+
+        if (!test) {
+            return res.status(404).json({ message: "Test not found" });
+        }
+
+        return res.json(test);
+    } catch (err) {
+        return res.status(500).json({ message: "Server error" });
+    }
+};
+
+// PUT /api/teacher/tests/:id @update test
+export const updateTest = async (req, res) => {
+    try {
+        const { title, description, dueDate, subject, assignedStudents } = req.body;
+
+        const test = await Test.findOne({
+            _id: req.params.testId,
+            teacher: req.user._id
+        });
+
+        if (!test) {
+            return res.status(404).json({ message: "Test not found" });
+        }
+
+        test.title = title;
+        test.description = description;
+        test.dueDate = dueDate;
+        test.subject = subject;
+        test.assignedStudents = assignedStudents;
+
+        await test.save();
+
+        return res.json({ success: true });
+    } catch (err) {
+        return res.status(500).json({ message: "Update failed" });
+    }
+};
+
 export const getSubjects = async (req, res) => {
     try {
         const subjects = await Subject.find().select("_id subjectName");
@@ -156,7 +207,7 @@ export const getMyTestsBySubject = async (req, res) => {
 export const deleteTest = async (req, res) => {
     try {
         const { testId } = req.params;
-        const deletedTest = await Question.findByIdAndDelete(testId);
+        const deletedTest = await Test.findByIdAndDelete(testId);
         if (!deletedTest) {
             return res.status(404).json({ success: false, message: "Test not found" });
         }

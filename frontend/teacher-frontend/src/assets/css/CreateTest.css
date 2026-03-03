@@ -14,7 +14,7 @@
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  color: #4f46e5;
+  color: #61c066;
 }
 
 .test-back:hover {
@@ -33,7 +33,7 @@
 .create-test-card h2 {
   margin-bottom: 20px;
   text-align: center;
-  color: #333;
+  color: #61c066;
 }
 
 .create-test-card label {
@@ -63,7 +63,7 @@
 .create-test-card input:focus,
 .create-test-card textarea:focus {
   outline: none;
-  border-color: #4f46e5;
+  border-color: #61c066;
 }
 
 .students-list {
@@ -84,19 +84,20 @@
 }
 
 .student-item:hover {
-  background: #f0f0ff;
+  background: #bef2c1ba;
 }
 
 .student-item.selected {
-  background: #4f46e5;
-  color: white;
+  /* background: #eff6ff; */
+  /* background: #ddecfd; */
+  background-color: #9ddea1ba;
 }
 
 .create-test-card button {
   width: 100%;
   margin-top: 20px;
   padding: 12px;
-  background: #4f46e5;
+  background: #61c066;
   color: white;
   border: none;
   border-radius: 8px;
@@ -107,7 +108,7 @@
 }
 
 .create-test-card button:hover {
-  background: #4338ca;
+  background: #3ea743;
 }
 
 .subject-grid {
@@ -136,10 +137,20 @@
 }
 
 .subject-card:hover {
-  border-color: #3b82f6;
+  border-color: #bef2c1ba;
 }
 
 .subject-card.active {
-  border-color: #3b82f6;
+  border-color: #61c066;
   background: #eff6ff;
+}
+
+.error {
+  color: #dc2626;
+  text-align: center;
+}
+
+.success {
+  color: rgb(71, 191, 71);
+  text-align: center;
 }

@@ -20,11 +20,42 @@
 }
 .btn {
   padding: 6px 12px;
-  background: #2563eb;
-  color: white;
+  background: #61c066;
+  color: rgb(240, 236, 236);
   border-radius: 4px;
   text-decoration: none;
 }
+
+.btn-question {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  text-decoration: none;
+  border: none;
+  transition: 0.2s ease;
+}
+
+/* Edit */
+.btn-question-edit {
+  background: #fff3e0;
+  color: #f57c00;
+}
+
+.btn-question-edit:hover {
+  background: #ffe0b2;
+}
+
+/* Delete */
+.btn-question-delete {
+  background: #ffebee;
+  color: #d32f2f;
+}
+
+.btn-question-delete:hover {
+  background: #ffcdd2;
+}
+
 .btn-danger {
   background: #dc2626;
 }

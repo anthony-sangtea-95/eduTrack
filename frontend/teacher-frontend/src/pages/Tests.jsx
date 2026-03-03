@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import  API  from '../services/api'
 import Loading from '../components/Loading.jsx'
+import "../assets/css/Tests.css"
 
 export default function Tests() {
   const [tests, setTests] = useState([])
@@ -32,7 +33,6 @@ export default function Tests() {
       const { data } = await API.delete(`/teacher/tests/${id}`);
 
       if (data.success) {
-        // remove deleted test from UI without refresh
         setTests(prev => prev.filter(test => test._id !== id));
       }
     } catch (err) {
@@ -49,7 +49,7 @@ export default function Tests() {
          <div className="page" style={{ margin: '0 20px'}}>
         <h2 className='text-align-c'>My Tests</h2>
         <div className='text-align-r'>
-          <Link className='create-button no-underline' to="/tests/create">
+          <Link className='create-test-button no-underline' to="/tests/create">
            + New Test
           </Link>
         </div>
@@ -60,34 +60,37 @@ export default function Tests() {
           {tests.map(test => (
             <li
               key={test._id}
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                padding: '10px 0',
-                borderBottom: '1px solid #eee',
-              }}
+              className="test-item"
             >
-              <div>
+              <div className="test-info">
                 <strong>{test.title}</strong>
-                <div style={{ fontSize: 12, opacity: 0.6 }}>
+                <div className="test-date">
                   Created: {new Date(test.createdAt).toLocaleDateString()}
                 </div>
               </div>
 
-                <Link to={`/tests/update/${test._id}`} className="edit-link">
+              <div className="test-actions">
+                <Link 
+                  to={`/tests/update/${test._id}`} 
+                  className="btn-test btn-test-manage"
+                >
+                  Manage
+                </Link>
+
+                <Link 
+                  to={`/tests/edit/${test._id}`} 
+                  className="btn-test btn-test-edit"
+                >
                   Edit
                 </Link>
 
-                <button
-                  onClick={() => handleDelete(test._id)}
-                  className="delete-button"
+                <button 
+                  onClick={() => handleDelete(test._id)} 
+                  className="btn-test btn-test-delete"
                 >
                   Delete
                 </button>
-
-                <Link to={`/tests/update/${test._id}`} className="manage-link">
-                  Manage Questions
-                </Link>
+              </div>
             </li>
           ))}
         </ul>
