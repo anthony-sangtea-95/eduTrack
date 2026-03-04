@@ -52,14 +52,6 @@ textarea {
   resize: vertical;
 }
 
-input:focus,
-textarea:focus,
-select:focus {
-  outline: none;
-  border-color: #4f46e5;
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
-}
-
 .options-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -94,12 +86,12 @@ select:focus {
 }
 
 .btn.primary {
-  background: #4f46e5;
+  background: #16a34acc;
   color: #fff;
 }
 
 .btn.primary:hover {
-  background: #4338ca;
+  background: #16a34a;
 }
 
 .btn.ghost {
@@ -112,12 +104,27 @@ select:focus {
   background: #f3f4f6;
 }
 
-.error {
-  color: #dc2626;
-  text-align: center;
+.teachers-list {
+  margin-top: 10px;
+  max-height: 150px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 6px;
 }
 
-.success {
-  color: rgb(71, 191, 71);
-  text-align: center;
+.teacher-item {
+  padding: 8px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.teacher-item:hover {
+  background-color: #bef2c1ba;
+}
+
+.teacher-item.selected {
+  background-color: #9ddea1ba;
 }

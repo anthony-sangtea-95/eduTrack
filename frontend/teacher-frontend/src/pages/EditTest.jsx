@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import API from "../services/api";
 import "../assets/css/CreateTest.css";
 import { useNavigate, useParams } from "react-router-dom";
+import { showSuccess, showError } from "../../../utils/utils";
 
 export default function EditTest() {
   const navigate = useNavigate();
@@ -16,15 +17,13 @@ export default function EditTest() {
   const [selectedSubject, setSelectedSubject] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
 
 
   useEffect(() => {
     fetchData();
   }, []);
 
-  const fetchData = async () => {
+  const fetchData = async () => { 
     try {
       const [testRes, studentsRes, subjectsRes] = await Promise.all([
         API.get(`/teacher/tests/${testId}`),
@@ -78,11 +77,12 @@ export default function EditTest() {
       });
 
       if(data.success){
-        setSuccess("Test updated successfully ✅");
+        showSuccess("Test updated successfully");
         navigate("/tests");
       }
     } catch (err) {
-      setError("Update failed");
+      showError("Failed to update test");
+      console.error(err);
     } finally {
       setSaving(false);
     }
@@ -100,9 +100,6 @@ export default function EditTest() {
 
         <div className="create-test-card">
           <h2>Edit Test</h2>
-          
-          { (error || success) && (<p className={ error ? "error" : "success"}>{ error ? error : success }</p> )}
-
           <label>Title</label>
           <input
             type="text"

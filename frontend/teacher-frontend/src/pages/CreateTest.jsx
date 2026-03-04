@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import API from "../services/api";
 import "../assets/css/CreateTest.css";
 import { useNavigate } from "react-router-dom";
+import { showSuccess, showError } from "../../../utils/utils";
 
 export default function CreateTest() {
   const navigate = useNavigate();
@@ -27,14 +28,19 @@ export default function CreateTest() {
   };
 
   const submitHandler = async () => {
-    await API.post("/teacher/tests", {
+    const { data } = await API.post("/teacher/tests", {
       title,
       description,
       dueDate,
       subject: selectedSubject,
       assignedStudents: selectedStudents
     });
-    alert("Test created successfully");
+    if (data.success) {
+      showSuccess(data.message);
+    } else {
+      showError("Failed to create test");
+      console.error(data.message);
+    }
     navigate("/tests");
   };
 

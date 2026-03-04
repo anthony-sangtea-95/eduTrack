@@ -2,42 +2,65 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import API from "../services/api";
 import Loading from "../components/Loading";
-// import "../assets/css/Question.css";
- import "../assets/css/EditQuestion.css";
+import "../assets/css/EditQuestion.css";
+import { showError, showSuccess } from "../../../utils/utils";
 
 export default function EditQuestion() {
   const { questionId } = useParams();
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [teachers, setTeachers] = useState([]);
 
   const [form, setForm] = useState({
     questionText: "",
     options: { a: "", b: "", c: "", d: "" },
     correctOption: "",
+    allowedTeachers: [],
   });
 
   useEffect(() => {
     fetchQuestion();
+    fetchTeachers();
   }, []);
 
   const fetchQuestion = async () => {
     try {
       const res = await API.get(`/teacher/questions/${questionId}`);
       const q = res.data;
-
       setForm({
         questionText: q.questionText,
         options: q.options,
         correctOption: q.correctOption,
+        allowedTeachers: q.allowedTeachers || [],
       });
     } catch (err) {
-      setError("Failed to load question");
+      showError("Failed to load question");
     } finally {
       setLoading(false);
     }
+  };
+
+  const fetchTeachers = async () => {
+    try {
+      const res = await API.get("/teacher/users");
+      setTeachers(res.data);
+    } catch (err) {
+      setError("Failed to load teachers");
+    }
+  };
+
+  const toggleTeacher = (teacherId) => {
+    setForm((prev) => {
+      const alreadySelected = prev.allowedTeachers.includes(teacherId);
+
+      return {
+        ...prev,
+        allowedTeachers: alreadySelected
+          ? prev.allowedTeachers.filter((id) => id !== teacherId)
+          : [...prev.allowedTeachers, teacherId],
+      };
+    });
   };
 
   const handleChange = (e) => {
@@ -57,10 +80,11 @@ export default function EditQuestion() {
     try {
       const {data} = await API.put(`/teacher/questions/${questionId}`, form);
       if (data.success) {
-        setSuccess("Updated Success...");
+        showSuccess("Question updated successfully");
       }
+      navigate("/questions")
     } catch (err) {
-      setError("Error : " + err.message);
+      showError("Error : " + err.message);
     }
   };
 
@@ -70,7 +94,6 @@ export default function EditQuestion() {
       <>
         <div className="edit-page">
             <div className="card">
-              { (error || success) && (<p className={ error ? "error" : "success"}>{ error ? error : success }</p> )}
                 <h2 className="page-title">Edit Question</h2>
 
                 <form onSubmit={handleSubmit} className="question-form">
@@ -120,6 +143,22 @@ export default function EditQuestion() {
                     </select>
                 </div>
 
+                <div className="form-group">
+                  <label>Allowed Teachers:</label>
+                  <div className="teachers-list">
+                    {teachers.map((t) => (
+                      <div
+                        key={t._id}
+                        className={`teacher-item ${
+                          form.allowedTeachers.includes(t._id) ? "selected" : ""
+                        }`}
+                        onClick={() => toggleTeacher(t._id)}
+                      >
+                        {t.name}
+                      </div>
+                    ))}
+                  </div>
+                </div>
                 <div className="form-actions">
                     <button type="submit" className="btn primary">
                     Update Question

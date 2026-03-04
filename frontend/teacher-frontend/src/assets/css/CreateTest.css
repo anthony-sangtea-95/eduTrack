@@ -140,13 +140,3 @@
   background: #bef2c1ba;
   border: none;
 }
-
-.error {
-  color: #dc2626;
-  text-align: center;
-}
-
-.success {
-  color: rgb(71, 191, 71);
-  text-align: center;
-}

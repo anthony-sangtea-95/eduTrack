@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import API from "../services/api";
 import "../assets/css/CreateQuestion.css";
 import { useNavigate } from "react-router-dom";
+import { showSuccess,showError } from "../../../utils/utils";
 
 export default function CreateQuestion() {
   const navigate = useNavigate();
@@ -20,8 +21,6 @@ export default function CreateQuestion() {
   });
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
 
   useEffect(() => {
     fetchSubjects();
@@ -33,7 +32,7 @@ export default function CreateQuestion() {
       const res = await API.get("/teacher/subjects");
       setSubjects(res.data);
     } catch {
-      setError("Failed to load subjects");
+      showError("Failed to load subjects");
     }
   };
 
@@ -43,7 +42,7 @@ export default function CreateQuestion() {
       setTests(res.data);
       setIsTestDisabled(res.data.length === 0);
     } catch {
-      setError("Failed to load tests");
+      showError("Failed to load tests");
     }
   };
 
@@ -52,7 +51,7 @@ export default function CreateQuestion() {
     const res = await API.get("/teacher/users");
     setTeachers(res.data);
   } catch {
-    setError("Failed to load teachers");
+    showError("Failed to load teachers");
   }
 };
 
@@ -90,23 +89,13 @@ const toggleTeacher = (teacherId) => {
     }
   };
 
-  const handleAllowedTeachersChange = (e) => {
-    const selected = Array.from(e.target.selectedOptions, opt => opt.value);
-    setForm({
-      ...form,
-      allowedTeachers: selected,
-    });
-};
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
-    setSuccess("");
-
+    
     try {
       setLoading(true);
       await API.post("/teacher/questions", form);
-      setSuccess("Question created successfully ✅");
+      showSuccess("Question created successfully");
 
       setForm({
         subject: "",
@@ -114,9 +103,11 @@ const toggleTeacher = (teacherId) => {
         questionText: "",
         options: { a: "", b: "", c: "", d: "" },
         correctOption: "",
+        allowedTeachers: [],
       });
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to create question");
+      showError("Failed to create question");
+      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -130,9 +121,6 @@ const toggleTeacher = (teacherId) => {
         </button>
         <div className="create-question-card">
           <h2>Create Question</h2>
-          {error && <div className="error">{error}</div>}
-          {success && <div className="success">{success}</div>}
-
           <form className="question-form" onSubmit={handleSubmit}>
             {/* SUBJECT */}
             <select value={form.subject} onChange={handleSubjectChange} required>
@@ -196,20 +184,6 @@ const toggleTeacher = (teacherId) => {
                 </label>
               ))}
             </div>
-
-            {/* ALLOWED TEACHERS */}
-            {/* <label>Allowed Teachers:</label>
-            <select
-            multiple
-            value={form.allowedTeachers}
-            onChange={handleAllowedTeachersChange}
-            >
-            {teachers.map((t) => (
-              <option key={t._id} value={t._id}>
-                {t.name}
-              </option>
-            ))}
-          </select> */}
           <label>Allowed Teachers:</label>
           <div className="teachers-list">
             {teachers.map((t) => (

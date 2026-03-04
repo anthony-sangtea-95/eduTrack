@@ -26,9 +26,9 @@ export const createTest = async (req, res) => {
             teacher: req.user._id,
             assignedStudents
         });
-        res.status(201).json(test);
+        return res.status(201).json({ success: true, message: "Test created successfully" });
     } catch (error) {
-        return res.status(500).json({ message: error.message });
+        return res.status(500).json({ success: false, message: error.message });
     }
 };
 
@@ -239,7 +239,7 @@ export const getQuestionById = async (req, res) => {
             return res.status(400).json({ message: "Invalid question ID" });
         }
         const question = await Question.findById(questionId);
-        res.json(question);
+        return res.json(question);
     } catch (error) {
         return res.status(500).json({ message: error.message })
     }
@@ -247,12 +247,13 @@ export const getQuestionById = async (req, res) => {
 
 export const updateQuestion = async (req, res) => {
     try {
-        const { questionText, options, correctOption } = req.body;
+        const { questionText, options, correctOption, allowedTeachers } = req.body;
         const { questionId } = req.params;
         const question = await Question.findById(questionId);
         question.questionText = questionText;
         question.options = options;
         question.correctOption = correctOption;
+        question.allowedTeachers = allowedTeachers;
         question.save();
         res.status(200).json({ success: true });
     } catch (error) {
