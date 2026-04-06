@@ -18,6 +18,7 @@ import {
     getQuestionById,
     updateQuestion,
     deleteQuestion,
+    addQuestionToTest
 } from "../controllers/teacherController.js";
 
 const router = express.Router();
@@ -43,6 +44,8 @@ router.put("/tests/:testId", updateTest);
 
 //Question
 router.post("/questions", createQuestion);
+router.post("/tests/:testId/questions/add", addQuestionToTest);
+router.delete("/tests/:testId/questions/remove", removeQuestionFromTest);
 router.get("/tests/:testId/questions", getQuestionsByTest);
 router.get("/questions", getQuestionsByTeacher);
 router.get("/questions/:questionId", getQuestionById);

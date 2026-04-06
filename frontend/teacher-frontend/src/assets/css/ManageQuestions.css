@@ -1,0 +1,55 @@
+.row {
+  display: flex;
+  gap: 16px;
+}
+
+.col {
+  flex: 1;
+}
+
+.scroll-panel {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.question-card {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  padding: 12px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  transition: 0.2s;
+}
+
+.question-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.add-btn {
+  margin-top: 8px;
+  background: #10b981;
+}
+
+.remove-btn {
+  margin-top: 8px;
+  background: #ef4444;
+}
+
+.small-btn {
+  margin-right: 6px;
+  padding: 6px 10px;
+}
+
+.badge {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+.badge.added {
+  background: #d1fae5;
+  color: #065f46;
+}

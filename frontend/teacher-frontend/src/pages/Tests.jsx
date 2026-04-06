@@ -71,7 +71,7 @@ export default function Tests() {
 
               <div className="test-actions">
                 <Link 
-                  to={`/tests/update/${test._id}`} 
+                  to={`/tests/manage/${test._id}`} 
                   className="btn-test btn-test-manage"
                 >
                   Manage

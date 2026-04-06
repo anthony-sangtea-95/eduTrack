@@ -83,6 +83,66 @@ export const updateTest = async (req, res) => {
     }
 };
 
+export const addQuestionToTest = async (req, res) => {
+    try {
+        const { testId } = req.params;
+        const { questionId } = req.body;
+
+        const test = await Test.findById(testId);
+        if (!test)
+            return res.status(404).json({ message: "Test not found" });
+
+        const question = await Question.findById(questionId);
+        if (!question)
+            return res.status(404).json({ message: "Question not found" });
+
+        if (
+            question.createdBy.toString() !== req.user._id.toString() &&
+            !question.allowedTeachers.includes(req.user._id)
+        ) {
+            return res.status(403).json({ message: "Not allowed to use this question" });
+        }
+
+        // ❗ prevent duplicate
+        if (test.questions.includes(questionId)) {
+            return res.status(400).json({ message: "Question already added" });
+        }
+
+        test.questions.push(questionId);
+        await test.save();
+
+        res.json({ message: "Question added successfully", test });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+export const removeQuestionFromTest = async (req, res) => {
+    try {
+        const { testId } = req.params;
+        const { questionId } = req.body;
+
+        const test = await Test.findById(testId);
+        if (!test)
+            return res.status(404).json({ message: "Test not found" });
+
+        // ❗ check if question exists in test
+        if (!test.questions.includes(questionId)) {
+            return res.status(400).json({ message: "Question not in test" });
+        }
+
+        test.questions = test.questions.filter(
+            (q) => q.toString() !== questionId
+        );
+
+        await test.save();
+
+        res.json({ message: "Question removed successfully", test });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 export const getSubjects = async (req, res) => {
     try {
         const subjects = await Subject.find().select("_id subjectName");

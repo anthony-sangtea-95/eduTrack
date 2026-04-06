@@ -10,6 +10,7 @@ import EditQuestion from "./pages/EditQuestion.jsx";
 import { AuthProvider } from "./context/AuthContext.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import MainLayout from "./layouts/MainLayout.jsx";
+import ManageQuestions from "./pages/ManageQuestions.jsx";
 
 export default function App() {
   return (
@@ -31,6 +32,7 @@ export default function App() {
           <Route path="/tests" element={<Tests />} />
           <Route path="/tests/create" element={<CreateTest />} />
           <Route path="/tests/edit/:testId" element={<EditTest />} />
+          <Route path="/tests/manage/:testId" element={<ManageQuestions />}/>
           <Route path="/questions" element={<Questions />} />
           <Route path="/questions/create" element={<CreateQuestion />} />
           <Route path="/teacher/questions/:questionId/edit" element={<EditQuestion />} />
