@@ -24,13 +24,15 @@ export const getTestQuestions = async (req, res) => {
     const { testId } = req.params;
     if (!mongoose.Types.ObjectId.isValid(testId)) return res.status(400).json({ message: "Invalid test id" });
 
-    const test = await Test.findById(testId);
+    const test = await Test.findById(testId).populate({
+      path: 'questions',
+      select: '-correctOption' // hide correct answers
+    });
     if (!test) return res.status(404).json({ message: "Test not found" });
     // ensure student is assigned
     if (!test.assignedStudents.map(String).includes(String(req.user._id))) return res.status(403).json({ message: "Not assigned this test" });
 
-    const questions = await Question.find({ test: testId }).select("-correctOption"); // hide correct answers
-    res.json({ test, questions });
+    res.json({ test, questions: test.questions });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

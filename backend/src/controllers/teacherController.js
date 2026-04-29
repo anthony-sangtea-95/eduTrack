@@ -169,8 +169,11 @@ export const getQuestionsByTest = async (req, res) => {
         if (!mongoose.Types.ObjectId.isValid(testId)) {
             return res.status(400).json({ message: "Invalid test ID" });
         }
-        const questions = await Question.find({ test: testId }).populate("test");
-        res.json(questions);
+        const test = await Test.findById(testId).populate("questions");
+        if (!test) {
+            return res.status(404).json({ message: "Test not found" });
+        }
+        res.json(test.questions);
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
@@ -179,7 +182,7 @@ export const getQuestionsByTest = async (req, res) => {
 // @desc Add question to a test
 export const createQuestion = async (req, res) => {
     try {
-        const { subject: subjectId, test: testId, questionText, options, correctOption, allowedTeachers = [] } = req.body;
+        const { subject: subjectId, questionText, options, correctOption, allowedTeachers = [] } = req.body;
 
         const subjectExists = await Subject.findById(subjectId);
 
@@ -187,15 +190,7 @@ export const createQuestion = async (req, res) => {
             return res.status(400).json("Subject not found!!");
         }
 
-        if (testId) {
-            const testExists = await Test.findById(testId);
-            if (!testExists) {
-                return res.status(400).json("Test not found!!");
-            }
-        }
-
         const question = await Question.create({
-            test: testId || null,
             subject: subjectId,
             questionText,
             options,

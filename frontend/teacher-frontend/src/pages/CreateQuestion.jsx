@@ -7,13 +7,10 @@ import { showSuccess,showError } from "../../../utils/utils";
 export default function CreateQuestion() {
   const navigate = useNavigate();
   const [subjects, setSubjects] = useState([]);
-  const [tests, setTests] = useState([]);
-  const [isTestDisabled, setIsTestDisabled] = useState(true);
   const [teachers, setTeachers] = useState([]);
 
   const [form, setForm] = useState({
     subject: "",
-    test: "",
     questionText: "",
     options: { a: "", b: "", c: "", d: "" },
     correctOption: "",
@@ -33,16 +30,6 @@ export default function CreateQuestion() {
       setSubjects(res.data);
     } catch {
       showError("Failed to load subjects");
-    }
-  };
-
-  const fetchTests = async (subjectId) => {
-    try {
-      const res = await API.get(`/teacher/subjects/${subjectId}/tests`);
-      setTests(res.data);
-      setIsTestDisabled(res.data.length === 0);
-    } catch {
-      showError("Failed to load tests");
     }
   };
 
@@ -81,12 +68,7 @@ const toggleTeacher = (teacherId) => {
 
   const handleSubjectChange = (e) => {
     const subjectId = e.target.value;
-    setForm({ ...form, subject: subjectId, test: "" });
-    setTests([]);
-    setIsTestDisabled(true);
-    if (subjectId) {
-      fetchTests(subjectId);
-    }
+    setForm({ ...form, subject: subjectId });
   };
 
   const handleSubmit = async (e) => {
@@ -99,7 +81,6 @@ const toggleTeacher = (teacherId) => {
 
       setForm({
         subject: "",
-        test: "",
         questionText: "",
         options: { a: "", b: "", c: "", d: "" },
         correctOption: "",
@@ -129,22 +110,7 @@ const toggleTeacher = (teacherId) => {
                 <option key={s._id} value={s._id}>
                   {s.subjectName}
                 </option>
-              ))}
-            </select>
-
-            {/* TEST (optional) */}
-            <select
-              name="test"
-              value={form.test}
-              onChange={handleChange}
-              disabled={isTestDisabled}
-            >
-              <option value="">No Test (Question Bank)</option>
-              {tests.map((t) => (
-                <option key={t._id} value={t._id}>
-                  {t.title}
-                </option>
-              ))}
+              ))} 
             </select>
 
             {/* QUESTION TEXT */}

@@ -1,13 +1,16 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
-import connectDB from "./config/db.js";
-import authRoutes from "./routes/authRoutes.js";
-import adminRoutes from "./routes/adminRoutes.js";
-import teacherRoutes from "./routes/teacherRoutes.js";
-import studentRoutes from "./routes/studentRoutes.js";
+import connectDB from "./src/config/db.js";
+import authRoutes from "./src/routes/authRoutes.js";
+import adminRoutes from "./src/routes/adminRoutes.js";
+import teacherRoutes from "./src/routes/teacherRoutes.js";
+import studentRoutes from "./src/routes/studentRoutes.js";
 
-dotenv.config({ path: '../.env' });
+import dns from "dns";
+dns.setDefaultResultOrder("ipv4first");
+
+dotenv.config();
 connectDB();
 
 const app = express();

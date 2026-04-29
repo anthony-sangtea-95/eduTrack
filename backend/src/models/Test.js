@@ -18,6 +18,9 @@ const testSchema = new mongoose.Schema(
         assignedStudents: [
             { type: mongoose.Schema.Types.ObjectId, ref: "User" },
         ],
+        questions: [
+            { type: mongoose.Schema.Types.ObjectId, ref: "Question" },
+        ],
     },
     { timestamps: true }
 );
