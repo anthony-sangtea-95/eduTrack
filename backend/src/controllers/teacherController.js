@@ -17,11 +17,12 @@ export const getTeachers = async (req, res) => {
 // @desc Create a new test
 export const createTest = async (req, res) => {
     try {
-        const { title, description, dueDate, subject, assignedStudents } = req.body;
+        const { title, description, dueDate, durationMinutes, subject, assignedStudents } = req.body;
         const test = await Test.create({
             title,
             description,
             dueDate,
+            durationMinutes,
             subject,
             teacher: req.user._id,
             assignedStudents
@@ -58,7 +59,7 @@ export const getTestById = async (req, res) => {
 // PUT /api/teacher/tests/:id @update test
 export const updateTest = async (req, res) => {
     try {
-        const { title, description, dueDate, subject, assignedStudents } = req.body;
+        const { title, description, dueDate, durationMinutes, subject, assignedStudents } = req.body;
 
         const test = await Test.findOne({
             _id: req.params.testId,
@@ -72,6 +73,7 @@ export const updateTest = async (req, res) => {
         test.title = title;
         test.description = description;
         test.dueDate = dueDate;
+        test.durationMinutes = durationMinutes;
         test.subject = subject;
         test.assignedStudents = assignedStudents;
 
@@ -84,63 +86,66 @@ export const updateTest = async (req, res) => {
 };
 
 export const addQuestionToTest = async (req, res) => {
-    try {
-        const { testId } = req.params;
-        const { questionId } = req.body;
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
-        const test = await Test.findById(testId);
-        if (!test)
-            return res.status(404).json({ message: "Test not found" });
+  try {
+    const { testId } = req.params;
+    const { questionId } = req.body;
 
-        const question = await Question.findById(questionId);
-        if (!question)
-            return res.status(404).json({ message: "Question not found" });
+    await Test.findByIdAndUpdate(
+      testId,
+      { $addToSet: { questions: questionId } },
+      { session }
+    );
 
-        if (
-            question.createdBy.toString() !== req.user._id.toString() &&
-            !question.allowedTeachers.includes(req.user._id)
-        ) {
-            return res.status(403).json({ message: "Not allowed to use this question" });
-        }
+    await Question.findByIdAndUpdate(
+      questionId,
+      { $addToSet: { tests: testId } },
+      { session }
+    );
 
-        // ❗ prevent duplicate
-        if (test.questions.includes(questionId)) {
-            return res.status(400).json({ message: "Question already added" });
-        }
+    await session.commitTransaction();
+    session.endSession();
 
-        test.questions.push(questionId);
-        await test.save();
+    res.json({ message: "Added successfully" });
+  } catch (err) {
+    await session.abortTransaction();
+    session.endSession();
 
-        res.json({ message: "Question added successfully", test });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
+    res.status(500).json({ message: "Qustion adding failed" });
+  }
 };
 
 export const removeQuestionFromTest = async (req, res) => {
-    try {
-        const { testId } = req.params;
-        const { questionId } = req.body;
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
-        const test = await Test.findById(testId);
-        if (!test)
-            return res.status(404).json({ message: "Test not found" });
+  try {
+    const { testId, questionId } = req.params;
 
-        // ❗ check if question exists in test
-        if (!test.questions.includes(questionId)) {
-            return res.status(400).json({ message: "Question not in test" });
-        }
+    await Test.findByIdAndUpdate(
+      testId,
+      { $pull: { questions: questionId } },
+      { session }
+    );
 
-        test.questions = test.questions.filter(
-            (q) => q.toString() !== questionId
-        );
+    await Question.findByIdAndUpdate(
+      questionId,
+      { $pull: { tests: testId } },
+      { session }
+    );
 
-        await test.save();
+    await session.commitTransaction();
+    session.endSession();
 
-        res.json({ message: "Question removed successfully", test });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
+    res.json({ message: "Removed Successfully" });
+  } catch (err) {
+    await session.abortTransaction();
+    session.endSession();
+
+    res.status(500).json({ message: "Remove failed" });
+  }
 };
 
 export const getSubjects = async (req, res) => {
@@ -162,6 +167,26 @@ export const getAllStudents = async (req, res) => {
     }
 }
 
+export const getAccessibleQuestions = async (req, res) => {
+    try {
+        const { testId } = req.params;
+        const test = await Test.findById(testId).populate("subject");
+        if (!test) {
+            return res.status(404).json({ message: "Test not found" });
+        }
+        const questions = await Question.find({
+            subject: test.subject._id,
+            $or: [
+                { createdBy: req.user._id },
+                { allowedTeachers: req.user._id }
+            ]
+        }).populate("subject", "subjectName");
+        res.json(questions);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+}
+
 // get questions by testId
 export const getQuestionsByTest = async (req, res) => {
     try {
@@ -173,7 +198,10 @@ export const getQuestionsByTest = async (req, res) => {
         if (!test) {
             return res.status(404).json({ message: "Test not found" });
         }
-        res.json(test.questions);
+        res.json({
+            testName: test.title,
+            questions: test.questions
+        });
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }

@@ -5,6 +5,7 @@ import "../assets/css/ManageQuestions.css";
 
 export default function ManageQuestions() {
   const { testId } = useParams();
+  const [testName, setTestName] = useState("");
 
   const [testQuestions, setTestQuestions] = useState([]);
   const [allQuestions, setAllQuestions] = useState([]);
@@ -15,9 +16,10 @@ export default function ManageQuestions() {
   const load = async () => {
     try {
       const testRes = await API.get(`/teacher/tests/${testId}/questions`);
-      const allRes = await API.get(`/teacher/questions`);
+      const allRes = await API.get(`/teacher/tests/${testId}/accessibleQuestions`); // get all accessible questions by teacher and quiz type
 
-      setTestQuestions(testRes.data || []);
+      setTestName(testRes.data.testName || "");
+      setTestQuestions(testRes.data.questions || []);
       setAllQuestions(allRes.data || []);
     } catch (err) {
       console.error(err);
@@ -71,9 +73,7 @@ export default function ManageQuestions() {
     );
 
     try {
-      await API.post(`/teacher/tests/${testId}/questions/remove`, {
-        questionId,
-      });
+      await API.delete(`/teacher/tests/${testId}/questions/${questionId}/remove`);
     } catch (err) {
       console.error(err);
       load(); // fallback
@@ -85,7 +85,7 @@ export default function ManageQuestions() {
 
       <main className="main">
         <div className="header">
-          <h1>Manage Questions</h1>
+          <h1>{testName}</h1>
         </div>
 
         {/* 🔍 Search + Filter */}
@@ -137,7 +137,7 @@ export default function ManageQuestions() {
 
           {/* RIGHT: TEST QUESTIONS */}
           <div className="col card scroll-panel">
-            <h3>In This Test ({testQuestions.length})</h3>
+            <h3>Total number of questions: <span className="badge added">{testQuestions.length}</span></h3>
 
             {testQuestions.map((q) => (
               <div key={q._id} className="question-card">

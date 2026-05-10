@@ -5,6 +5,10 @@ const testSchema = new mongoose.Schema(
         title: { type: String, required: true },
         description: String,
         dueDate: Date,
+        durationMinutes: {
+            type: Number,
+            required: true,
+        },
         subject: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Subject",

@@ -9,6 +9,7 @@ export default function CreateTest() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [dueDate, setDueDate] = useState("");
+  const [durationMinutes, setDurationMinutes] = useState("");
   const [students, setStudents] = useState([]);
   const [selectedStudents, setSelectedStudents] = useState([]);
   const [subjects, setSubjects] = useState([]);
@@ -32,6 +33,7 @@ export default function CreateTest() {
       title,
       description,
       dueDate,
+      durationMinutes: Number(durationMinutes),
       subject: selectedSubject,
       assignedStudents: selectedStudents
     });
@@ -68,11 +70,21 @@ export default function CreateTest() {
           onChange={e => setDescription(e.target.value)}
         />
 
+
         <label>Due Date</label>
         <input
           type="date"
           value={dueDate}
           onChange={e => setDueDate(e.target.value)}
+        />
+
+        <label>Duration (minutes)</label>
+        <input
+          type="number"
+          min="1"
+          placeholder="Enter duration in minutes"
+          value={durationMinutes}
+          onChange={e => setDurationMinutes(e.target.value)}
         />
 
         <label>Subjects</label>

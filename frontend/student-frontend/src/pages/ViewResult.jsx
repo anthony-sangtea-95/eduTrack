@@ -27,7 +27,10 @@ export default function ViewResult(){
           <div style={{marginTop:12}}>
             <h4>Answers</h4>
             {submission.answers.map(a => (
-              <div key={a.question}><div className="small">Question: {a.question}</div><div className="small">Selected: {a.selected}</div></div>
+              <div key={a.question._id}>
+                <div className="small">Question: {a.question.questionText}</div>
+                <div className="small">Selected: {a.selected}</div>
+              </div>
             ))}
           </div>
         </div>

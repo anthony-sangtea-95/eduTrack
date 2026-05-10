@@ -14,6 +14,7 @@ import {
     getAllStudents,
     getQuestionsByTest,
     getQuestionsByTeacher,
+    getAccessibleQuestions,
     createQuestion,
     getQuestionById,
     updateQuestion,
@@ -46,7 +47,8 @@ router.put("/tests/:testId", updateTest);
 //Question
 router.post("/questions", createQuestion);
 router.post("/tests/:testId/questions/add", addQuestionToTest);
-router.post("/tests/:testId/questions/remove", removeQuestionFromTest); //update test by removing question
+router.delete("/tests/:testId/questions/:questionId/remove", removeQuestionFromTest); //update test by removing question
+router.get("/tests/:testId/accessibleQuestions", getAccessibleQuestions); // get all accessible questions by teacher and quiz type
 router.get("/tests/:testId/questions", getQuestionsByTest);
 router.get("/questions", getQuestionsByTeacher);
 router.get("/questions/:questionId", getQuestionById);

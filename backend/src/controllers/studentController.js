@@ -73,3 +73,15 @@ export const submitTest = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+export const viewResult = async (req, res) => {
+  try {
+    const { testId } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(testId)) return res.status(400).json({ message: "Invalid test id" });
+    const submission = await Submission.findOne({ test: testId, student: req.user._id }).populate("answers.question");
+    if (!submission) return res.status(404).json({ message: "Result not found" });
+    res.json(submission);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};

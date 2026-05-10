@@ -15,6 +15,7 @@ export default function EditTest() {
   const [selectedStudents, setSelectedStudents] = useState([]);
   const [subjects, setSubjects] = useState([]);
   const [selectedSubject, setSelectedSubject] = useState("");
+  const [durationMinutes, setDurationMinutes] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -41,6 +42,7 @@ export default function EditTest() {
           : ""
       );
       setSelectedSubject(test.subject?._id || "");
+      setDurationMinutes(test.durationMinutes || "");
 
       setSelectedStudents(
         test.assignedStudents?.map(s => s._id) || []
@@ -72,6 +74,7 @@ export default function EditTest() {
         title,
         description,
         dueDate,
+        durationMinutes: Number(durationMinutes),
         subject: selectedSubject,
         assignedStudents: selectedStudents
       });
@@ -113,11 +116,21 @@ export default function EditTest() {
             onChange={e => setDescription(e.target.value)}
           />
 
+
           <label>Due Date</label>
           <input
             type="date"
             value={dueDate}
             onChange={e => setDueDate(e.target.value)}
+          />
+
+          <label>Duration (minutes)</label>
+          <input
+            type="number"
+            min="1"
+            placeholder="Enter duration in minutes"
+            value={durationMinutes}
+            onChange={e => setDurationMinutes(e.target.value)}
           />
 
           <label>Subjects</label>
