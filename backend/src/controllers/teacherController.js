@@ -3,6 +3,7 @@ import Question from "../models/Question.js";
 import User from "../models/User.js";
 import Subject from "../models/Subject.js";
 import mongoose from "mongoose";
+import Submission from "../models/Submission.js";
 
 // get all teachers to give permissions to specific teachers
 export const getTeachers = async (req, res) => {
@@ -17,7 +18,19 @@ export const getTeachers = async (req, res) => {
 // @desc Create a new test
 export const createTest = async (req, res) => {
     try {
-        const { title, description, dueDate, durationMinutes, subject, assignedStudents } = req.body;
+        const {
+          title,
+          description,
+          dueDate,
+          durationMinutes,
+          subject,
+          assignedStudents,
+          isPublished,
+          status,
+          startTime,
+          attemptRules = {}
+        } = req.body;
+
         const test = await Test.create({
             title,
             description,
@@ -25,9 +38,16 @@ export const createTest = async (req, res) => {
             durationMinutes,
             subject,
             teacher: req.user._id,
-            assignedStudents
+            assignedStudents,
+            isPublished: !!isPublished,
+            status: status || 'draft',
+            startTime: startTime ? new Date(startTime) : null,
+            attemptRules: {
+              allowRetake: !!attemptRules.allowRetake,
+              maxAttempts: Number(attemptRules.maxAttempts) || 1,
+            }
         });
-        return res.status(201).json({ success: true, message: "Test created successfully" });
+        return res.status(201).json({ success: true, message: "Test created successfully", test });
     } catch (error) {
         return res.status(500).json({ success: false, message: error.message });
     }
@@ -59,7 +79,18 @@ export const getTestById = async (req, res) => {
 // PUT /api/teacher/tests/:id @update test
 export const updateTest = async (req, res) => {
     try {
-        const { title, description, dueDate, durationMinutes, subject, assignedStudents } = req.body;
+        const {
+          title,
+          description,
+          dueDate,
+          durationMinutes,
+          subject,
+          assignedStudents,
+          isPublished,
+          status,
+          startTime,
+          attemptRules = {}
+        } = req.body;
 
         const test = await Test.findOne({
             _id: req.params.testId,
@@ -77,9 +108,18 @@ export const updateTest = async (req, res) => {
         test.subject = subject;
         test.assignedStudents = assignedStudents;
 
+        // persist new fields
+        test.isPublished = !!isPublished;
+        test.status = status || test.status;
+        test.startTime = startTime ? new Date(startTime) : test.startTime;
+        test.attemptRules = {
+          allowRetake: !!attemptRules.allowRetake,
+          maxAttempts: Number(attemptRules.maxAttempts) || (test.attemptRules?.maxAttempts || 1)
+        };
+
         await test.save();
 
-        return res.json({ success: true });
+        return res.json({ success: true, test });
     } catch (err) {
         return res.status(500).json({ message: "Update failed" });
     }
@@ -267,7 +307,19 @@ export const getMyTests = async (req, res) => {
             "assignedStudents",
             "name email"
         );
-        res.json(tests);
+
+        // enrich with submission stats
+        const enhanced = await Promise.all(tests.map(async (t) => {
+          const totalSubmissions = await Submission.countDocuments({ test: t._id });
+          const distinctStudents = (await Submission.distinct('student', { test: t._id })).length;
+          return {
+            ...t.toObject(),
+            totalSubmissions,
+            distinctStudentsSubmitted: distinctStudents
+          };
+        }));
+
+        res.json(enhanced);
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }

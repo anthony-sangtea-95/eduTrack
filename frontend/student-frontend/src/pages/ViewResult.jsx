@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import Sidebar from '../components/Sidebar'
 import API from '../services/api'
+import ResultSummary from '../components/ResultSummary'
 
 export default function ViewResult(){
   const { testId } = useParams()
@@ -23,15 +24,17 @@ export default function ViewResult(){
       <main className="main">
         <div className="header"><h1>Result</h1></div>
         <div className="card">
-          <div><strong>Score:</strong> {submission.score?.toFixed?.(2) ?? submission.score}</div>
-          <div style={{marginTop:12}}>
-            <h4>Answers</h4>
-            {submission.answers.map(a => (
-              <div key={a.question._id}>
-                <div className="small">Question: {a.question.questionText}</div>
-                <div className="small">Selected: {a.selected}</div>
-              </div>
-            ))}
+          <ResultSummary result={submission} />
+          <div className="mt-4">
+            <h4 className="font-semibold">Answers</h4>
+            <div className="mt-2 space-y-3">
+              {submission.answers.map(a=> (
+                <div key={a.question._id} className="p-3 border rounded-md">
+                  <div className="font-medium">{a.question.questionText}</div>
+                  <div className="text-sm text-gray-600">Your answer: <strong>{a.selected}</strong> | Correct: <strong>{a.correct}</strong></div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </main>

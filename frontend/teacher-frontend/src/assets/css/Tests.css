@@ -78,3 +78,10 @@
 .btn-test-delete:hover {
   background: #ffcdd2;
 }
+
+.badge { display:inline-block; font-size:12px; padding:4px 8px; border-radius:999px; background:#f3f4f6; color:#374151 }
+.badge-green { background:#d1fae5; color:#065f46 }
+.badge-indigo { background:#eef2ff; color:#3730a3 }
+
+.test-meta { font-size:13px; opacity:0.85; margin-top:6px }
+.test-meta .meta-item { margin-right:12px }

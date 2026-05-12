@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import API from "../services/api";
 import "../assets/css/Subjects.css";
+import {showSuccess, showError} from "../../../utils/utils";
 
 export default function Subjects() {
   const [subjects, setSubjects] = useState([]);
   const [subjectName, setSubjectName] = useState("");
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
 
   useEffect(() => {
     fetchSubjects();
@@ -19,7 +19,7 @@ export default function Subjects() {
       const res = await API.get("/admin/subjects");
       setSubjects(res.data);
     } catch {
-      setError("Failed to load subjects");
+      showError("Failed to load subjects");
     } finally {
       setLoading(false);
     }
@@ -30,17 +30,20 @@ export default function Subjects() {
     if (!subjectName.trim()) return;
 
     try {
+      let res = null;
       if (editingId) {
-        await API.put(`/admin/subjects/${editingId}`, { subjectName });
+        res = await API.put(`/admin/subjects/${editingId}`, { subjectName });
       } else {
-        await API.post("/admin/subjects", { subjectName });
+        res = await API.post("/admin/subjects", { subjectName });
       }
-
+      if (res.status === 201 || res.status === 200) {
+        showSuccess(editingId ? "Subject updated" : "Subject created");
+      }
       setSubjectName("");
       setEditingId(null);
       fetchSubjects();
     } catch (err) {
-      setError(err.response?.data?.message || "Action failed");
+      showError(editingId ? "Update failed : " + (err.response?.data?.message || "") : "Creation failed : " + (err.response?.data?.message || ""));
     }
   };
 
@@ -53,19 +56,23 @@ const handleEdit = (subject) => {
     if (!window.confirm("Delete this subject?")) return;
 
     try {
-      await API.delete(`/admin/subjects/${id}`);
+      const res = await API.delete(`/admin/subjects/${id}`);
+      if (res.status === 200) {
+        showSuccess(res.data.message);
+      } else {
+        if (res.status === 404) {
+          showError(res.data.message);
+        }
+      }
       fetchSubjects();
     } catch (err) {
-      setError("Delete failed");
+      showError("Delete failed : " + (err.response?.data?.message || ""));
     }
   };
 
   return (
     <div className="subjects-container">
       <h2>Subjects</h2>
-
-      {error && <div className="error">{error}</div>}
-
       <form className="subject-form" onSubmit={handleSubmit}>
         <input
           type="text"

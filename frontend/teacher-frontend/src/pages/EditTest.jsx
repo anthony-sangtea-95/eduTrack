@@ -19,6 +19,13 @@ export default function EditTest() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
+  // New fields from Test schema
+  const [isPublished, setIsPublished] = useState(false);
+  const [status, setStatus] = useState('draft');
+  const [startTime, setStartTime] = useState('');
+  const [allowRetake, setAllowRetake] = useState(false);
+  const [maxAttempts, setMaxAttempts] = useState(1);
+
 
   useEffect(() => {
     fetchData();
@@ -44,6 +51,13 @@ export default function EditTest() {
       setSelectedSubject(test.subject?._id || "");
       setDurationMinutes(test.durationMinutes || "");
 
+      // new fields
+      setIsPublished(!!test.isPublished);
+      setStatus(test.status || 'draft');
+      setStartTime(test.startTime ? new Date(test.startTime).toISOString().slice(0,16) : '');
+      setAllowRetake(!!test.attemptRules?.allowRetake);
+      setMaxAttempts(test.attemptRules?.maxAttempts ?? 1);
+
       setSelectedStudents(
         test.assignedStudents?.map(s => s._id) || []
       );
@@ -66,18 +80,35 @@ export default function EditTest() {
     );
   };
 
+  const handleChangeStatus = (e) => {
+    const newStatus = e.target.value;
+    setStatus(newStatus);  
+    if (newStatus === 'draft') {
+      setIsPublished(false);
+    } else {
+      setIsPublished(true);
+    }
+  }
+
   const submitHandler = async () => {
     try {
       setSaving(true);
 
-      const { data } = await API.put(`/teacher/tests/${testId}`, {
+      const payload = {
         title,
         description,
         dueDate,
         durationMinutes: Number(durationMinutes),
         subject: selectedSubject,
-        assignedStudents: selectedStudents
-      });
+        assignedStudents: selectedStudents,
+        // new fields
+        isPublished,
+        status,
+        startTime: startTime ? new Date(startTime).toISOString() : null,
+        attemptRules: { allowRetake, maxAttempts: Number(maxAttempts) }
+      };
+
+      const { data } = await API.put(`/teacher/tests/${testId}`, payload);
 
       if(data.success){
         showSuccess("Test updated successfully");
@@ -132,6 +163,31 @@ export default function EditTest() {
             value={durationMinutes}
             onChange={e => setDurationMinutes(e.target.value)}
           />
+
+          <label>Start Time</label>
+          <input
+            type="datetime-local"
+            value={startTime}
+            onChange={e => setStartTime(e.target.value)}
+          />
+
+          {/* <label className="row-inline">
+            <input type="checkbox" checked={isPublished} onChange={e => setIsPublished(e.target.checked)} /> {' '}
+            Publish now
+          </label> */}
+
+          <label>Status</label>
+          <select value={status} onChange={handleChangeStatus}>
+            <option value="draft">Draft</option>
+            <option value="published">Published</option>
+            <option value="closed">Closed</option>
+          </select>
+
+          <label>Attempt Rules</label>
+          <div className="attempt-rules">
+            <label><input type="checkbox" checked={allowRetake} onChange={e => setAllowRetake(e.target.checked)} /> Allow retake</label>
+            <label style={{marginLeft:12}}>Max attempts <input type="number" min="1" value={maxAttempts} onChange={e=>setMaxAttempts(e.target.value)} style={{width:80, marginLeft:8}}/></label>
+          </div>
 
           <label>Subjects</label>
           <div className="subject-grid">

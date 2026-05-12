@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import Sidebar from '../components/Sidebar'
 import API from '../services/api'
-import { Link } from 'react-router-dom'
+import TestCard from '../components/TestCard'
 
 export default function MyTests(){
   const [tests, setTests] = useState([])
@@ -17,23 +17,11 @@ export default function MyTests(){
     <div className="app-shell">
       <Sidebar />
       <main className="main">
-        <div className="header"><h1>My Tests</h1></div>
-        <div className="card">
-          <table className="table">
-            <thead><tr><th>Title</th><th>Due</th><th>Actions</th></tr></thead>
-            <tbody>
-              {tests.map(t => (
-                <tr key={t._id}>
-                  <td>{t.title}</td>
-                  <td>{t.dueDate ? new Date(t.dueDate).toLocaleDateString() : '-'}</td>
-                  <td>
-                    <Link to={`/tests/${t._id}/take`}>Take</Link> |{' '}
-                    <Link to={`/tests/${t._id}/result`}>Result</Link>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="header"><h1>Available Tests</h1></div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {tests.length===0 ? <div className="card">No tests available</div> : tests.map(t=> (
+            <TestCard key={t._id} test={t} attempt={t.latestAttempt} />
+          ))}
         </div>
       </main>
     </div>

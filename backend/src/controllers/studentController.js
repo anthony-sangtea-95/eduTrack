@@ -5,15 +5,19 @@ import Submission from "../models/Submission.js";
 
 export const getAssignedTests = async (req, res) => {
   try {
-    const tests = await Test.find({ assignedStudents: req.user._id }).select("-__v").populate("teacher", "name email");
-    const submittedTestIds = await Submission.find({
-      student: req.user._id
-    }).distinct("test");
-    const result = tests.map(test => ({
-      ...test.toObject(),
-      completed: submittedTestIds.includes(test._id.toString())
+    const tests = await Test.find({ assignedStudents: req.user._id }).select("-__v").populate([{ path: "teacher", select: "name email" }, { path: "subject", select: "subjectName" }, {path: "questions", select: "-correctOption" }]);
+
+    // Attach latest submission (if any) per test for the requesting student
+    const enhanced = await Promise.all(tests.map(async (test) => {
+      const latest = await Submission.findOne({ test: test._id, student: req.user._id }).sort({ submittedAt: -1 }).lean();
+      return {
+        ...test.toObject(),
+        latestAttempt: latest ? { _id: latest._id, score: latest.score, submittedAt: latest.submittedAt } : null,
+        completed: !!latest
+      };
     }));
-    res.json(result);
+
+    res.json(enhanced);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -32,6 +36,11 @@ export const getTestQuestions = async (req, res) => {
     // ensure student is assigned
     if (!test.assignedStudents.map(String).includes(String(req.user._id))) return res.status(403).json({ message: "Not assigned this test" });
 
+    // respect publishing and scheduling
+    const now = new Date();
+    if (!test.isPublished || (test.status && test.status !== 'published')) return res.status(403).json({ message: 'Test not available' });
+    if (test.startTime && new Date(test.startTime) > now) return res.status(403).json({ message: 'Test not started yet' });
+
     res.json({ test, questions: test.questions });
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -48,13 +57,22 @@ export const submitTest = async (req, res) => {
     if (!test) return res.status(404).json({ message: "Test not found" });
     if (!test.assignedStudents.map(String).includes(String(req.user._id))) return res.status(403).json({ message: "Not assigned this test" });
 
+    // respect publishing, scheduling and attempt rules
+    const now = new Date();
+    if (!test.isPublished || (test.status && test.status !== 'published')) return res.status(403).json({ message: 'Test not available' });
+    if (test.startTime && new Date(test.startTime) > now) return res.status(403).json({ message: 'Test not started yet' });
+
+    const attemptsCount = await Submission.countDocuments({ test: testId, student: req.user._id });
+    const maxAttempts = test.attemptRules?.maxAttempts ?? 1;
+    if (attemptsCount >= maxAttempts) return res.status(403).json({ message: 'Maximum attempts reached' });
+
     // Load correct answers
-    const questionIds = answers.map(a => a.question).filter(id => mongoose.Types.ObjectId.isValid(id));
+    const questionIds = (answers || []).map(a => a.question).filter(id => mongoose.Types.ObjectId.isValid(id));
     const questions = await Question.find({ _id: { $in: questionIds } });
 
     // compute score
     let correct = 0;
-    for (const ans of answers) {
+    for (const ans of (answers || [])) {
       const q = questions.find(x => x._id.toString() === ans.question);
       if (q && q.correctOption === ans.selected) correct++;
     }

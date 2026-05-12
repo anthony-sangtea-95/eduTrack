@@ -15,6 +15,13 @@ export default function CreateTest() {
   const [subjects, setSubjects] = useState([]);
   const [selectedSubject, setSelectedSubject] = useState("");
 
+  // New fields from updated Test schema
+  const [isPublished, setIsPublished] = useState(false);
+  const [status, setStatus] = useState('draft'); // draft | published | closed
+  const [startTime, setStartTime] = useState(''); // ISO datetime-local string
+  const [allowRetake, setAllowRetake] = useState(false);
+  const [maxAttempts, setMaxAttempts] = useState(1);
+
   useEffect(() => {
     API.get("/teacher/tests/students").then(res => setStudents(res.data)).catch(err => console.error(err));
     API.get("/teacher/subjects").then(res => setSubjects(res.data)).catch(err => console.error(err));
@@ -28,15 +35,32 @@ export default function CreateTest() {
     );
   };
 
+  const handleChangeStatus = (e) => {
+    const newStatus = e.target.value;
+    setStatus(newStatus);  
+    if (newStatus === 'draft') {
+      setIsPublished(false);
+    } else {
+      setIsPublished(true);
+    }
+  }
+
   const submitHandler = async () => {
-    const { data } = await API.post("/teacher/tests", {
+    const payload = {
       title,
       description,
       dueDate,
       durationMinutes: Number(durationMinutes),
       subject: selectedSubject,
-      assignedStudents: selectedStudents
-    });
+      assignedStudents: selectedStudents,
+      // new fields
+      isPublished,
+      status,
+      startTime: startTime ? new Date(startTime).toISOString() : null,
+      attemptRules: { allowRetake, maxAttempts: Number(maxAttempts) }
+    };
+
+    const { data } = await API.post("/teacher/tests", payload);
     if (data.success) {
       showSuccess(data.message);
     } else {
@@ -86,6 +110,31 @@ export default function CreateTest() {
           value={durationMinutes}
           onChange={e => setDurationMinutes(e.target.value)}
         />
+
+        <label>Start Time</label>
+        <input
+          type="datetime-local"
+          value={startTime}
+          onChange={e => setStartTime(e.target.value)}
+        />
+
+        {/* <label className="row-inline">
+          <input type="checkbox" checked={isPublished} onChange={e => setIsPublished(e.target.checked)} /> {' '}
+          Publish now
+        </label> */}
+
+        <label>Status</label>
+        <select value={status} onChange={handleChangeStatus}>
+          <option value="draft">Draft</option>
+          <option value="published">Published</option>
+          <option value="closed">Closed</option>
+        </select>
+
+        <label>Attempt Rules</label>
+        <div className="attempt-rules">
+          <label><input type="checkbox" checked={allowRetake} onChange={e => setAllowRetake(e.target.checked)} /> Allow retake</label>
+          <label style={{marginLeft:12}}>Max attempts <input type="number" min="1" value={maxAttempts} onChange={e=>setMaxAttempts(e.target.value)} style={{width:80, marginLeft:8}}/></label>
+        </div>
 
         <label>Subjects</label>
         <div className="subject-grid">

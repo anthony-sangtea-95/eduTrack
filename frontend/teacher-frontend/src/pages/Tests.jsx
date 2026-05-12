@@ -63,9 +63,18 @@ export default function Tests() {
               className="test-item"
             >
               <div className="test-info">
-                <strong>{test.title}</strong>
+                <div className="flex items-center gap-3">
+                  <strong>{test.title}</strong>
+                  {test.isPublished ? <span className="badge badge-green">Published</span> : <span className="badge">{test.status}</span>}
+                </div>
                 <div className="test-date">
                   Created: {new Date(test.createdAt).toLocaleDateString()}
+                  {test.startTime ? <span className="ml-3">Starts: {new Date(test.startTime).toLocaleString()}</span> : null}
+                  <div className="test-meta">
+                    <span className="meta-item">Max attempts per student: <strong>{test.attemptRules?.maxAttempts ?? 1}</strong></span>
+                    <span className="meta-item">Total submissions: <strong>{test.totalSubmissions ?? 0}</strong></span>
+                    <span className="meta-item">Students submitted: <strong>{test.distinctStudentsSubmitted ?? 0}</strong></span>
+                  </div>
                 </div>
               </div>
 
