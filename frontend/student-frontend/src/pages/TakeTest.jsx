@@ -134,7 +134,7 @@ export default function TakeTest(){
           <div className="max-w-6xl mx-auto flex items-center justify-between p-4">
             <div>
               <div className="text-lg font-semibold">{test.title}</div>
-              <div className="text-sm text-gray-500">{test.subject}</div>
+              <div className="text-sm text-gray-500">{test.subject?.subjectName || 'No subject'}</div>
             </div>
             <div className="flex items-center gap-4">
               <div className="text-sm text-gray-600">Progress: {answeredCount}/{questions.length}</div>
@@ -153,9 +153,11 @@ export default function TakeTest(){
               </div>
               {currentQuestion ? <QuestionCard question={currentQuestion} selected={answers[currentQuestion._id]} onSelect={onSelect} disabled={submitted} /> : <div>No question</div>}
               <div className="mt-4 flex justify-between">
-                <button className="px-3 py-2 border rounded-md" onClick={()=>setCurrent(c=>Math.max(0,c-1))} disabled={current===0}>Previous</button>
                 <div>
-                  <button className="px-3 py-2 border rounded-md mr-2" onClick={()=>setCurrent(c=>Math.min(questions.length-1,c+1))} disabled={current===questions.length-1}>Next</button>
+                  { current !== 0 ? <button className="px-3 py-2 border rounded-md" onClick={()=>setCurrent(c=>Math.max(0,c-1))}>Previous</button> : '' }
+                </div>
+                <div>
+                  { current !== questions.length-1 ? <button className="px-3 py-2 border rounded-md" onClick={()=>setCurrent(c=>Math.min(questions.length-1,c+1))}>Next</button> : '' }
                 </div>
               </div>
             </div>

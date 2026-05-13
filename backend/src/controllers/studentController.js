@@ -5,7 +5,26 @@ import Submission from "../models/Submission.js";
 
 export const getAssignedTests = async (req, res) => {
   try {
-    const tests = await Test.find({ assignedStudents: req.user._id }).select("-__v").populate([{ path: "teacher", select: "name email" }, { path: "subject", select: "subjectName" }, {path: "questions", select: "-correctOption" }]);
+    const visibleStatuses = ["published", "closed"];
+
+    const tests = await Test.find({
+        assignedStudents: req.user._id,
+        status: { $in: visibleStatuses }
+    })
+    .select("-__v")
+    .populate([
+        {
+            path: "teacher",
+            select: "name email"
+        },
+        {
+            path: "subject",
+            select: "subjectName"
+        },
+        {
+            path: "questions",
+        }
+    ]);
 
     // Attach latest submission (if any) per test for the requesting student
     const enhanced = await Promise.all(tests.map(async (test) => {
@@ -28,10 +47,10 @@ export const getTestQuestions = async (req, res) => {
     const { testId } = req.params;
     if (!mongoose.Types.ObjectId.isValid(testId)) return res.status(400).json({ message: "Invalid test id" });
 
-    const test = await Test.findById(testId).populate({
+    const test = await Test.findById(testId).populate([{
       path: 'questions',
-      select: '-correctOption' // hide correct answers
-    });
+      select: 'questionText options' // hide correct answers
+    }, { path: 'subject', select: 'subjectName' }]);
     if (!test) return res.status(404).json({ message: "Test not found" });
     // ensure student is assigned
     if (!test.assignedStudents.map(String).includes(String(req.user._id))) return res.status(403).json({ message: "Not assigned this test" });
