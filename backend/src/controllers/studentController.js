@@ -28,12 +28,28 @@ export const getAssignedTests = async (req, res) => {
 
     // Attach latest submission (if any) per test for the requesting student
     const enhanced = await Promise.all(tests.map(async (test) => {
-      const latest = await Submission.findOne({ test: test._id, student: req.user._id }).sort({ submittedAt: -1 }).lean();
+      const attemptCount = await Submission.countDocuments({
+          test: test._id,
+          student: req.user._id
+      });
+      const { allowRetake, maxAttempts } = test.attemptRules;
+
+      const attemptsLeft = Math.max(maxAttempts - attemptCount,0);
+
+      const testAccess = {
+          attempted: attemptCount > 0,
+          attemptCount,
+          attemptsLeft,
+          maxAttempts,
+          canAttempt: attemptsLeft > 0,
+          canRetake: allowRetake && attemptsLeft > 0,
+          canViewResult: test.status === "closed" || attemptCount > 0
+      };
+
       return {
         ...test.toObject(),
-        latestAttempt: latest ? { _id: latest._id, score: latest.score, submittedAt: latest.submittedAt } : null,
-        completed: !!latest
-      };
+        testAccess
+      }
     }));
 
     res.json(enhanced);

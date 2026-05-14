@@ -1,12 +1,12 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-export default function TestCard({ test, attempt }){
-  const status = attempt ? (attempt.finished ? 'Finished' : 'In Progress') : 'Not Started'
-  const canView = attempt && attempt.finished
-  const canRetake = attempt && attempt.finished && !!test.attemptRules?.allowRetake
+export default function TestCard({ test, testAccess }){
+  const attemptText = `${testAccess?.attemptCount ?? 0}/${testAccess?.maxAttempts ?? 1} used`;
+  const canView = testAccess && testAccess.canViewResult
+  const canRetake = testAccess && testAccess.canRetake
 
-  const startDisabled = !test.isPublished || (test.startTime && new Date(test.startTime) > new Date())
+  const startDisabled = !test.isPublished || (test.startTime && new Date(test.startTime) > new Date()) || (testAccess && testAccess.attempted)
 
   return (
     <div className="bg-white rounded-xl p-4 shadow-md hover:shadow-lg transition">
@@ -19,12 +19,12 @@ export default function TestCard({ test, attempt }){
           </div>
           <div className="text-sm text-gray-500 mt-1">Subject: {test.subject?.subjectName || 'General'}</div>
         </div>
-        <div className="text-sm text-gray-600">{status}</div>
+        {/* <div className="text-sm text-gray-600">{status}</div> */}
       </div>
       <div className="mt-3 grid grid-cols-3 gap-2 text-sm text-gray-600">
         <div>Total Questions: <span className="font-medium">{test.totalQuestions}</span></div>
         <div>Duration: <span className="font-medium">{test.durationMinutes}m</span></div>
-        <div>Attempts: <span className="font-medium">{attempt? attempt.attemptNumber:0}</span></div>
+        <div>Attempts: <span className="font-medium">{attemptText}</span></div>
       </div>
       <div className="mt-4 flex gap-2">
         {startDisabled ? (
