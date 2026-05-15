@@ -5,18 +5,19 @@ import API from '../services/api'
 import ResultSummary from '../components/ResultSummary'
 
 export default function ViewResult(){
-  const { testId } = useParams()
+  const { testId, submittedID } = useParams()
   const [submission, setSubmission] = useState(null)
 
   useEffect(()=>{
     const load = async () => {
-      const res = await API.get(`/student/tests/${testId}/result`).catch(()=>({data:null}))
+      const res = await API.get(`/student/tests/${testId}/${submittedID}/result`).catch(()=>({data:null}))
       setSubmission(res.data)
     }
     load()
   }, [testId])
 
   if (!submission) return <div className="app-shell"><Sidebar /><main className="main"><div className="card">No result found</div></main></div>
+  console.log(submission)
 
   return (
     <div className="app-shell">

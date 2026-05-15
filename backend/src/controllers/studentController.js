@@ -42,7 +42,7 @@ export const getAssignedTests = async (req, res) => {
           attemptsLeft,
           maxAttempts,
           canAttempt: attemptsLeft > 0,
-          canRetake: allowRetake && attemptsLeft > 0,
+          canRetake: allowRetake && attemptsLeft > 0 && test.status !== "closed",
           canViewResult: test.status === "closed" || attemptCount > 0
       };
 
@@ -121,7 +121,7 @@ export const submitTest = async (req, res) => {
       score
     });
 
-    res.json({ message: "Submitted", submission });
+    res.json({ message: "Submitted", submittedId: submission._id });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -129,9 +129,10 @@ export const submitTest = async (req, res) => {
 
 export const viewResult = async (req, res) => {
   try {
-    const { testId } = req.params;
+    const { testId, submittedID } = req.params;
     if (!mongoose.Types.ObjectId.isValid(testId)) return res.status(400).json({ message: "Invalid test id" });
-    const submission = await Submission.findOne({ test: testId, student: req.user._id }).populate("answers.question");
+    if (!mongoose.Types.ObjectId.isValid(submittedID)) return res.status(400).json({ message: "Invalid submission id" });
+    const submission = await Submission.findOne({ _id: submittedID, test: testId, student: req.user._id }).populate("answers.question");
     if (!submission) return res.status(404).json({ message: "Result not found" });
     res.json(submission);
   } catch (err) {

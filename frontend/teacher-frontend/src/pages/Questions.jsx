@@ -64,6 +64,7 @@ export default function Questions() {
               <th>#</th>
               <th>Question</th>
               <th>Subject</th>
+              <th>Mark</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -73,6 +74,7 @@ export default function Questions() {
                 <td>{index + 1}</td>
                 <td>{q.questionText}</td>
                 <td>{q.subject.subjectName}</td>
+                <td>{q.mark}</td>
                 <td className="actions">
                   <Link
                     to={`/teacher/questions/${q._id}/edit`}

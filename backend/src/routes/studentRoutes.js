@@ -10,6 +10,6 @@ router.use(protect, requireRole("student"));
 router.get("/tests", getAssignedTests);
 router.get("/tests/:testId", getTestQuestions);
 router.post("/tests/:testId/submit", submitTest);
-router.get("/tests/:testId/result", viewResult);
+router.get("/tests/:testId/:submittedID/result", viewResult);
 
 export default router;

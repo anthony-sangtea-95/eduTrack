@@ -83,12 +83,13 @@ export default function TakeTest(){
     setLoadingSubmit(true)
     try{
       const payload = { answers: Object.keys(answers).map(q=>({ question: q, selected: answers[q] })) , auto }
-      await API.post(`/student/tests/${testId}/submit`, payload)
+      const res = await API.post(`/student/tests/${testId}/submit`, payload)
+      const submittedID = res.data.submittedId;
       setSubmitted(true)
       localStorage.removeItem(`test:${testId}:answers`)
       localStorage.removeItem(`test:${testId}:timeLeft`)
       // small delay for UX
-      setTimeout(()=> navigate(`/tests/${testId}/result`, { replace:true }), 800)
+      setTimeout(()=> navigate(`/tests/${testId}/${submittedID}/result`, { replace:true }), 800)
     }catch(err){
       console.error(err)
       alert('Submit failed. Please try again.')

@@ -14,6 +14,7 @@ export default function CreateQuestion() {
     questionText: "",
     options: { a: "", b: "", c: "", d: "" },
     correctOption: "",
+    mark: "",
     allowedTeachers: [],
   });
 
@@ -76,7 +77,7 @@ const toggleTeacher = (teacherId) => {
     
     try {
       setLoading(true);
-      await API.post("/teacher/questions", form);
+      await API.post("/teacher/questions", { ...form, mark: Number(form.mark) });
       showSuccess("Question created successfully");
 
       setForm({
@@ -84,6 +85,7 @@ const toggleTeacher = (teacherId) => {
         questionText: "",
         options: { a: "", b: "", c: "", d: "" },
         correctOption: "",
+        mark: "",
         allowedTeachers: [],
       });
     } catch (err) {
@@ -119,6 +121,16 @@ const toggleTeacher = (teacherId) => {
               placeholder="Enter question text"
               value={form.questionText}
               onChange={handleChange}
+              required
+            />
+
+            <input
+              type="number"
+              name="mark"
+              placeholder="Enter mark value"
+              value={form.mark}
+              onChange={handleChange}
+              min="1"
               required
             />
 

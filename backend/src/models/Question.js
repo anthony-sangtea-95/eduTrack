@@ -11,6 +11,7 @@ const questionSchema = new mongoose.Schema(
         questionText: {
             type: String,
             required: true,
+            default: 1,
         },
 
         options: {
@@ -23,6 +24,11 @@ const questionSchema = new mongoose.Schema(
         correctOption: {
             type: String,
             enum: ["a", "b", "c", "d"],
+            required: true,
+        },
+
+        mark: {
+            type: Number,
             required: true,
         },
 

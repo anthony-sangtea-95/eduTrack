@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import  API  from '../services/api'
 import Loading from '../components/Loading.jsx'
+import TestList from '../components/TestList.jsx'
 import "../assets/css/Tests.css"
 
 export default function Tests() {
@@ -58,49 +59,50 @@ export default function Tests() {
       ) : (
         <ul className="card">
           {tests.map(test => (
-            <li
-              key={test._id}
-              className="test-item"
-            >
-              <div className="test-info">
-                <div className="flex items-center gap-3">
-                  <strong>{test.title}</strong>
-                  {test.isPublished ? <span className="badge badge-green">Published</span> : <span className="badge">{test.status}</span>}
-                </div>
-                <div className="test-date">
-                  Created: {new Date(test.createdAt).toLocaleDateString()}
-                  {test.startTime ? <span className="ml-3">Starts: {new Date(test.startTime).toLocaleString()}</span> : null}
-                  <div className="test-meta">
-                    <span className="meta-item">Max attempts per student: <strong>{test.attemptRules?.maxAttempts ?? 1}</strong></span>
-                    <span className="meta-item">Total submissions: <strong>{test.totalSubmissions ?? 0}</strong></span>
-                    <span className="meta-item">Students submitted: <strong>{test.distinctStudentsSubmitted ?? 0}</strong></span>
-                  </div>
-                </div>
-              </div>
+            <TestList key={test._id} test={test} handleDelete={handleDelete} />
+            // <li
+            //   key={test._id}
+            //   className="test-item"
+            // >
+            //   <div className="test-info">
+            //     <div className="flex items-center gap-3">
+            //       <strong>{test.title}</strong>
+            //       {tests.status ? <span className={statusClassName}>{tests.status}</span> : 'No Status'}
+            //     </div>
+            //     <div className="test-date">
+            //       Created: {new Date(test.createdAt).toLocaleDateString()}
+            //       {test.startTime ? <span className="ml-3">Starts: {new Date(test.startTime).toLocaleString()}</span> : null}
+            //       <div className="test-meta">
+            //         <span className="meta-item">Max attempts per student: <strong>{test.attemptRules?.maxAttempts ?? 1}</strong></span>
+            //         <span className="meta-item">Total submissions: <strong>{test.totalSubmissions ?? 0}</strong></span>
+            //         <span className="meta-item">Students submitted: <strong>{test.distinctStudentsSubmitted ?? 0}</strong></span>
+            //       </div>
+            //     </div>
+            //   </div>
 
-              <div className="test-actions">
-                <Link 
-                  to={`/tests/manage/${test._id}`} 
-                  className="btn-test btn-test-manage"
-                >
-                  Manage
-                </Link>
+            //   <div className="test-actions">
+            //     <Link 
+            //       to={`/tests/manage/${test._id}`} 
+            //       className="btn-test btn-test-manage"
+            //     >
+            //       Manage
+            //     </Link>
 
-                <Link 
-                  to={`/tests/edit/${test._id}`} 
-                  className="btn-test btn-test-edit"
-                >
-                  Edit
-                </Link>
+            //     <Link 
+            //       to={`/tests/edit/${test._id}`} 
+            //       className="btn-test btn-test-edit"
+            //     >
+            //       Edit
+            //     </Link>
 
-                <button 
-                  onClick={() => handleDelete(test._id)} 
-                  className="btn-test btn-test-delete"
-                >
-                  Delete
-                </button>
-              </div>
-            </li>
+            //     <button 
+            //       onClick={() => handleDelete(test._id)} 
+            //       className="btn-test btn-test-delete"
+            //     >
+            //       Delete
+            //     </button>
+            //   </div>
+            // </li>
           ))}
         </ul>
       )}

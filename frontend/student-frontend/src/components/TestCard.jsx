@@ -5,6 +5,11 @@ export default function TestCard({ test, testAccess }){
   const attemptText = `${testAccess?.attemptCount ?? 0}/${testAccess?.maxAttempts ?? 1} used`;
   const canView = testAccess && testAccess.canViewResult
   const canRetake = testAccess && testAccess.canRetake
+  const statusColors = {
+    'bg' : test.status === 'published' ? 'bg-green-100' :  'bg-red-100',
+    'text' : test.status === 'published' ? 'text-green-800' : 'text-red-800'
+  }
+  const statusClassName = `text-xs ${statusColors.bg} ${statusColors.text} px-2 py-0.5 rounded`
 
   const startDisabled = !test.isPublished || (test.startTime && new Date(test.startTime) > new Date()) || (testAccess && testAccess.attempted)
 
@@ -13,13 +18,11 @@ export default function TestCard({ test, testAccess }){
       <div className="flex items-start justify-between">
         <div>
           <div className="flex items-center gap-3">
-            <div className="text-lg font-semibold">{test.title}</div>
-            {test.isPublished ? <span className="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded">Published</span> : <span className="text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded">{test.status}</span>}
-            {/* {test.status && <span className="text-xs bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded">{test.status}</span>} */}
+            <div className="text-lg font-semibold">{test.title}</div> 
+            {test.status ? <span className={statusClassName}>{test.status === 'published' ? 'open' : test.status}</span> : 'No Status'}
           </div>
           <div className="text-sm text-gray-500 mt-1">Subject: {test.subject?.subjectName || 'General'}</div>
         </div>
-        {/* <div className="text-sm text-gray-600">{status}</div> */}
       </div>
       <div className="mt-3 grid grid-cols-3 gap-2 text-sm text-gray-600">
         <div>Total Questions: <span className="font-medium">{test.totalQuestions}</span></div>

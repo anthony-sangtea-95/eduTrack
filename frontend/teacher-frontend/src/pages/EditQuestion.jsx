@@ -16,6 +16,7 @@ export default function EditQuestion() {
     questionText: "",
     options: { a: "", b: "", c: "", d: "" },
     correctOption: "",
+    mark: "",
     allowedTeachers: [],
   });
 
@@ -32,6 +33,7 @@ export default function EditQuestion() {
         questionText: q.questionText,
         options: q.options,
         correctOption: q.correctOption,
+        mark: q.mark ?? "",
         allowedTeachers: q.allowedTeachers || [],
       });
     } catch (err) {
@@ -78,7 +80,7 @@ export default function EditQuestion() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const {data} = await API.put(`/teacher/questions/${questionId}`, form);
+      const {data} = await API.put(`/teacher/questions/${questionId}`, { ...form, mark: Number(form.mark) });
       if (data.success) {
         showSuccess("Question updated successfully");
       }
@@ -125,6 +127,18 @@ export default function EditQuestion() {
                         />
                     </div>
                     ))}
+                </div>
+
+                <div className="form-group">
+                    <label>Mark</label>
+                    <input
+                      type="number"
+                      name="mark"
+                      value={form.mark}
+                      onChange={handleChange}
+                      min="1"
+                      required
+                    />
                 </div>
 
                 <div className="form-group">

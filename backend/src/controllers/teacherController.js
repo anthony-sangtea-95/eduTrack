@@ -148,12 +148,14 @@ export const addQuestionToTest = async (req, res) => {
     await session.commitTransaction();
     session.endSession();
 
+    await recalculateTestTotalMark(testId);
+
     res.json({ message: "Added successfully" });
   } catch (err) {
     await session.abortTransaction();
     session.endSession();
 
-    res.status(500).json({ message: "Qustion adding failed" });
+    res.status(500).json({ message: "Question adding failed" });
   }
 };
 
@@ -178,6 +180,8 @@ export const removeQuestionFromTest = async (req, res) => {
 
     await session.commitTransaction();
     session.endSession();
+
+    await recalculateTestTotalMark(testId);
 
     res.json({ message: "Removed Successfully" });
   } catch (err) {
@@ -250,7 +254,7 @@ export const getQuestionsByTest = async (req, res) => {
 // @desc Add question to a test
 export const createQuestion = async (req, res) => {
     try {
-        const { subject: subjectId, questionText, options, correctOption, allowedTeachers = [] } = req.body;
+        const { subject: subjectId, questionText, options, correctOption, mark,allowedTeachers = [] } = req.body;
 
         const subjectExists = await Subject.findById(subjectId);
 
@@ -263,6 +267,7 @@ export const createQuestion = async (req, res) => {
             questionText,
             options,
             correctOption,
+            mark,
             createdBy: req.user._id,
             allowedTeachers,
         });
@@ -382,14 +387,18 @@ export const getQuestionById = async (req, res) => {
 
 export const updateQuestion = async (req, res) => {
     try {
-        const { questionText, options, correctOption, allowedTeachers } = req.body;
+        const { questionText, options, correctOption, mark,allowedTeachers } = req.body;
         const { questionId } = req.params;
         const question = await Question.findById(questionId);
         question.questionText = questionText;
         question.options = options;
         question.correctOption = correctOption;
+        question.mark = mark;
         question.allowedTeachers = allowedTeachers;
-        question.save();
+        await question.save();
+        if (question.test) {
+            await recalculateTestTotalMark(question.test);
+        }
         res.status(200).json({ success: true });
     } catch (error) {
         return res.status(500).json({ message: error.message })
@@ -407,4 +416,29 @@ export const deleteQuestion = async (req, res) => {
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
+}
+
+
+// functions
+const recalculateTestTotalMark = async (testId) => {
+  const test = await Test.findById(testId);
+
+  if (!test) return;
+  const result = await Question.aggregate([
+    {
+      $match: {
+        _id: { $in: testId }
+      }
+    },
+    {
+      $group: {
+        _id: null,
+        total: { $sum: "$mark" }
+      }
+    }
+  ]);
+
+  await Test.findByIdAndUpdate(testId, {
+    totalMark: result[0]?.total || 0
+  });
 }
