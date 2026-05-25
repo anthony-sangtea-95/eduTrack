@@ -126,71 +126,82 @@ export const updateTest = async (req, res) => {
 };
 
 export const addQuestionToTest = async (req, res) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
   try {
+    const session = await mongoose.startSession();
     const { testId } = req.params;
     const { questionId } = req.body;
+    await session.withTransaction(async () => {
+      const question = await Question.findById(questionId).session(session);
+      if (!question) {
+        throw new Error("Question not found");
+      }
+      // already added?
+      const testExists = await Test.findOne({
+        _id: testId,
+        questions: questionId
+      }).session(session);
 
-    await Test.findByIdAndUpdate(
-      testId,
-      { $addToSet: { questions: questionId } },
-      { session }
-    );
-
-    await Question.findByIdAndUpdate(
-      questionId,
-      { $addToSet: { tests: testId } },
-      { session }
-    );
-
-    await session.commitTransaction();
-    session.endSession();
-
-    await recalculateTestTotalMark(testId);
-
-    res.json({ message: "Added successfully" });
-  } catch (err) {
-    await session.abortTransaction();
-    session.endSession();
-
-    res.status(500).json({ message: "Question adding failed" });
+      if (testExists) {
+        return;
+      }
+      // add question to test
+      await Test.updateOne(
+        { _id: testId },
+        {
+          $addToSet: {
+            questions: questionId
+          },
+          $inc: {
+            totalMarks: question.mark
+          }
+        },
+        { session }
+      );
+    });
+    res.json({
+      message: "Added successfully"
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message
+    });
+  } finally {
+        session.endSession();
   }
 };
 
 export const removeQuestionFromTest = async (req, res) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
+    try {
+        const session = await mongoose.startSession();
+        const { testId, questionId } = req.params;
+        await session.withTransaction(async () => {
+            const question = await Question.findById(questionId).session(session);
+            if (!question) {
+                throw new Error("Question not found");
+            }
+            const testExists = await Test.findOne({
+                _id: testId,
+                questions: questionId
+            }).session(session);
 
-  try {
-    const { testId, questionId } = req.params;
-
-    await Test.findByIdAndUpdate(
-      testId,
-      { $pull: { questions: questionId } },
-      { session }
-    );
-
-    await Question.findByIdAndUpdate(
-      questionId,
-      { $pull: { tests: testId } },
-      { session }
-    );
-
-    await session.commitTransaction();
-    session.endSession();
-
-    await recalculateTestTotalMark(testId);
-
-    res.json({ message: "Removed Successfully" });
-  } catch (err) {
-    await session.abortTransaction();
-    session.endSession();
-
-    res.status(500).json({ message: "Remove failed" });
-  }
-};
+            // if question not part of test, skip
+            if (!testExists) {
+                return;
+            }
+            await Test.updateOne(
+                { _id: testId },
+                {
+                    $pull: { questions: questionId },
+                    $inc: { totalMarks: -question.mark }
+                },
+                { session }
+            );
+        });
+        res.json({ message: "Removed Successfully" });
+    } catch (error) {
+        res.status(500).json({ message: "Remove failed" + error.message });
+    }
+}
 
 export const getSubjects = async (req, res) => {
     try {
@@ -387,18 +398,24 @@ export const getQuestionById = async (req, res) => {
 
 export const updateQuestion = async (req, res) => {
     try {
+        const session = await mongoose.startSession();
         const { questionText, options, correctOption, mark,allowedTeachers } = req.body;
         const { questionId } = req.params;
-        const question = await Question.findById(questionId);
-        question.questionText = questionText;
-        question.options = options;
-        question.correctOption = correctOption;
-        question.mark = mark;
-        question.allowedTeachers = allowedTeachers;
-        await question.save();
-        if (question.test) {
-            await recalculateTestTotalMark(question.test);
-        }
+        await session.withTransaction(async () => {
+            const question = await Question.findById(questionId);
+            const oldMark = question.mark;
+            question.questionText = questionText;
+            question.options = options;
+            question.correctOption = correctOption;
+            question.mark = mark;
+            question.allowedTeachers = allowedTeachers;
+            await question.save();
+            const delta = question.mark - oldMark;
+            await Test.updateMany(
+                { questions: question._id },
+                { $inc: { totalMarks: delta } }
+            );
+        });
         res.status(200).json({ success: true });
     } catch (error) {
         return res.status(500).json({ message: error.message })
@@ -416,29 +433,4 @@ export const deleteQuestion = async (req, res) => {
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
-}
-
-
-// functions
-const recalculateTestTotalMark = async (testId) => {
-  const test = await Test.findById(testId);
-
-  if (!test) return;
-  const result = await Question.aggregate([
-    {
-      $match: {
-        _id: { $in: testId }
-      }
-    },
-    {
-      $group: {
-        _id: null,
-        total: { $sum: "$mark" }
-      }
-    }
-  ]);
-
-  await Test.findByIdAndUpdate(testId, {
-    totalMark: result[0]?.total || 0
-  });
 }
