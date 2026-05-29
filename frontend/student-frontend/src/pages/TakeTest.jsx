@@ -16,6 +16,7 @@ export default function TakeTest(){
   const [questions, setQuestions] = useState([])
   const [answers, setAnswers] = useState({})
   const [current, setCurrent] = useState(0)
+  const [totalTime, setTotalTime] = useState(0)
   const [timeLeft, setTimeLeft] = useState(null)
   const [loadingSubmit, setLoadingSubmit] = useState(false)
   const [submitted, setSubmitted] = useState(false)
@@ -32,8 +33,9 @@ export default function TakeTest(){
         const minutes = res.data.test?.durationMinutes || 30
         const saved = JSON.parse(localStorage.getItem(`test:${testId}:answers`)||'{}')
         const savedTime = parseInt(localStorage.getItem(`test:${testId}:timeLeft`)||'')
+        setTotalTime(minutes * 60)
         setAnswers(saved || {})
-        setTimeLeft(savedTime || (minutes*60))
+        setTimeLeft(savedTime || minutes * 60)
       }catch(err){
         console.error(err)
       }
@@ -82,7 +84,8 @@ export default function TakeTest(){
     if (submitted) return
     setLoadingSubmit(true)
     try{
-      const payload = { answers: Object.keys(answers).map(q=>({ question: q, selected: answers[q] })) , auto }
+      const payload = { answers: Object.keys(answers).map(q=>({ question: q, selected: answers[q] })) , auto,
+        timeTakenInSeconds: totalTime - timeLeft}
       const res = await API.post(`/student/tests/${testId}/submit`, payload)
       const submittedID = res.data.submittedId;
       setSubmitted(true)

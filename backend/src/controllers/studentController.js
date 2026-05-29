@@ -42,7 +42,7 @@ export const getAssignedTests = async (req, res) => {
           attemptsLeft,
           maxAttempts,
           canAttempt: attemptsLeft > 0,
-          canRetake: allowRetake && attemptsLeft > 0 && test.status !== "closed",
+          canRetake: allowRetake && attemptsLeft > 1 && attemptCount > 0 && test.status !== "closed",
           canViewResult: test.status === "closed" || attemptCount > 0
       };
 
@@ -84,8 +84,22 @@ export const getTestQuestions = async (req, res) => {
 
 export const submitTest = async (req, res) => {
   try {
+
+    await Submission.updateMany(
+  {
+    $or: [
+      { timeTakenInSeconds: { $exists: false } }
+    ]
+  },
+  {
+    $set: {
+      timeTakenInSeconds: 0
+    }
+  }
+);
+
     const { testId } = req.params;
-    const { answers } = req.body; // [{ question: qid, selected: 'a' }, ...]
+    const { answers, timeTakenInSeconds } = req.body; // [{ question: qid, selected: 'a' }, ...]
 
     if (!mongoose.Types.ObjectId.isValid(testId)) return res.status(400).json({ message: "Invalid test id" });
     const test = await Test.findById(testId);
@@ -111,6 +125,7 @@ export const submitTest = async (req, res) => {
       const q = questions.find(x => x._id.toString() === ans.question);
       if (q && q.correctOption === ans.selected) correct++;
     }
+    const wrong = (answers || []).length - correct;
     const score = questions.length ? (correct / questions.length) * 100 : 0;
 
     // save submission
@@ -118,6 +133,9 @@ export const submitTest = async (req, res) => {
       test: testId,
       student: req.user._id,
       answers,
+      correct,
+      wrong,
+      timeTakenInSeconds: timeTakenInSeconds || 0,
       score
     });
 
@@ -132,7 +150,13 @@ export const viewResult = async (req, res) => {
     const { testId, submittedID } = req.params;
     if (!mongoose.Types.ObjectId.isValid(testId)) return res.status(400).json({ message: "Invalid test id" });
     if (!mongoose.Types.ObjectId.isValid(submittedID)) return res.status(400).json({ message: "Invalid submission id" });
-    const submission = await Submission.findOne({ _id: submittedID, test: testId, student: req.user._id }).populate("answers.question");
+    const submission = await Submission
+                      .findOne({
+                        test: testId,
+                        student: req.user._id
+                      })
+                      .sort({ submittedAt: -1 }) // latest submitted one
+                      .populate("answers.question");
     if (!submission) return res.status(404).json({ message: "Result not found" });
     res.json(submission);
   } catch (err) {
