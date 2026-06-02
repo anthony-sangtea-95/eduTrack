@@ -43,3 +43,9 @@
 - [ ] CI/CD setup
 - [ ] Deploy backend
 - [ ] Deploy frontend
+
+
+### TODO
+- [ ] Validate time taken duration
+- [ ] Develop ViewResultList 
+- [ ] Remove console.log (especially in frontend)

@@ -42,7 +42,7 @@ export const getAssignedTests = async (req, res) => {
           attemptsLeft,
           maxAttempts,
           canAttempt: attemptsLeft > 0,
-          canRetake: allowRetake && attemptsLeft > 1 && attemptCount > 0 && test.status !== "closed",
+          canRetake: allowRetake && attemptsLeft > 0 && attemptCount > 0 && test.status !== "closed",
           canViewResult: test.status === "closed" || attemptCount > 0
       };
 

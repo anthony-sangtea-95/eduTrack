@@ -22,6 +22,7 @@ export default function TakeTest(){
   const [submitted, setSubmitted] = useState(false)
   const [showModal, setShowModal] = useState(false)
   const timerRef = useRef(null)
+  const isRetake = searchParams.get('retake') === '1'
 
   // load test and attempt
   useEffect(()=>{
@@ -31,17 +32,27 @@ export default function TakeTest(){
         setTest(res.data.test)
         setQuestions(res.data.questions || [])
         const minutes = res.data.test?.durationMinutes || 30
-        const saved = JSON.parse(localStorage.getItem(`test:${testId}:answers`)||'{}')
-        const savedTime = parseInt(localStorage.getItem(`test:${testId}:timeLeft`)||'')
+        const saved = isRetake ? {} : JSON.parse(localStorage.getItem(`test:${testId}:answers`)||'{}')
+        const rawSavedTime = isRetake ? '' : localStorage.getItem(`test:${testId}:timeLeft`)||''
+        const parsedSavedTime = parseInt(rawSavedTime, 10)
+        const initialTime = Number.isFinite(parsedSavedTime) ? parsedSavedTime : minutes * 60
+
+        if (isRetake) {
+          localStorage.removeItem(`test:${testId}:answers`)
+          localStorage.removeItem(`test:${testId}:timeLeft`)
+        }
+
         setTotalTime(minutes * 60)
         setAnswers(saved || {})
-        setTimeLeft(savedTime || minutes * 60)
+        setCurrent(0)
+        setSubmitted(false)
+        setTimeLeft(initialTime)
       }catch(err){
         console.error(err)
       }
     }
     load()
-  }, [testId])
+  }, [testId, searchParams.toString()])
 
   // warn before unload
   useEffect(()=>{

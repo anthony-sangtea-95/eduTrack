@@ -32,7 +32,7 @@ export default function ViewResult(){
               {submission.answers.map(a=> (
                 <div key={a.question._id} className="p-3 border rounded-md">
                   <div className="font-medium">{a.question.questionText}</div>
-                  <div className="text-sm text-gray-600">Your answer: <strong>{a.selected}</strong> | Correct: <strong>{a.correct}</strong></div>
+                  <div className="text-sm text-gray-600">Your answer: <strong>{a.selected}</strong> | Correct: <strong>{a.question.correctOption}</strong></div>
                 </div>
               ))}
             </div>
