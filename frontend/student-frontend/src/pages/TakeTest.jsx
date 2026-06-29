@@ -23,6 +23,8 @@ export default function TakeTest(){
   const [showModal, setShowModal] = useState(false)
   const timerRef = useRef(null)
   const isRetake = searchParams.get('retake') === '1'
+  const endTime = useRef(Date.now() + totalTime * 1000);
+  localStorage.setItem(`test:${testId}:endTime`, String(endTime.current));
 
   // load test and attempt
   useEffect(()=>{
@@ -33,20 +35,20 @@ export default function TakeTest(){
         setQuestions(res.data.questions || [])
         const minutes = res.data.test?.durationMinutes || 30
         const saved = isRetake ? {} : JSON.parse(localStorage.getItem(`test:${testId}:answers`)||'{}')
-        const rawSavedTime = isRetake ? '' : localStorage.getItem(`test:${testId}:timeLeft`)||''
-        const parsedSavedTime = parseInt(rawSavedTime, 10)
-        const initialTime = Number.isFinite(parsedSavedTime) ? parsedSavedTime : minutes * 60
+        // const rawSavedTime = isRetake ? '' : localStorage.getItem(`test:${testId}:timeLeft`)||''
+        // const parsedSavedTime = parseInt(rawSavedTime, 10)
+        // const initialTime = Number.isFinite(parsedSavedTime) ? parsedSavedTime : minutes * 60
 
         if (isRetake) {
           localStorage.removeItem(`test:${testId}:answers`)
-          localStorage.removeItem(`test:${testId}:timeLeft`)
+          // localStorage.removeItem(`test:${testId}:timeLeft`)
         }
 
         setTotalTime(minutes * 60)
         setAnswers(saved || {})
         setCurrent(0)
         setSubmitted(false)
-        setTimeLeft(initialTime)
+        // setTimeLeft(initialTime)
       }catch(err){
         console.error(err)
       }
@@ -62,25 +64,44 @@ export default function TakeTest(){
   }, [submitted])
 
   // timer
-  useEffect(()=>{
-    if (timeLeft == null) return
-    if (timeLeft <= 0){
-      doSubmit(true)
-      return
-    }
-    timerRef.current = setInterval(()=>{
-      setTimeLeft(t=>t-1)
-    }, 1000)
-    return ()=> clearInterval(timerRef.current)
-  }, [timeLeft])
+  // useEffect(()=>{
+  //   if (timeLeft == null) return
+  //   if (timeLeft <= 0){
+  //     doSubmit(true)
+  //     return
+  //   }
+  //   timerRef.current = setInterval(()=>{
+  //     setTimeLeft(t=>t-1)
+  //   }, 1000)
+  //   return ()=> clearInterval(timerRef.current)
+  // }, [timeLeft])
+  useEffect(() => {
+    const id = setInterval(() => {
+        const left = Math.max(
+            0,
+            Math.ceil((endTime.current - Date.now()) / 1000)
+        );
+
+        setTimeLeft(left);
+
+        if (left === 0) {
+            clearInterval(id);
+            doSubmit(true);
+        }
+    }, 1000);
+
+    return () => clearInterval(id);
+}, []);
 
   // autosave answers
   useEffect(()=>{
     localStorage.setItem(`test:${testId}:answers`, JSON.stringify(answers))
   }, [answers, testId])
-  useEffect(()=>{
-    if (timeLeft!=null) localStorage.setItem(`test:${testId}:timeLeft`, String(timeLeft))
-  }, [timeLeft, testId])
+
+  // useEffect(()=>{
+  //   if (loadingSubmit) return
+  //   if (timeLeft!=null) localStorage.setItem(`test:${testId}:timeLeft`, String(timeLeft))
+  // }, [timeLeft, testId, loadingSubmit])
 
   const onSelect = (opt)=>{
     if (submitted) return
@@ -92,7 +113,7 @@ export default function TakeTest(){
   const jumpTo = (idx)=>{ setCurrent(idx) }
 
   const doSubmit = useCallback(async (auto=false)=>{
-    if (submitted) return
+    if (loadingSubmit) return
     setLoadingSubmit(true)
     try{
       const payload = { answers: Object.keys(answers).map(q=>({ question: q, selected: answers[q] })) , auto,
@@ -110,7 +131,7 @@ export default function TakeTest(){
     }finally{
       setLoadingSubmit(false)
     }
-  },[answers, testId, submitted, navigate])
+  },[answers, testId, loadingSubmit, navigate, totalTime, timeLeft])
 
   if (!test) return <div className="app-shell"><Sidebar /><main className="main"><div className="card">Loading...</div></main></div>
 

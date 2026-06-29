@@ -2,7 +2,6 @@ import React from 'react'
 import ProgressCircle from './ProgressCircle'
 
 export default function ResultSummary({ result }){
-  console.log("ResultSummary", result)
   const correct = result.correct || 0
   const wrong = result.wrong || 0
   const total = correct + wrong

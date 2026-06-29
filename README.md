@@ -12,15 +12,15 @@
 
 - [x] Create test (Teacher)
 - [x] Assign test to students
-- [ ] Load questions to test (Manage Questions of Test)
+- [x] Load questions to test (Manage Questions of Test)
 - [x] Edit test after creation
-- [ ] Add timer for tests
-- [ ] Auto-submit when time expires
+- [x] Add timer for tests
+- [x] Auto-submit when time expires
 
 ### 📊 Results & Analytics
 
-- [ ] Store student scores
-- [ ] Show detailed result breakdown
+- [x] Store student scores
+- [x] Show detailed result breakdown
 - [ ] Export results to CSV
 - [ ] Basic analytics dashboard for teachers
 

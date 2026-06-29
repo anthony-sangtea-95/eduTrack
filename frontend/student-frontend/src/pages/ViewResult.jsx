@@ -17,7 +17,6 @@ export default function ViewResult(){
   }, [testId])
 
   if (!submission) return <div className="app-shell"><Sidebar /><main className="main"><div className="card">No result found</div></main></div>
-  console.log(submission)
 
   return (
     <div className="app-shell">
