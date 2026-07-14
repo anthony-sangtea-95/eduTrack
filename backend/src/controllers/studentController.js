@@ -75,8 +75,41 @@ export const getTestQuestions = async (req, res) => {
     const now = new Date();
     if (!test.isPublished || (test.status && test.status !== 'published')) return res.status(403).json({ message: 'Test not available' });
     if (test.startTime && new Date(test.startTime) > now) return res.status(403).json({ message: 'Test not started yet' });
-
     res.json({ test, questions: test.questions });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+export const getCreateAttemptID = async (req, res) => {
+  try {
+    const { testId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(testId)) return res.status(400).json({ message: "Invalid test id" });
+
+    const test = await Test.findById(testId);
+    if (!test) return res.status(404).json({ message: "Test not found" });
+
+    // ensure student is assigned
+    if (!test.assignedStudents.map(String).includes(String(req.user._id))) return res.status(403).json({ message: "Not assigned this test" });
+
+    // respect publishing and scheduling
+    const now = new Date();
+    if (!test.isPublished || (test.status && test.status !== 'published')) return res.status(403).json({ message: 'Test not available' });
+    if (test.startTime && new Date(test.startTime) > now) return res.status(403).json({ message: 'Test not started yet' });
+
+    const existing = await Submission.findOne({ test: testId, student: req.user._id, submittedAt: null });
+    if (existing) {
+      return res.json({ submissionId: existing._id });
+    }
+
+    const submission = await Submission.create({
+      test: testId,
+      student: req.user._id,
+      startedAt: new Date(),
+    });
+
+    res.json({ submissionId: submission._id });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -84,22 +117,8 @@ export const getTestQuestions = async (req, res) => {
 
 export const submitTest = async (req, res) => {
   try {
-
-    await Submission.updateMany(
-  {
-    $or: [
-      { timeTakenInSeconds: { $exists: false } }
-    ]
-  },
-  {
-    $set: {
-      timeTakenInSeconds: 0
-    }
-  }
-);
-
     const { testId } = req.params;
-    const { answers, timeTakenInSeconds } = req.body; // [{ question: qid, selected: 'a' }, ...]
+    const { answers, submissionId } = req.body;
 
     if (!mongoose.Types.ObjectId.isValid(testId)) return res.status(400).json({ message: "Invalid test id" });
     const test = await Test.findById(testId);
@@ -111,9 +130,9 @@ export const submitTest = async (req, res) => {
     if (!test.isPublished || (test.status && test.status !== 'published')) return res.status(403).json({ message: 'Test not available' });
     if (test.startTime && new Date(test.startTime) > now) return res.status(403).json({ message: 'Test not started yet' });
 
-    const attemptsCount = await Submission.countDocuments({ test: testId, student: req.user._id });
-    const maxAttempts = test.attemptRules?.maxAttempts ?? 1;
-    if (attemptsCount >= maxAttempts) return res.status(403).json({ message: 'Maximum attempts reached' });
+    // const attemptsCount = await Submission.countDocuments({ test: testId, student: req.user._id });
+    // const maxAttempts = test.attemptRules?.maxAttempts ?? 1;
+    // if (attemptsCount >= maxAttempts) return res.status(403).json({ message: 'Maximum attempts reached' });
 
     // Load correct answers
     const questionIds = (answers || []).map(a => a.question).filter(id => mongoose.Types.ObjectId.isValid(id));
@@ -128,16 +147,28 @@ export const submitTest = async (req, res) => {
     const wrong = (answers || []).length - correct;
     const score = questions.length ? (correct / questions.length) * 100 : 0;
 
+    if (!mongoose.Types.ObjectId.isValid(submissionId)) return res.status(400).json({ message: "Invalid submission id" });
+    const submission = await Submission.findOne({ _id: submissionId, test: testId, student: req.user._id });
+    if (!submission) return res.status(404).json({ message: "Submission not found" });
+
+    submission.answers = answers;
+    submission.correct = correct;
+    submission.wrong = wrong;
+    submission.score = score;
+    submission.timeTakenInSeconds = Math.floor((new Date() - submission.startedAt) / 1000);
+    submission.submittedAt = new Date();
+    await submission.save();
+
     // save submission
-    const submission = await Submission.create({
-      test: testId,
-      student: req.user._id,
-      answers,
-      correct,
-      wrong,
-      timeTakenInSeconds: timeTakenInSeconds || 0,
-      score
-    });
+    // const submission = await Submission.create({
+    //   test: testId,
+    //   student: req.user._id,
+    //   answers,
+    //   correct,
+    //   wrong,
+    //   timeTakenInSeconds: timeTakenInSeconds || 0,
+    //   score
+    // });
 
     res.json({ message: "Submitted", submittedId: submission._id });
   } catch (err) {

@@ -11,9 +11,10 @@ const submissionSchema = new mongoose.Schema({
   answers: [answerSchema],
   correct: { type: Number, default: 0 },
   wrong: { type: Number, default: 0 },
+  startedAt: { type: Date },
   timeTakenInSeconds: { type: Number, default: 0 },
   score: { type: Number, default: 0 },
-  submittedAt: { type: Date, default: Date.now }
+  submittedAt: { type: Date, default: null }
 });
 
 const Submission = mongoose.model("Submission", submissionSchema);

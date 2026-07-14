@@ -14,21 +14,38 @@ export default function TakeTest(){
 
   const [test, setTest] = useState(null)
   const [questions, setQuestions] = useState([])
+  const [attemptId, setAttemptId] = useState(null)
   const [answers, setAnswers] = useState({})
   const [current, setCurrent] = useState(0)
   const [totalTime, setTotalTime] = useState(0)
   const [timeLeft, setTimeLeft] = useState(null)
-  const [loadingSubmit, setLoadingSubmit] = useState(false)
+  // const [loadingSubmit, setLoadingSubmit] = useState(false)
+  const submittingRef = useRef(false);
   const [submitted, setSubmitted] = useState(false)
   const [showModal, setShowModal] = useState(false)
+  const attemptCreated = useRef(false)
   const timerRef = useRef(null)
   const isRetake = searchParams.get('retake') === '1'
-  const endTime = useRef(Date.now() + totalTime * 1000);
-  localStorage.setItem(`test:${testId}:endTime`, String(endTime.current));
+  const endTime = useRef(null);
 
   // load test and attempt
+  useEffect(() => {
+    if (attemptCreated.current) return;
+    attemptCreated.current = true;
+    const loadAttempt = async () => {
+      try {
+        const attempt = await API.post(`/student/tests/${testId}/attempt`)
+        setAttemptId(attempt.data.submissionId || null)
+      } catch (err) {
+        console.error(err)
+      }
+    }
+
+    loadAttempt()
+  }, [testId])
+
   useEffect(()=>{
-    const load = async ()=>{
+    const loadTest = async ()=>{
       try{
         const res = await API.get(`/student/tests/${testId}`)
         setTest(res.data.test)
@@ -48,12 +65,24 @@ export default function TakeTest(){
         setAnswers(saved || {})
         setCurrent(0)
         setSubmitted(false)
-        // setTimeLeft(initialTime)
+
+        const saveEndTime = localStorage.getItem(`test:${testId}:endTime`);
+        if (saveEndTime) {
+          endTime.current = parseInt(saveEndTime, 10);
+        } else {
+          const newEndTime = Date.now() + totalTime * 1000;
+          endTime.current = newEndTime;
+          localStorage.setItem(
+              `test:${testId}:endTime`,
+              String(newEndTime)
+          );
+        }
+        setTimeLeft(totalTime)
       }catch(err){
         console.error(err)
       }
     }
-    load()
+    loadTest()
   }, [testId, searchParams.toString()])
 
   // warn before unload
@@ -63,45 +92,26 @@ export default function TakeTest(){
     return ()=> window.removeEventListener('beforeunload', handler)
   }, [submitted])
 
-  // timer
-  // useEffect(()=>{
-  //   if (timeLeft == null) return
-  //   if (timeLeft <= 0){
-  //     doSubmit(true)
-  //     return
-  //   }
-  //   timerRef.current = setInterval(()=>{
-  //     setTimeLeft(t=>t-1)
-  //   }, 1000)
-  //   return ()=> clearInterval(timerRef.current)
-  // }, [timeLeft])
   useEffect(() => {
+    if (!endTime.current) return;
     const id = setInterval(() => {
         const left = Math.max(
             0,
             Math.ceil((endTime.current - Date.now()) / 1000)
         );
-
         setTimeLeft(left);
-
         if (left === 0) {
             clearInterval(id);
             doSubmit(true);
         }
     }, 1000);
-
     return () => clearInterval(id);
-}, []);
+  }, []);
 
   // autosave answers
   useEffect(()=>{
     localStorage.setItem(`test:${testId}:answers`, JSON.stringify(answers))
   }, [answers, testId])
-
-  // useEffect(()=>{
-  //   if (loadingSubmit) return
-  //   if (timeLeft!=null) localStorage.setItem(`test:${testId}:timeLeft`, String(timeLeft))
-  // }, [timeLeft, testId, loadingSubmit])
 
   const onSelect = (opt)=>{
     if (submitted) return
@@ -113,11 +123,13 @@ export default function TakeTest(){
   const jumpTo = (idx)=>{ setCurrent(idx) }
 
   const doSubmit = useCallback(async (auto=false)=>{
-    if (loadingSubmit) return
-    setLoadingSubmit(true)
+    // if (loadingSubmit) return
+    // setLoadingSubmit(true)
+    if (submittingRef.current) return
+    submittingRef.current = true
     try{
       const payload = { answers: Object.keys(answers).map(q=>({ question: q, selected: answers[q] })) , auto,
-        timeTakenInSeconds: totalTime - timeLeft}
+        submissionId: attemptId}
       const res = await API.post(`/student/tests/${testId}/submit`, payload)
       const submittedID = res.data.submittedId;
       setSubmitted(true)
@@ -129,9 +141,10 @@ export default function TakeTest(){
       console.error(err)
       alert('Submit failed. Please try again.')
     }finally{
-      setLoadingSubmit(false)
+      submittingRef.current = false
+      // setLoadingSubmit(false)
     }
-  },[answers, testId, loadingSubmit, navigate, totalTime, timeLeft])
+  },[answers, testId, submittingRef, navigate, totalTime, timeLeft])
 
   if (!test) return <div className="app-shell"><Sidebar /><main className="main"><div className="card">Loading...</div></main></div>
 
@@ -215,7 +228,7 @@ export default function TakeTest(){
           </aside>
         </div>
 
-        <SubmitModal open={showModal} onClose={()=>setShowModal(false)} onConfirm={()=>doSubmit(false)} loading={loadingSubmit} />
+        <SubmitModal open={showModal} onClose={()=>setShowModal(false)} onConfirm={()=>doSubmit(false)} loading={submittingRef.current} />
       </main>
     </div>
   )
