@@ -17,9 +17,7 @@ export default function TakeTest(){
   const [attemptId, setAttemptId] = useState(null)
   const [answers, setAnswers] = useState({})
   const [current, setCurrent] = useState(0)
-  const [totalTime, setTotalTime] = useState(0)
   const [timeLeft, setTimeLeft] = useState(null)
-  // const [loadingSubmit, setLoadingSubmit] = useState(false)
   const submittingRef = useRef(false);
   const [submitted, setSubmitted] = useState(false)
   const [showModal, setShowModal] = useState(false)
@@ -27,6 +25,7 @@ export default function TakeTest(){
   const timerRef = useRef(null)
   const isRetake = searchParams.get('retake') === '1'
   const endTime = useRef(null);
+  const [timerReady, setTimerReady] = useState(false);
 
   // load test and attempt
   useEffect(() => {
@@ -50,18 +49,13 @@ export default function TakeTest(){
         const res = await API.get(`/student/tests/${testId}`)
         setTest(res.data.test)
         setQuestions(res.data.questions || [])
-        const minutes = res.data.test?.durationMinutes || 30
+        const durationMinutes = res.data.test?.durationMinutes || 30
         const saved = isRetake ? {} : JSON.parse(localStorage.getItem(`test:${testId}:answers`)||'{}')
-        // const rawSavedTime = isRetake ? '' : localStorage.getItem(`test:${testId}:timeLeft`)||''
-        // const parsedSavedTime = parseInt(rawSavedTime, 10)
-        // const initialTime = Number.isFinite(parsedSavedTime) ? parsedSavedTime : minutes * 60
 
         if (isRetake) {
           localStorage.removeItem(`test:${testId}:answers`)
-          // localStorage.removeItem(`test:${testId}:timeLeft`)
         }
 
-        setTotalTime(minutes * 60)
         setAnswers(saved || {})
         setCurrent(0)
         setSubmitted(false)
@@ -70,14 +64,20 @@ export default function TakeTest(){
         if (saveEndTime) {
           endTime.current = parseInt(saveEndTime, 10);
         } else {
-          const newEndTime = Date.now() + totalTime * 1000;
+          const newEndTime = Date.now() + durationMinutes * 60 * 1000;
           endTime.current = newEndTime;
           localStorage.setItem(
               `test:${testId}:endTime`,
               String(newEndTime)
           );
         }
-        setTimeLeft(totalTime)
+        setTimeLeft(
+            Math.max(
+                0,
+                Math.ceil((endTime.current - Date.now()) / 1000)
+            )
+        );
+        setTimerReady(true);
       }catch(err){
         console.error(err)
       }
@@ -93,7 +93,7 @@ export default function TakeTest(){
   }, [submitted])
 
   useEffect(() => {
-    if (!endTime.current) return;
+    if (!timerReady) return;
     const id = setInterval(() => {
         const left = Math.max(
             0,
@@ -106,7 +106,7 @@ export default function TakeTest(){
         }
     }, 1000);
     return () => clearInterval(id);
-  }, []);
+  }, [timerReady]);
 
   // autosave answers
   useEffect(()=>{
@@ -123,8 +123,6 @@ export default function TakeTest(){
   const jumpTo = (idx)=>{ setCurrent(idx) }
 
   const doSubmit = useCallback(async (auto=false)=>{
-    // if (loadingSubmit) return
-    // setLoadingSubmit(true)
     if (submittingRef.current) return
     submittingRef.current = true
     try{
@@ -134,17 +132,15 @@ export default function TakeTest(){
       const submittedID = res.data.submittedId;
       setSubmitted(true)
       localStorage.removeItem(`test:${testId}:answers`)
-      localStorage.removeItem(`test:${testId}:timeLeft`)
+      localStorage.removeItem(`test:${testId}:endTime`)
       // small delay for UX
       setTimeout(()=> navigate(`/tests/${testId}/${submittedID}/result`, { replace:true }), 800)
     }catch(err){
       console.error(err)
-      alert('Submit failed. Please try again.')
-    }finally{
       submittingRef.current = false
-      // setLoadingSubmit(false)
+      alert('Submit failed. Please try again.')
     }
-  },[answers, testId, submittingRef, navigate, totalTime, timeLeft])
+  },[answers, testId, submittingRef, navigate])
 
   if (!test) return <div className="app-shell"><Sidebar /><main className="main"><div className="card">Loading...</div></main></div>
 

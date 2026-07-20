@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import Sidebar from '../components/Sidebar'
 import API from '../services/api'
 import ResultSummary from '../components/ResultSummary'
@@ -7,6 +7,7 @@ import ResultSummary from '../components/ResultSummary'
 export default function ViewResult(){
   const { testId, submittedID } = useParams()
   const [submission, setSubmission] = useState(null)
+  const navigate = useNavigate()
 
   useEffect(()=>{
     const load = async () => {
@@ -22,7 +23,16 @@ export default function ViewResult(){
     <div className="app-shell">
       <Sidebar />
       <main className="main">
-        <div className="header"><h1>Result</h1></div>
+        <div className="header">
+          <h1>Result</h1>
+          <button
+            onClick={() => navigate('/tests')}
+            className="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50 hover:shadow-md"
+          >
+            <span className="text-base">←</span>
+            Back to Tests
+          </button>
+        </div>
         <div className="card">
           <ResultSummary result={submission} />
           <div className="mt-4">

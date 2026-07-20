@@ -46,6 +46,8 @@
 
 
 ### TODO
-- [ ] Validate time taken duration
+- [x] Validate time taken duration
 - [ ] Develop ViewResultList 
 - [ ] Remove console.log (especially in frontend)
+- [x] Add back button to view result
+- [ ] Highlight (correct|wrong) in result row
