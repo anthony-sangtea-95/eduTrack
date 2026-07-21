@@ -194,3 +194,14 @@ export const viewResult = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+export const getSubmissions = async (req, res) => {
+  try {
+    const submissions = await Submission.find({ student: req.user._id })
+      .populate('test', 'title subject')
+      .sort({ submittedAt: -1 });
+    res.json(submissions);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};

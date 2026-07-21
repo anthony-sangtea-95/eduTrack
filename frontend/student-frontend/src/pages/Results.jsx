@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import Sidebar from '../components/Sidebar';  
+import Sidebar from '../components/Sidebar'; 
+import API from '../services/api' 
 
 const Results = () => {
   const [results, setResults] = useState([]);
@@ -10,12 +11,8 @@ const Results = () => {
   useEffect(() => {
     const fetchResults = async () => {
       try {
-        const response = await fetch('/api/submissions');
-        if (!response.ok) {
-          throw new Error('Failed to load submissions');
-        }
-        const data = await response.json();
-        setResults(data || []);
+        const response = await API.get('/student/submissions');
+        setResults(response.data || []);
       } catch (err) {
         setError(err.message || 'Unable to fetch results');
       } finally {

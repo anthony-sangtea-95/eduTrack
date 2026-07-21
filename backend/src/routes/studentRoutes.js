@@ -1,7 +1,7 @@
 import express from "express";
 import { protect } from "../middleware/authMiddleware.js";
 import { requireRole } from "../middleware/roleMiddleware.js";
-import { getAssignedTests, getTestQuestions, submitTest, viewResult, getCreateAttemptID } from "../controllers/studentController.js";
+import { getAssignedTests, getTestQuestions, submitTest, viewResult, getCreateAttemptID, getSubmissions } from "../controllers/studentController.js";
 
 const router = express.Router();
 
@@ -12,5 +12,6 @@ router.get("/tests/:testId", getTestQuestions);
 router.post("/tests/:testId/attempt", getCreateAttemptID);
 router.post("/tests/:testId/submit", submitTest);
 router.get("/tests/:testId/:submittedID/result", viewResult);
+router.get("/student/submissions", getSubmissions);
 
 export default router;
