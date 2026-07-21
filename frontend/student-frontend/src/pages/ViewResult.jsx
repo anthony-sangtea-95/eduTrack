@@ -39,9 +39,13 @@ export default function ViewResult(){
             <h4 className="font-semibold">Answers</h4>
             <div className="mt-2 space-y-3">
               {submission.answers.map(a=> (
-                <div key={a.question._id} className="p-3 border rounded-md">
+                // <div key={a.question._id} className="p-3 border rounded-md">
+                <div key={a.question._id} className={`p-3 border rounded-md ${a.selected === a.question.correctOption ? 'bg-green-50 border-green-300' : 'bg-red-50 border-red-300'}`}>
                   <div className="font-medium">{a.question.questionText}</div>
-                  <div className="text-sm text-gray-600">Your answer: <strong>{a.selected}</strong> | Correct: <strong>{a.question.correctOption}</strong></div>
+                  {/* <div className="text-sm text-gray-600">Your answer: <strong>{a.selected}</strong> | Correct: <strong>{a.question.correctOption}</strong></div> */}
+                  <div className="text-sm text-gray-600">
+                    Your answer: <strong>{`${a.selected}.${a.question.options?.[a.selected]}` ?? 'No option text'}</strong> | 
+                    Correct: <strong>{`${a.question.correctOption}.${a.question.options?.[a.question.correctOption]}` ?? 'No correct option text'}</strong></div>
                 </div>
               ))}
             </div>

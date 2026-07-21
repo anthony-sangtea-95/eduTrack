@@ -36,7 +36,7 @@ export default function TestCard({ test, testAccess }){
           <Link to={`/tests/${test._id}/take`} className="px-3 py-2 bg-indigo-600 text-white rounded-md">Start</Link>
         )}
 
-        {canView ? <Link to={`/tests/${test._id}/result`} className="px-3 py-2 border rounded-md">View Result</Link> : <button className="px-3 py-2 border rounded-md text-gray-400 cursor-not-allowed" disabled>View Result</button>}
+        {canView ? <Link to={`/tests/${test._id}/results`} className="px-3 py-2 border rounded-md">Results</Link> : <button className="px-3 py-2 border rounded-md text-gray-400 cursor-not-allowed" disabled>View Result</button>}
         {canRetake ? <Link to={`/tests/${test._id}/take?retake=1`} className="px-3 py-2 border rounded-md">Retake</Link>: <button className="px-3 py-2 border rounded-md text-gray-400 cursor-not-allowed" disabled>Retake</button>}
       </div>
     </div>

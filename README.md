@@ -50,4 +50,4 @@
 - [ ] Develop ViewResultList 
 - [ ] Remove console.log (especially in frontend)
 - [x] Add back button to view result
-- [ ] Highlight (correct|wrong) in result row
+- [x] Highlight (correct|wrong) in result row
