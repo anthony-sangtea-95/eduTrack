@@ -67,19 +67,18 @@
 }
 
 .students-list {
-  margin-top: 10px;
-  max-height: 150px;
+  margin-top: 5px;
+  max-height: 200px;
   overflow-y: auto;
   border: 1px solid #ddd;
   border-radius: 6px;
-  padding: 6px;
+  padding: 5px;
 }
 
 .student-item {
-  padding: 8px 10px;
+  padding: 5px 5px;
   border-radius: 5px;
   cursor: pointer;
-  font-size: 14px;
   transition: background 0.2s;
 }
 
@@ -120,16 +119,11 @@
 
 .subject-card {
   border: 1px solid #e5e7eb;
+  padding: 6px 12px;
   border-radius: 10px;
   cursor: pointer;
   transition: all 0.2s ease;
   background: #fff;
-}
-
-.subject-card p {
-  font-size: 13px;
-  color: #6b7280;
-  text-align: center;
 }
 
 .subject-card:hover {

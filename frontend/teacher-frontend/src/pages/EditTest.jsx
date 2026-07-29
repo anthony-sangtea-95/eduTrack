@@ -125,101 +125,153 @@ export default function EditTest() {
   if (loading) return <p style={{textAlign:"center"}}>Loading...</p>;
 
   return (
-    <div className="main">
-      <div className="create-test-container">
-
-        <button className="test-back" onClick={() => navigate("/tests")}>
+    <div className="max-w-5xl mx-auto p-6 bg-slate-50 min-h-screen">
+      <div className="flex items-center justify-between mb-6">
+        <button className="text-slate-600 text-sm hover:underline" onClick={() => navigate("/tests")}>
           ← Back
         </button>
+        <h1 className="text-2xl font-bold text-slate-800">Edit Test</h1>
+        <div></div>
+      </div>
 
-        <div className="create-test-card">
-          <h2>Edit Test</h2>
-          <label>Title</label>
-          <input
-            type="text"
-            value={title}
-            onChange={e => setTitle(e.target.value)}
-          />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 space-y-6 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+          <h2 className="text-lg font-semibold text-slate-700">Test Details</h2>
 
-          <label>Description</label>
-          <textarea
-            value={description}
-            onChange={e => setDescription(e.target.value)}
-          />
-
-
-          <label>Due Date</label>
-          <input
-            type="date"
-            value={dueDate}
-            onChange={e => setDueDate(e.target.value)}
-          />
-
-          <label>Duration (minutes)</label>
-          <input
-            type="number"
-            min="1"
-            placeholder="Enter duration in minutes"
-            value={durationMinutes}
-            onChange={e => setDurationMinutes(e.target.value)}
-          />
-
-          <label>Start Time</label>
-          <input
-            type="datetime-local"
-            value={startTime}
-            onChange={e => setStartTime(e.target.value)}
-          />
-
-          {/* <label className="row-inline">
-            <input type="checkbox" checked={isPublished} onChange={e => setIsPublished(e.target.checked)} /> {' '}
-            Publish now
-          </label> */}
-
-          <label>Status</label>
-          <select value={status} onChange={handleChangeStatus}>
-            <option value="draft">Draft</option>
-            <option value="published">Published</option>
-            <option value="closed">Closed</option>
-          </select>
-
-          <label>Attempt Rules</label>
-          <div className="attempt-rules">
-            <label><input type="checkbox" checked={allowRetake} onChange={e => setAllowRetake(e.target.checked)} /> Allow retake</label>
-            <label style={{marginLeft:12}}>Max attempts <input type="number" min="1" value={maxAttempts} onChange={e=>setMaxAttempts(e.target.value)} style={{width:80, marginLeft:8}}/></label>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Title</label>
+            <input
+              type="text"
+              placeholder="Enter test title"
+              className="w-full border rounded-lg p-2.5"
+              value={title}
+              onChange={e => setTitle(e.target.value)}
+            />
           </div>
 
-          <label>Subjects</label>
-          <div className="subject-grid">
-            {subjects.map(subject => (
-              <div
-                key={subject._id}
-                className={`subject-card ${
-                  selectedSubject === subject._id ? "active" : ""
-                }`}
-                onClick={() => setSelectedSubject(subject._id)}
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Description</label>
+            <textarea
+              placeholder="Describe the test"
+              rows={3}
+              className="w-full border rounded-lg p-2.5"
+              value={description}
+              onChange={e => setDescription(e.target.value)}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Start Time</label>
+              <input
+                type="datetime-local"
+                className="w-full border rounded-lg p-2.5 text-sm"
+                value={startTime}
+                onChange={e => setStartTime(e.target.value)}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Due Date</label>
+              <input
+                type="date"
+                className="w-full border rounded-lg p-2.5 text-sm"
+                value={dueDate}
+                onChange={e => setDueDate(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Duration (mins)</label>
+              <input
+                type="number"
+                min="1"
+                placeholder="60"
+                className="w-full border rounded-lg p-2.5"
+                value={durationMinutes}
+                onChange={e => setDurationMinutes(e.target.value)}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Status</label>
+              <select
+                className="w-full border rounded-lg p-2.5 bg-white"
+                value={status}
+                onChange={handleChangeStatus}
               >
-                <p>{subject.subjectName}</p>
-              </div>
-            ))}
+                <option value="draft">Draft</option>
+                <option value="published">Published</option>
+                <option value="closed">Closed</option>
+              </select>
+            </div>
           </div>
 
-          <label>Assign Students</label>
-          <div className="students-list">
-            {students.map(s => (
-              <div
-                key={s._id}
-                className={`student-item ${
-                  selectedStudents.includes(s._id) ? "selected" : ""
-                }`}
-                onClick={() => toggleStudent(s._id)}
-              >
-                {s.name}
-              </div>
-            ))}
+          <div className="p-4 bg-slate-50 rounded-lg border border-slate-200 flex items-center justify-between">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                className="rounded"
+                checked={allowRetake}
+                onChange={e => setAllowRetake(e.target.checked)}
+              />
+              <span className="text-sm font-medium text-slate-700">Allow Retakes</span>
+            </label>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-slate-600">Max attempts:</span>
+              <input
+                type="number"
+                min={1}
+                className="w-16 border rounded-lg p-1.5 text-center"
+                value={maxAttempts}
+                disabled={!allowRetake}
+                onChange={e => setMaxAttempts(e.target.value)}
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-6">
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+            <h2 className="text-lg font-semibold text-slate-700 mb-3">Subjects</h2>
+            <div className="flex flex-wrap gap-2">
+              {subjects.map(subject => (
+                <div
+                  key={subject._id}
+                  className={`text-sm subject-card ${selectedSubject === subject._id ? "active" : ""}`}
+                  onClick={() => setSelectedSubject(subject._id)}
+                >
+                  {subject.subjectName}
+                </div>
+              ))}
+            </div>
           </div>
 
-          <button onClick={submitHandler} disabled={saving}>
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+            <h2 className="text-lg font-semibold text-slate-700 mb-3">Assign Students</h2>
+            <input
+              type="text"
+              placeholder="Search students..."
+              className="w-full border rounded-lg p-2 text-sm mb-3"
+            />
+            <div className="students-list">
+              {students.map(s => (
+                <div
+                  key={s._id}
+                  className={`student-item text-sm ${selectedStudents.includes(s._id) ? "selected" : ""}`}
+                  onClick={() => toggleStudent(s._id)}
+                >
+                  {s.name}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <button
+            onClick={submitHandler}
+            disabled={saving}
+            className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-medium py-3 rounded-xl shadow-sm transition"
+          >
             {saving ? "Updating..." : "Update Test"}
           </button>
         </div>
