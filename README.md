@@ -51,3 +51,5 @@
 - [ ] Remove console.log (especially in frontend)
 - [x] Add back button to view result
 - [x] Highlight (correct|wrong) in result row
+- [ ] Restrict test based on due date
+- [ ] Solve removing questions from test that is already published or closed

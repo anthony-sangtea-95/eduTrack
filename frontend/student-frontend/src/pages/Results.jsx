@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import { useParams }  from 'react-router-dom'
 import Sidebar from '../components/Sidebar'; 
 import API from '../services/api' 
 
 const Results = () => {
+  const { testId } = useParams();
   const [results, setResults] = useState([]);
   const [selectedResult, setSelectedResult] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -11,7 +13,7 @@ const Results = () => {
   useEffect(() => {
     const fetchResults = async () => {
       try {
-        const response = await API.get('/student/submissions');
+        const response = await API.get(`/student/submissions/${testId}`);
         setResults(response.data || []);
       } catch (err) {
         setError(err.message || 'Unable to fetch results');
@@ -21,7 +23,7 @@ const Results = () => {
     };
 
     fetchResults();
-  }, []);
+  }, [testId]);
 
   const closeModal = () => setSelectedResult(null);
 
@@ -36,8 +38,8 @@ const Results = () => {
         <main className="main">
             <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-blue-50 to-sky-100 p-6 text-slate-800 sm:p-10">
                 <div className="mx-auto mb-8 max-w-3xl text-center">
-                    <h1 className="m-0 text-3xl font-semibold tracking-tight sm:text-4xl">Submission Results</h1>
-                    <p className="mt-3 text-base text-slate-600">Review the latest results from the Submission document.</p>
+                    <h1 className="m-0 text-3xl font-semibold tracking-tight sm:text-4xl">{results[0]?.test?.title || 'Results'}</h1>
+                    <p className="mt-3 text-base text-slate-600">{results[0]?.test?.description || 'No description'}</p>
                 </div>
 
                 {loading && (
@@ -65,24 +67,24 @@ const Results = () => {
                     >
                         <div className="flex items-center justify-between gap-4">
                         <div>
-                            <div className="mb-1.5 text-lg font-semibold text-slate-900">
-                            {result.title || result.assignment || 'Submission Result'}
-                            </div>
-                            <div className="text-sm text-slate-500">
-                            {result.studentName || result.student || 'Student not set'}
-                            </div>
-                        </div>
-                        <div className="min-w-[72px] rounded-full bg-gradient-to-br from-indigo-600 to-indigo-500 px-3.5 py-2.5 text-center text-sm font-bold text-white">
-                            {result.score ?? 'N/A'}
+                            <span className="font-semibold text-slate-900">
+                               Score : {result.score ?? 'N/A'}
+                            </span> &nbsp;
+                            <span className={`px-3 py-1 rounded-full ${result.result === 'Pass' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                                {result.result}
+                            </span>
                         </div>
                         </div>
-                        <p className="mb-4 mt-4 min-h-[3rem] leading-7 text-slate-600">
-                        {result.summary || result.description || 'Tap view details to inspect full results.'}
+                        <p className="mb-1 mt-4 min-h-[3rem] leading-7 text-slate-600">
+                            Time Taken: {result.timeTakenInSeconds ? `${Math.floor(result.timeTakenInSeconds / 60)}m ${result.timeTakenInSeconds % 60}s` : 'N/A'}
+                        </p>
+                        <p className="mb-1 min-h-[3rem] leading-7 text-slate-600">
+                            Correct: {result.correct ?? 'N/A'} | Wrong: {result.wrong ?? 'N/A'}
                         </p>
                         <div className="flex flex-wrap items-center justify-between gap-4">
                         <span className="text-sm text-slate-500">Submitted: {formatDate(result.submittedAt || result.createdAt)}</span>
                         <button
-                            className="rounded-full bg-indigo-700 px-5 py-3 font-semibold text-white transition hover:bg-indigo-800"
+                            className="rounded-full bg-indigo-700 px-4 py-2 font-semibold text-white transition hover:bg-indigo-800"
                             onClick={() => setSelectedResult(result)}
                             type="button"
                         >
@@ -99,10 +101,10 @@ const Results = () => {
                         <div className="flex items-center justify-between gap-5 border-b border-slate-200 px-7 py-6">
                         <div>
                             <h2 className="m-0 text-xl font-semibold text-slate-900">
-                            {selectedResult.title || selectedResult.assignment || 'Submission Detail'}
+                            {selectedResult.test?.title || 'Results'}
                             </h2>
                             <p className="mt-2 text-sm text-slate-500">
-                            Submitted by {selectedResult.studentName || selectedResult.student || 'Unknown'}
+                            {selectedResult.test?.description || 'No description'}
                             </p>
                         </div>
                         <button className="text-3xl leading-none text-slate-700" onClick={closeModal} type="button">
@@ -110,24 +112,32 @@ const Results = () => {
                         </button>
                         </div>
                         <div className="grid gap-4 px-7 py-6">
-                        <div className="flex items-center justify-between rounded-2xl bg-slate-50 px-5 py-4 text-slate-800">
-                            <span className="font-semibold text-slate-500">Score</span>
-                            <span>{selectedResult.score ?? 'N/A'}</span>
-                        </div>
-                        <div className="flex items-center justify-between rounded-2xl bg-slate-50 px-5 py-4 text-slate-800">
-                            <span className="font-semibold text-slate-500">Status</span>
-                            <span>{selectedResult.status || 'Pending'}</span>
-                        </div>
-                        <div className="flex items-center justify-between rounded-2xl bg-slate-50 px-5 py-4 text-slate-800">
-                            <span className="font-semibold text-slate-500">Submitted At</span>
-                            <span>{formatDate(selectedResult.submittedAt || selectedResult.createdAt)}</span>
-                        </div>
-                        <div className="rounded-2xl bg-slate-50 px-5 py-4 text-slate-800">
-                            <span className="font-semibold text-slate-500">Remarks</span>
-                            <p className="mt-2 leading-7 text-slate-700">
-                            {selectedResult.remarks || selectedResult.feedback || 'No additional remarks available.'}
-                            </p>
-                        </div>
+                            {/* <div className="flex items-center justify-between rounded-2xl bg-slate-50 px-5 py-4 text-slate-800">
+                                <span className="font-semibold text-slate-500">Score</span>
+                                <span>{selectedResult.score ?? 'N/A'}</span>
+                            </div>
+                            <div className="flex items-center justify-between rounded-2xl bg-slate-50 px-5 py-4 text-slate-800">
+                                <span className="font-semibold text-slate-500">Status</span>
+                                <span>{selectedResult.status || 'Pending'}</span>
+                            </div>
+                            <div className="flex items-center justify-between rounded-2xl bg-slate-50 px-5 py-4 text-slate-800">
+                                <span className="font-semibold text-slate-500">Submitted At</span>
+                                <span>{formatDate(selectedResult.submittedAt || selectedResult.createdAt)}</span>
+                            </div>
+                            <div className="rounded-2xl bg-slate-50 px-5 py-4 text-slate-800">
+                                <span className="font-semibold text-slate-500">Remarks</span>
+                                <p className="mt-2 leading-7 text-slate-700">
+                                {selectedResult.remarks || selectedResult.feedback || 'No additional remarks available.'}
+                                </p>
+                            </div> */}
+                            {submission.answers.map(a=> (
+                                <div key={a.question._id} className={`p-3 border rounded-md ${a.selected === a.question.correctOption ? 'bg-green-50 border-green-300' : 'bg-red-50 border-red-300'}`}>
+                                <div className="font-medium">{a.question.questionText}</div>
+                                <div className="text-sm text-gray-600">
+                                    Your answer: <strong>{`${a.selected}.${a.question.options?.[a.selected]}` ?? 'No option text'}</strong> |
+                                    Correct: <strong>{`${a.question.correctOption}.${a.question.options?.[a.question.correctOption]}` ?? 'No correct option text'}</strong></div>
+                                </div>
+                            ))}
                         </div>
                         <div className="flex justify-end px-7 pb-6">
                         <button className="rounded-full bg-indigo-600 px-5 py-3 font-bold text-white" onClick={closeModal} type="button">

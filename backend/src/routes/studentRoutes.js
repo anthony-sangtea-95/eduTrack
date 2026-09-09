@@ -12,6 +12,6 @@ router.get("/tests/:testId", getTestQuestions);
 router.post("/tests/:testId/attempt", getCreateAttemptID);
 router.post("/tests/:testId/submit", submitTest);
 router.get("/tests/:testId/:submittedID/result", viewResult);
-router.get("/student/submissions", getSubmissions);
+router.get("/submissions/:testId", getSubmissions);
 
 export default router;

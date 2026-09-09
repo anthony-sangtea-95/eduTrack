@@ -52,6 +52,11 @@ const testSchema = new mongoose.Schema(
       default: 0,
     },
 
+    passPercentage: {
+      type: Number,
+      default: 50
+    },
+
     // ✅ controls student behavior
     attemptRules: {
       allowRetake: {

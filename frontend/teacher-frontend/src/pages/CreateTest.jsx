@@ -121,9 +121,9 @@ export default function CreateTest() {
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-1">Status</label>
           <select className="w-full border rounded-lg p-2.5 bg-white" value={status} onChange={handleChangeStatus}>
-            <option>Draft</option>
-            <option>Published</option>
-            <option>Closed</option>
+            <option>draft</option>
+            <option>published</option>
+            <option>closed</option>
           </select>
         </div>
       </div>

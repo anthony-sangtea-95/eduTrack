@@ -197,10 +197,23 @@ export const viewResult = async (req, res) => {
 
 export const getSubmissions = async (req, res) => {
   try {
-    const submissions = await Submission.find({ student: req.user._id })
-      .populate('test', 'title subject')
+    const { testId } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(testId)) return res.status(400).json({ message: "Invalid test id" });
+    const submissions = await Submission.find({ student: req.user._id, test: testId })
+      .populate('test', 'title description subject questions totalMarks passPercentage')
       .sort({ submittedAt: -1 });
-    res.json(submissions);
+    const result = submissions.map(submission => {
+      const totalMarks = submission.test.totalMarks || 0;
+      const passPercentage = submission.test.passPercentage || 50;
+      const percentScore = totalMarks ? (submission.score / totalMarks) * 100 : 0;
+      const passed = percentScore >= passPercentage;
+      return {
+        ...submission.toObject(),
+        percentage: Number(percentScore.toFixed(2)),
+        result: passed ? 'Pass' : 'Fail',
+      }
+    });
+    res.json(result);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
