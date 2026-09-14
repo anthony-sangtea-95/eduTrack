@@ -4,8 +4,8 @@ import ProgressCircle from './ProgressCircle'
 export default function ResultSummary({ result }){
   const correct = result.correct || 0
   const wrong = result.wrong || 0
-  const total = correct + wrong
-  const percent = total? Math.round((correct/total)*100):0
+  const total = result.test?.totalMarks || (correct + wrong) || 0
+  const percent = total? Math.round((result.score / total) * 100):0
   const pass = percent >= (result.passPercentage || 50)
 
   const timeTaken = (result) => {

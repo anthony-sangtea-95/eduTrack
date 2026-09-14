@@ -16,4 +16,7 @@ coverage/
 
 # System files
 .DS_Store
-Thumbs.db
+Thumbs.dbs
+
+# TODO 
+todo.md

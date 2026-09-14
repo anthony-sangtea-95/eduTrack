@@ -40,7 +40,7 @@ export default function MyTests(){
             <div className="card">No tests available</div>
           ) : (
             tests.map(t => (
-              <TestCard key={t._id} test={t} testAccess={t.testAccess} />
+              <TestCard key={t._id} test={t} testStatus={t.testStatus} testAccess={t.testAccess} />
             ))
           )}
         </div>

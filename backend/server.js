@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import connectDB from "./src/config/db.js";
 import authRoutes from "./src/routes/authRoutes.js";
+import "./src/jobs/closeExpiredTests.js"; // Import the cron job to ensure it runs
 import adminRoutes from "./src/routes/adminRoutes.js";
 import teacherRoutes from "./src/routes/teacherRoutes.js";
 import studentRoutes from "./src/routes/studentRoutes.js";

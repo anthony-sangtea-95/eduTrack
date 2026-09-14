@@ -126,11 +126,12 @@ export const updateTest = async (req, res) => {
 };
 
 export const addQuestionToTest = async (req, res) => {
+  let session;
   try {
-    const session = await mongoose.startSession();
+    session = await mongoose.startSession();
     const { testId } = req.params;
     const { questionId } = req.body;
-    await session.withTransaction(async () => {
+    const rtn = await session.withTransaction(async () => {
       const question = await Question.findById(questionId).session(session);
       if (!question) {
         throw new Error("Question not found");
@@ -142,10 +143,10 @@ export const addQuestionToTest = async (req, res) => {
       }).session(session);
 
       if (testExists) {
-        return;
+        return 0;
       }
       // add question to test
-      await Test.updateOne(
+      const result = await Test.updateOne(
         { _id: testId },
         {
           $addToSet: {
@@ -157,14 +158,17 @@ export const addQuestionToTest = async (req, res) => {
         },
         { session }
       );
+      if (result.modifiedCount > 0) {
+        return 1;
+      }
     });
     res.json({
-      message: "Added successfully"
+      message: rtn === 1 ? "Added Successfully" : "Already Added"
     });
   } catch (error) {
-    res.status(500).json({
-      message: error.message
-    });
+        res.status(500).json({
+        message: error.message
+        });
   } finally {
         session.endSession();
   }

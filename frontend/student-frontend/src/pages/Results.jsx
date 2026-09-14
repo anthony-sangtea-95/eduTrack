@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { useParams }  from 'react-router-dom'
+import { useNavigate, useParams }  from 'react-router-dom'
 import Sidebar from '../components/Sidebar'; 
 import API from '../services/api' 
 
 const Results = () => {
   const { testId } = useParams();
+  const navigate = useNavigate();
   const [results, setResults] = useState([]);
   const [selectedResult, setSelectedResult] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -29,6 +30,7 @@ const Results = () => {
 
   const formatDate = (value) => {
     if (!value) return 'N/A';
+    if (value === '-') return '-';
     return new Date(value).toLocaleString();
   };
 
@@ -36,14 +38,25 @@ const Results = () => {
     <div className="app-shell">
         <Sidebar />
         <main className="main">
-            <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-blue-50 to-sky-100 p-6 text-slate-800 sm:p-10">
+            <div className="min-h-screen bg-gradient-to-br p-6 sm:p-10">
+                <button className="text-slate-600 text-sm hover:underline" onClick={() => navigate("/tests")}>
+                ← Back
+                </button>
                 <div className="mx-auto mb-8 max-w-3xl text-center">
-                    <h1 className="m-0 text-3xl font-semibold tracking-tight sm:text-4xl">{results[0]?.test?.title || 'Results'}</h1>
-                    <p className="mt-3 text-base text-slate-600">{results[0]?.test?.description || 'No description'}</p>
+                    <h1 className="m-0 text-3xl font-semibold tracking-tight sm:text-4xl">
+                        {loading ?
+                            '' :
+                            results[0]?.test?.title || 'No Title'}
+                    </h1>
+                    <p className="mt-3 text-base text-slate-600">
+                        {loading ?
+                            '' :
+                            results[0]?.test?.description || 'No description'}
+                    </p>
                 </div>
 
                 {loading && (
-                    <div className="mx-auto mb-5 max-w-3xl rounded-2xl bg-indigo-100 px-5 py-4 text-center text-indigo-700">
+                    <div className="mx-auto mb-5 max-w-3xl rounded-2xl px-5 py-4 text-center">
                     Loading results...
                     </div>
                 )}
@@ -68,7 +81,7 @@ const Results = () => {
                         <div className="flex items-center justify-between gap-4">
                         <div>
                             <span className="font-semibold text-slate-900">
-                               Score : {result.score ?? 'N/A'}
+                               Score : {result.score ?? 'N/A'}/{result.test?.totalMarks ?? 'N/A'}
                             </span> &nbsp;
                             <span className={`px-3 py-1 rounded-full ${result.result === 'Pass' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
                                 {result.result}
@@ -82,7 +95,7 @@ const Results = () => {
                             Correct: {result.correct ?? 'N/A'} | Wrong: {result.wrong ?? 'N/A'}
                         </p>
                         <div className="flex flex-wrap items-center justify-between gap-4">
-                        <span className="text-sm text-slate-500">Submitted: {formatDate(result.submittedAt || result.createdAt)}</span>
+                        <span className="text-sm text-slate-500">Submitted: {formatDate(result.submittedAt || '-')}</span>
                         <button
                             className="rounded-full bg-indigo-700 px-4 py-2 font-semibold text-white transition hover:bg-indigo-800"
                             onClick={() => setSelectedResult(result)}
@@ -97,7 +110,7 @@ const Results = () => {
 
                 {selectedResult && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/55 p-6" role="dialog" aria-modal="true">
-                    <div className="w-full max-w-2xl overflow-hidden rounded-[28px] bg-white shadow-[0_26px_70px_rgba(15,23,42,0.18)]">
+                    <div className="h-[60vh] w-[60vw] overflow-hidden rounded-[28px] bg-white shadow-[0_26px_70px_rgba(15,23,42,0.18)]">
                         <div className="flex items-center justify-between gap-5 border-b border-slate-200 px-7 py-6">
                         <div>
                             <h2 className="m-0 text-xl font-semibold text-slate-900">
@@ -111,26 +124,8 @@ const Results = () => {
                             ×
                         </button>
                         </div>
-                        <div className="grid gap-4 px-7 py-6">
-                            {/* <div className="flex items-center justify-between rounded-2xl bg-slate-50 px-5 py-4 text-slate-800">
-                                <span className="font-semibold text-slate-500">Score</span>
-                                <span>{selectedResult.score ?? 'N/A'}</span>
-                            </div>
-                            <div className="flex items-center justify-between rounded-2xl bg-slate-50 px-5 py-4 text-slate-800">
-                                <span className="font-semibold text-slate-500">Status</span>
-                                <span>{selectedResult.status || 'Pending'}</span>
-                            </div>
-                            <div className="flex items-center justify-between rounded-2xl bg-slate-50 px-5 py-4 text-slate-800">
-                                <span className="font-semibold text-slate-500">Submitted At</span>
-                                <span>{formatDate(selectedResult.submittedAt || selectedResult.createdAt)}</span>
-                            </div>
-                            <div className="rounded-2xl bg-slate-50 px-5 py-4 text-slate-800">
-                                <span className="font-semibold text-slate-500">Remarks</span>
-                                <p className="mt-2 leading-7 text-slate-700">
-                                {selectedResult.remarks || selectedResult.feedback || 'No additional remarks available.'}
-                                </p>
-                            </div> */}
-                            {submission.answers.map(a=> (
+                        <div className="grid max-h-[calc(60vh-150px)] gap-4 overflow-y-auto px-7 py-6">
+                            {selectedResult.answers.map(a=> (
                                 <div key={a.question._id} className={`p-3 border rounded-md ${a.selected === a.question.correctOption ? 'bg-green-50 border-green-300' : 'bg-red-50 border-red-300'}`}>
                                 <div className="font-medium">{a.question.questionText}</div>
                                 <div className="text-sm text-gray-600">
