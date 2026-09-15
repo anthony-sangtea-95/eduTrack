@@ -15,8 +15,6 @@ export default function CreateTest() {
   const [subjects, setSubjects] = useState([]);
   const [selectedSubject, setSelectedSubject] = useState("");
 
-  // New fields from updated Test schema
-  const [isPublished, setIsPublished] = useState(false);
   const [status, setStatus] = useState('draft'); // draft | published | closed
   const [startTime, setStartTime] = useState(''); // ISO datetime-local string
   const [allowRetake, setAllowRetake] = useState(false);
@@ -35,16 +33,6 @@ export default function CreateTest() {
     );
   };
 
-  const handleChangeStatus = (e) => {
-    const newStatus = e.target.value;
-    setStatus(newStatus);  
-    if (newStatus === 'draft') {
-      setIsPublished(false);
-    } else {
-      setIsPublished(true);
-    }
-  }
-
   const submitHandler = async () => {
     const payload = {
       title,
@@ -53,13 +41,10 @@ export default function CreateTest() {
       durationMinutes: Number(durationMinutes),
       subject: selectedSubject,
       assignedStudents: selectedStudents,
-      // new fields
-      isPublished,
       status,
       startTime: startTime ? new Date(startTime).toISOString() : null,
       attemptRules: { allowRetake, maxAttempts: Number(maxAttempts) }
     };
-    console.log("Submitting payload:", payload);
 
     const { data } = await API.post("/teacher/tests", payload);
     if (data.success) {
@@ -120,7 +105,7 @@ export default function CreateTest() {
         </div>
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-1">Status</label>
-          <select className="w-full border rounded-lg p-2.5 bg-white" value={status} onChange={handleChangeStatus}>
+          <select className="w-full border rounded-lg p-2.5 bg-white" value={status} onChange={e => setStatus(e.target.value)}>
             <option>draft</option>
             <option>published</option>
             <option>closed</option>

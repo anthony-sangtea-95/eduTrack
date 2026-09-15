@@ -224,39 +224,42 @@ The project is organized into separate frontend and backend applications.
 ```text
 eduTrack/
 │
-├── admin/
+├── backend/
 │   ├── src/
+│   │   ├── config/
+│   │   ├── controllers/
+│   │   ├── jobs/
+│   │   ├── middleware/
+│   │   ├── models/
+│   │   ├── routes/
+│   │   └── ...
+│   └── ...
+│
+├── frontend/
+│   ├── admin-frontend/
+│   │   ├── assets/
 │   │   ├── components/
-│   │   ├── pages/
-│   │   ├── services/
 │   │   ├── context/
-│   │   └── ...
-│   └── ...
-│
-├── teacher/
-│   ├── src/
-│   │   ├── components/
+│   │   ├── layouts/
 │   │   ├── pages/
 │   │   ├── services/
 │   │   └── ...
-│   └── ...
-│
-├── student/
-│   ├── src/
+│   ├── teacher-frontend/
+│   │   ├── assets/
 │   │   ├── components/
+│   │   ├── context/
+│   │   ├── layouts/
 │   │   ├── pages/
 │   │   ├── services/
 │   │   └── ...
-│   └── ...
-│
-├── server/
-│   ├── controllers/
-│   ├── models/
-│   ├── routes/
-│   ├── middleware/
-│   ├── services/
-│   ├── config/
-│   └── ...
+│   ├── student-frontend/
+│   │   ├── assets/
+│   │   ├── components/
+│   │   ├── context/
+│   │   ├── pages/
+│   │   ├── services/
+│   │   └── ...
+│   └── utils
 │
 └── README.md
 ```
@@ -311,15 +314,16 @@ role
 _id
 title
 description
+dueDate
+durationMinutes
 subject
 teacher
 assignedStudents
 questions
-dueDate
-durationMinutes
 status
-passPercentage
+startTime
 totalMark
+passPercentage
 attemptRules
 ```
 
@@ -327,13 +331,13 @@ attemptRules
 
 ```text
 _id
+subject
 questionText
 options
 correctOption
-subject
+mark
 createdBy
 allowedTeachers
-mark
 ```
 
 ### Submission
@@ -345,9 +349,9 @@ student
 answers
 correct
 wrong
-score
 startedAt
 timeTakenInSeconds
+score
 submittedAt
 ```
 

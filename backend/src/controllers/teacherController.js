@@ -25,7 +25,6 @@ export const createTest = async (req, res) => {
           durationMinutes,
           subject,
           assignedStudents,
-          isPublished,
           status,
           startTime,
           attemptRules = {}
@@ -39,7 +38,6 @@ export const createTest = async (req, res) => {
             subject,
             teacher: req.user._id,
             assignedStudents,
-            isPublished: !!isPublished,
             status: status || 'draft',
             startTime: startTime ? new Date(startTime) : null,
             attemptRules: {
@@ -86,7 +84,6 @@ export const updateTest = async (req, res) => {
           durationMinutes,
           subject,
           assignedStudents,
-          isPublished,
           status,
           startTime,
           attemptRules = {}
@@ -109,7 +106,6 @@ export const updateTest = async (req, res) => {
         test.assignedStudents = assignedStudents;
 
         // persist new fields
-        test.isPublished = !!isPublished;
         test.status = status || test.status;
         test.startTime = startTime ? new Date(startTime) : test.startTime;
         test.attemptRules = {

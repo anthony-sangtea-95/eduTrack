@@ -20,7 +20,6 @@ export default function Dashboard() {
     const loadDashboard = async () => {
       try {
         const res = await API.get("/student/dashboard");
-        console.log("Dashboard data:", res.data);
 
         setStats(res.data.stats || {});
         setRecentSubmissions(res.data.recentSubmissions || []);

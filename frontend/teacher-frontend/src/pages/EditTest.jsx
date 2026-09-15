@@ -19,8 +19,6 @@ export default function EditTest() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
-  // New fields from Test schema
-  const [isPublished, setIsPublished] = useState(false);
   const [status, setStatus] = useState('draft');
   const [startTime, setStartTime] = useState('');
   const [allowRetake, setAllowRetake] = useState(false);
@@ -51,8 +49,6 @@ export default function EditTest() {
       setSelectedSubject(test.subject?._id || "");
       setDurationMinutes(test.durationMinutes || "");
 
-      // new fields
-      setIsPublished(!!test.isPublished);
       setStatus(test.status || 'draft');
       setStartTime(test.startTime ? new Date(test.startTime).toISOString().slice(0,16) : '');
       setAllowRetake(!!test.attemptRules?.allowRetake);
@@ -80,16 +76,6 @@ export default function EditTest() {
     );
   };
 
-  const handleChangeStatus = (e) => {
-    const newStatus = e.target.value;
-    setStatus(newStatus);  
-    if (newStatus === 'draft') {
-      setIsPublished(false);
-    } else {
-      setIsPublished(true);
-    }
-  }
-
   const submitHandler = async () => {
     try {
       setSaving(true);
@@ -101,8 +87,6 @@ export default function EditTest() {
         durationMinutes: Number(durationMinutes),
         subject: selectedSubject,
         assignedStudents: selectedStudents,
-        // new fields
-        isPublished,
         status,
         startTime: startTime ? new Date(startTime).toISOString() : null,
         attemptRules: { allowRetake, maxAttempts: Number(maxAttempts) }
@@ -198,11 +182,11 @@ export default function EditTest() {
               <select
                 className="w-full border rounded-lg p-2.5 bg-white"
                 value={status}
-                onChange={handleChangeStatus}
+                onChange={e => setStatus(e.target.value)}
               >
-                <option value="draft">Draft</option>
-                <option value="published">Published</option>
-                <option value="closed">Closed</option>
+                <option value="draft">draft</option>
+                <option value="published">published</option>
+                <option value="closed">closed</option>
               </select>
             </div>
           </div>

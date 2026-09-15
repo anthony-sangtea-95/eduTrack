@@ -32,12 +32,6 @@ const testSchema = new mongoose.Schema(
       { type: mongoose.Schema.Types.ObjectId, ref: "Question" },
     ],
 
-    // ✅ NEW (important for admin control)
-    isPublished: {
-      type: Boolean,
-      default: false,
-    },
-
     status: {
       type: String,
       enum: ["draft", "published", "closed"],

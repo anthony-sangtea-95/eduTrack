@@ -26,6 +26,7 @@ export default function TakeTest(){
   const isRetake = searchParams.get('retake') === '1'
   const endTime = useRef(null);
   const [timerReady, setTimerReady] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   // load test and attempt
   useEffect(() => {
@@ -80,6 +81,8 @@ export default function TakeTest(){
         setTimerReady(true);
       }catch(err){
         console.error(err)
+      } finally {
+        setLoading(false)
       }
     }
     loadTest()
@@ -142,31 +145,8 @@ export default function TakeTest(){
     }
   },[answers, testId, submittingRef, navigate])
 
-  if (!test) return <div className="app-shell"><Sidebar /><main className="main"><div className="card">Loading...</div></main></div>
-
-  const now = new Date()
-  const startsAt = test.startTime ? new Date(test.startTime) : null
-  const allowedToTake = test.isPublished && (!test.status || test.status === 'published') && (!startsAt || startsAt <= now)
-
-  if (!allowedToTake) {
-    let message = 'This test is not available.'
-    if (startsAt && startsAt > now) message = `Test will start at ${startsAt.toLocaleString()}`
-    else if (!test.isPublished) message = 'Test is not published yet.'
-    else if (test.status === 'closed') message = 'This test is closed.'
-
-    return (
-      <div className="app-shell">
-        <Sidebar />
-        <main className="main">
-          <div className="card">
-            <h2 className="text-xl font-semibold">{test.title}</h2>
-            <p className="text-sm text-gray-600 mt-2">{message}</p>
-            <div className="mt-4"><button className="px-3 py-2 border rounded-md" onClick={()=>window.history.back()}>Back</button></div>
-          </div>
-        </main>
-      </div>
-    )
-  }
+  if (loading) return <div className="app-shell"><Sidebar /><main className="main"><div className="card">Loading...</div></main></div>
+  if (!test) return <div className="app-shell"><Sidebar /><main className="main"><div className="card">Test not found</div></main></div>
 
   const currentQuestion = questions[current]
   const answeredCount = Object.keys(answers).length

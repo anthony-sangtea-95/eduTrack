@@ -29,8 +29,6 @@ export const getStudentDashboard = async (req, res) => {
       .populate("test", "title totalMarks passPercentage dueDate")
       .sort({ submittedAt: -1 })
       .lean();
-
-    console.log("Submissions:", submissions);
     // A test is completed if student has at least one submitted attempt
     const completedTestIds = new Set(
       submissions.map(sub => sub.test?._id?.toString())
@@ -221,7 +219,7 @@ export const getTestQuestions = async (req, res) => {
 
     // respect publishing and scheduling
     const now = new Date();
-    if (!test.isPublished || (test.status && test.status !== 'published')) return res.status(403).json({ message: 'Test not available' });
+    if (test.status && test.status !== 'published') return res.status(403).json({ message: 'Test not available' });
     if (test.startTime && new Date(test.startTime) > now) return res.status(403).json({ message: 'Test not started yet' });
     res.json({ test, questions: test.questions });
   } catch (err) {
@@ -243,7 +241,7 @@ export const getCreateAttemptID = async (req, res) => {
 
     // respect publishing and scheduling
     const now = new Date();
-    if (!test.isPublished || (test.status && test.status !== 'published')) return res.status(403).json({ message: 'Test not available' });
+    if (test.status && test.status !== 'published') return res.status(403).json({ message: 'Test not available' });
     if (test.startTime && new Date(test.startTime) > now) return res.status(403).json({ message: 'Test not started yet' });
 
     const existing = await Submission.findOne({ test: testId, student: req.user._id, submittedAt: null });
@@ -275,7 +273,7 @@ export const submitTest = async (req, res) => {
 
     // respect publishing, scheduling and attempt rules
     const now = new Date();
-    if (!test.isPublished || (test.status && test.status !== 'published')) return res.status(403).json({ message: 'Test not available' });
+    if (test.status && test.status !== 'published') return res.status(403).json({ message: 'Test not available' });
     if (test.startTime && new Date(test.startTime) > now) return res.status(403).json({ message: 'Test not started yet' });
 
     // const attemptsCount = await Submission.countDocuments({ test: testId, student: req.user._id });
