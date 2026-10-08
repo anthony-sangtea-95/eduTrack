@@ -38,12 +38,16 @@ export const loginUser = async (req, res) => {
             return res.status(400).json({ message: "Role is required" });
         }
 
+        if (!user) {
+            return res.status(401).json({ message: "Invalid email or password" });
+        }
+
         // role mismatch: stop login
         if (user.role !== role) {
             return res.status(403).json({ message: `You are not allowed to login as ${user.role}` });
         }
 
-        if (user && (await user.matchPassword(password))) {
+        if (await user.matchPassword(password)) {
             res.json({
                 _id: user._id,
                 name: user.name,

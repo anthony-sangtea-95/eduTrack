@@ -25,4 +25,13 @@ app.use("/api/teacher", teacherRoutes);
 app.use("/api/student", studentRoutes);
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
+
+const startServer = async () => {
+    await connectDB();
+    app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
+};
+
+startServer().catch((error) => {
+    console.error(`❌ Failed to start server: ${error.message}`);
+    process.exit(1);
+});
