@@ -21,16 +21,18 @@ export default function Login() {
   }
 
   return (
-    <div className="form card">
-      <h2>Student Login</h2>
-      {err && <div style={{color:'red'}}>{err}</div>}
+    <div className="form card student-login-card">
+      <p className="student-login-eyebrow">eduTrack · Student learning</p>
+      <h2>Welcome back</h2>
+      <p className="student-login-description">Sign in to see your assigned tests and learning progress.</p>
+      {err && <div className="student-login-error" role="alert">{err}</div>}
       <form onSubmit={submit}>
-        <label>Email</label>
-        <input className="input" value={email} onChange={e=>setEmail(e.target.value)} />
-        <label>Password</label>
-        <input type="password" className="input" value={password} onChange={e=>setPassword(e.target.value)} />
-        <div style={{marginTop:12}}>
-          <button className="button" type="submit">Login</button>
+        <label htmlFor="student-email">Email</label>
+        <input id="student-email" type="email" autoComplete="username" className="input" value={email} onChange={e=>setEmail(e.target.value)} required />
+        <label htmlFor="student-password">Password</label>
+        <input id="student-password" type="password" autoComplete="current-password" className="input" value={password} onChange={e=>setPassword(e.target.value)} required />
+        <div className="student-login-submit">
+          <button className="button" type="submit">Sign in</button>
         </div>
       </form>
     </div>

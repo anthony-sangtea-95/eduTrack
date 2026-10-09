@@ -15,6 +15,7 @@ export default function Dashboard() {
 
   const [recentSubmissions, setRecentSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
 
   useEffect(() => {
     const loadDashboard = async () => {
@@ -26,6 +27,7 @@ export default function Dashboard() {
 
       } catch (err) {
         console.error("Dashboard error:", err);
+        setLoadError(true);
       } finally {
         setLoading(false);
       }
@@ -54,15 +56,24 @@ export default function Dashboard() {
     <div className="app-shell">
       <Sidebar />
 
-      <main className="main">
+      <main className="main student-dashboard">
 
-        <div className="header">
-          <h1>Student Dashboard</h1>
-          <p>Overview of your tests and performance</p>
+        <div className="student-dashboard-heading">
+          <div>
+            <p className="student-dashboard-eyebrow">Your learning overview</p>
+            <h1>Student dashboard</h1>
+            <p>Track your assessments and see how your learning is progressing.</p>
+          </div>
         </div>
 
+        {loadError && (
+          <div className="student-dashboard-notice" role="status">
+            Some dashboard information couldn’t be refreshed. Showing the information currently available.
+          </div>
+        )}
+
         {/* Dashboard Statistics */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 mb-6">
+        <div className="student-stat-grid grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4 mb-6" aria-busy={loading}>
 
           {/* Assigned Tests */}
           <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm hover:shadow-md transition-shadow">
@@ -238,16 +249,25 @@ export default function Dashboard() {
         </div>
 
         {/* Recent Attempts */}
-        <div className="card mt-3">
+        <div className="card student-recent-card mt-3">
 
-          <div className="header">
-            <h2>Recent Attempts</h2>
+          <div className="header student-recent-heading">
+            <div>
+              <h2>Recent attempts</h2>
+              <p>A quick look at your latest assessment results.</p>
+            </div>
           </div>
 
           {loading ? (
             <div>Loading...</div>
           ) : recentSubmissions.length === 0 ? (
-            <p>No test attempts yet.</p>
+            <div className="student-dashboard-empty">
+              <span aria-hidden="true">✓</span>
+              <div>
+                <strong>No attempts yet</strong>
+                <p>Your completed assessments will appear here.</p>
+              </div>
+            </div>
           ) : (
             <div className="table-wrapper">
               <table className="table">

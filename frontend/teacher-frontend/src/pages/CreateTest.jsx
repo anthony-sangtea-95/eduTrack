@@ -12,6 +12,7 @@ export default function CreateTest() {
   const [durationMinutes, setDurationMinutes] = useState("");
   const [students, setStudents] = useState([]);
   const [selectedStudents, setSelectedStudents] = useState([]);
+  const [studentSearch, setStudentSearch] = useState("");
   const [subjects, setSubjects] = useState([]);
   const [selectedSubject, setSelectedSubject] = useState("");
 
@@ -32,6 +33,9 @@ export default function CreateTest() {
         : [...prev, id]
     );
   };
+  const visibleStudents = students.filter((student) =>
+    student.name.toLowerCase().includes(studentSearch.toLowerCase())
+  );
 
   const submitHandler = async () => {
     const payload = {
@@ -57,55 +61,61 @@ export default function CreateTest() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto p-6 bg-slate-50 min-h-screen">
+    <div className="assessment-page max-w-5xl mx-auto p-6 bg-slate-50 min-h-screen">
   {/* Header */}
-  <div className="flex items-center justify-between mb-6">
-    <button className="text-slate-600 text-sm hover:underline" onClick={() => navigate("/tests")}>
-      ← Back
+  <div className="assessment-page-header">
+    <button className="assessment-back-link" type="button" onClick={() => navigate("/tests")}>
+      ← My tests
     </button>
-    <h1 className="text-2xl font-bold text-slate-800">Create New Test</h1>
-    <div></div> {/* Spacer */}
+    <div>
+      <p className="page-eyebrow">Assessment builder</p>
+      <h1>Create a test</h1>
+      <p>Set up the assessment, choose its subject, and assign students.</p>
+    </div>
   </div>
 
   <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
     
     {/* Left Column: Basic Info & Settings (2 cols) */}
-    <div className="lg:col-span-2 space-y-6 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
-      <h2 className="text-lg font-semibold text-slate-700">Test Details</h2>
+    <div className="assessment-details-panel lg:col-span-2 space-y-6 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+      <div className="assessment-panel-heading">
+        <h2>Test details</h2>
+        <p>Give students the information they need before they begin.</p>
+      </div>
       
       {/* Title */}
       <div>
-        <label className="block text-sm font-medium text-slate-700 mb-1">Title</label>
-        <input type="text" placeholder="Enter test title" className="w-full border rounded-lg p-2.5" value={title} onChange={e => setTitle(e.target.value)}/>
+        <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="test-title">Title</label>
+        <input id="test-title" type="text" placeholder="e.g. Algebra unit assessment" className="w-full border rounded-lg p-2.5" value={title} onChange={e => setTitle(e.target.value)}/>
       </div>
 
       {/* Description */}
       <div>
-        <label className="block text-sm font-medium text-slate-700 mb-1">Description</label>
-        <textarea placeholder="Describe the test" rows={3} className="w-full border rounded-lg p-2.5" value={description} onChange={e => setDescription(e.target.value)} />
+        <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="test-description">Description</label>
+        <textarea id="test-description" placeholder="Add instructions or a short overview for students" rows={3} className="w-full border rounded-lg p-2.5" value={description} onChange={e => setDescription(e.target.value)} />
       </div>
 
       {/* Date & Time Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Start Time</label>
-          <input type="datetime-local" className="w-full border rounded-lg p-2.5 text-sm" value={startTime} onChange={e => setStartTime(e.target.value)} />
+          <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="test-start-time">Start time</label>
+          <input id="test-start-time" type="datetime-local" className="w-full border rounded-lg p-2.5 text-sm" value={startTime} onChange={e => setStartTime(e.target.value)} />
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Due Date</label>
-          <input type="date" className="w-full border rounded-lg p-2.5 text-sm" value={dueDate} onChange={e => setDueDate(e.target.value)} />
+          <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="test-due-date">Due date</label>
+          <input id="test-due-date" type="date" className="w-full border rounded-lg p-2.5 text-sm" value={dueDate} onChange={e => setDueDate(e.target.value)} />
         </div>
       </div>
 
       {/* Settings Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Duration (mins)</label>
-          <input type="number" placeholder="60" className="w-full border rounded-lg p-2.5" value={durationMinutes} onChange={e => setDurationMinutes(e.target.value)} />
+          <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="test-duration">Duration (minutes)</label>
+          <input id="test-duration" type="number" min="1" placeholder="60" className="w-full border rounded-lg p-2.5" value={durationMinutes} onChange={e => setDurationMinutes(e.target.value)} />
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Status</label>
-          <select className="w-full border rounded-lg p-2.5 bg-white" value={status} onChange={e => setStatus(e.target.value)}>
+          <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="test-status">Status</label>
+          <select id="test-status" className="w-full border rounded-lg p-2.5 bg-white" value={status} onChange={e => setStatus(e.target.value)}>
             <option>draft</option>
             <option>published</option>
             <option>closed</option>
@@ -114,7 +124,7 @@ export default function CreateTest() {
       </div>
 
       {/* Attempt Rules */}
-      <div className="p-4 bg-slate-50 rounded-lg border border-slate-200 flex items-center justify-between">
+      <div className="assessment-retake-settings p-4 bg-slate-50 rounded-lg border border-slate-200 flex items-center justify-between">
         <label className="flex items-center gap-2 cursor-pointer">
           <input type="checkbox" className="rounded" checked={allowRetake} onChange={e => setAllowRetake(e.target.checked)} />
           <span className="text-sm font-medium text-slate-700">Allow Retakes</span>
@@ -131,43 +141,55 @@ export default function CreateTest() {
     </div>
 
     {/* Right Column: Subjects & Students (1 col) */}
-    <div className="space-y-6">
+    <div className="assessment-side-column space-y-6">
       
       {/* Subjects Card */}
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
-        <h2 className="text-lg font-semibold text-slate-700 mb-3">Subjects</h2>
+      <div className="assessment-side-panel bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+        <div className="assessment-panel-heading">
+          <h2>Subject</h2>
+          <p>Select one subject for this test.</p>
+        </div>
         <div className="flex flex-wrap gap-2">
           {subjects.map((subject) => (
-            <div
+            <button
               key={subject._id}
-              type="button"
               className={`text-sm subject-card ${selectedSubject === subject._id ? 'active' : ''}`}
               onClick={() => setSelectedSubject(subject._id)}
+              type="button"
+              aria-pressed={selectedSubject === subject._id}
             >
               {subject.subjectName}
-            </div>
+            </button>
           ))}
         </div>
       </div>
 
       {/* Assign Students Card */}
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
-        <h2 className="text-lg font-semibold text-slate-700 mb-3">Assign Students</h2>
+      <div className="assessment-side-panel bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+        <div className="assessment-panel-heading">
+          <h2>Assign students</h2>
+          <p>{selectedStudents.length} selected</p>
+        </div>
         <input 
           type="text" 
           placeholder="Search students..." 
           className="w-full border rounded-lg p-2 text-sm mb-3"
+          value={studentSearch}
+          onChange={e => setStudentSearch(e.target.value)}
+          aria-label="Search students"
         />
         <div className="students-list">
-          {students.map((student) => (
-            <div
+          {visibleStudents.length ? visibleStudents.map((student) => (
+            <button
               key={student._id}
               className={`student-item text-sm ${selectedStudents.includes(student._id) ? 'selected' : ''}`}
               onClick={() => toggleStudent(student._id)} 
+              type="button"
+              aria-pressed={selectedStudents.includes(student._id)}
             >
               {student.name}
-            </div>
-          ))}
+            </button>
+          )) : <p className="selection-empty">No students match your search.</p>}
         </div>
       </div>
 

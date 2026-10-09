@@ -11,6 +11,8 @@ export default function EditQuestion() {
 
   const [loading, setLoading] = useState(true);
   const [teachers, setTeachers] = useState([]);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
 
   const [form, setForm] = useState({
     questionText: "",
@@ -80,6 +82,7 @@ export default function EditQuestion() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      setSaving(true);
       const {data} = await API.put(`/teacher/questions/${questionId}`, { ...form, mark: Number(form.mark) });
       if (data.success) {
         showSuccess("Question updated successfully");
@@ -87,22 +90,30 @@ export default function EditQuestion() {
       navigate("/questions")
     } catch (err) {
       showError("Error : " + err.message);
+    } finally {
+      setSaving(false);
     }
   };
 
   if (loading) return <Loading />;
 
   return (
-      <>
-        <div className="edit-page">
-            <div className="card">
-                <h2 className="page-title">Edit Question</h2>
+      <main className="main">
+        <div className="edit-page question-editor-page">
+            <div className="card edit-question-card">
+                <button className="question-back" type="button" onClick={() => navigate("/questions")}>← Question bank</button>
+                <div className="question-editor-heading">
+                  <p className="page-eyebrow">Question bank</p>
+                  <h1 className="page-title">Edit question</h1>
+                  <p>Update the prompt, answer choices, or access settings.</p>
+                </div>
 
                 <form onSubmit={handleSubmit} className="question-form">
                 
                 <div className="form-group">
-                    <label>Question</label>
+                    <label htmlFor="edit-question-text">Question</label>
                     <textarea
+                    id="edit-question-text"
                     name="questionText"
                     value={form.questionText}
                     onChange={handleChange}
@@ -111,7 +122,10 @@ export default function EditQuestion() {
                     />
                 </div>
 
-                <div className="options-grid">
+                <fieldset className="options-grid">
+                    <legend>Answer choices</legend>
+                    <p className="question-field-hint">The highlighted option is currently marked as correct.</p>
+                    <div className="options-grid-content">
                     {["a", "b", "c", "d"].map((key) => (
                     <div
                         key={key}
@@ -119,20 +133,23 @@ export default function EditQuestion() {
                         form.correctOption === key ? "correct" : ""
                         }`}
                     >
-                        <label>Option {key.toUpperCase()}</label>
+                        <label htmlFor={`edit-option-${key}`}>Option {key.toUpperCase()}</label>
                         <input
+                        id={`edit-option-${key}`}
                         value={form.options[key]}
                         onChange={(e) => handleOptionChange(key, e.target.value)}
                         required
                         />
                     </div>
                     ))}
-                </div>
+                    </div>
+                </fieldset>
 
                 <div className="form-group">
-                    <label>Mark</label>
+                        <label htmlFor="edit-question-mark">Marks</label>
                     <input
-                      type="number"
+                          id="edit-question-mark"
+                          type="number"
                       name="mark"
                       value={form.mark}
                       onChange={handleChange}
@@ -142,8 +159,9 @@ export default function EditQuestion() {
                 </div>
 
                 <div className="form-group">
-                    <label>Correct Answer</label>
+                    <label htmlFor="edit-correct-option">Correct answer</label>
                     <select
+                    id="edit-correct-option"
                     name="correctOption"
                     value={form.correctOption}
                     onChange={handleChange}
@@ -158,24 +176,30 @@ export default function EditQuestion() {
                 </div>
 
                 <div className="form-group">
-                  <label>Allowed Teachers:</label>
+                  <div className="question-teacher-heading">
+                    <label>Share with teachers <span>Optional</span></label>
+                    <p>Choose colleagues who can use this question.</p>
+                  </div>
                   <div className="teachers-list">
                     {teachers.map((t) => (
-                      <div
+                      <button
                         key={t._id}
+                        type="button"
                         className={`teacher-item ${
                           form.allowedTeachers.includes(t._id) ? "selected" : ""
                         }`}
                         onClick={() => toggleTeacher(t._id)}
+                        aria-pressed={form.allowedTeachers.includes(t._id)}
                       >
                         {t.name}
-                      </div>
+                      </button>
                     ))}
                   </div>
+                  {error && <p className="page-feedback page-feedback-error" role="alert">{error}</p>}
                 </div>
                 <div className="form-actions">
-                    <button type="submit" className="btn primary">
-                    Update Question
+                    <button type="submit" className="btn primary" disabled={saving}>
+                    {saving ? "Saving..." : "Save changes"}
                     </button>
                     <button
                     type="button"
@@ -189,6 +213,6 @@ export default function EditQuestion() {
                 </form>
             </div>
         </div>
-      </>
+      </main>
   );
 }

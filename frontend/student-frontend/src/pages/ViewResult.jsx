@@ -17,35 +17,39 @@ export default function ViewResult(){
     load()
   }, [testId])
 
-  if (!submission) return <div className="app-shell"><Sidebar /><main className="main"><div className="card">No result found</div></main></div>
+  if (!submission) return <div className="app-shell"><Sidebar /><main className="main"><div className="student-results-state empty">No result found for this attempt.</div></main></div>
 
   return (
     <div className="app-shell">
       <Sidebar />
-      <main className="main">
-        <button className="text-slate-600 text-sm hover:underline" onClick={() => navigate("/tests")}>
-          ← Back
+      <main className="main student-view-result-page">
+        <button className="student-back-link" onClick={() => navigate("/tests")} type="button">
+          ← My tests
         </button>
         {/* <div className="header">
           <h1>Result</h1>
         </div> */}
-        <div className="card mt-2">
+        <div className="card student-result-detail-card mt-2">
           <ResultSummary result={submission} />
-          <div className="mt-4">
-            <h4 className="font-semibold">Answers</h4>
-            <div className="mt-2 space-y-3">
+          <section className="student-detailed-answers">
+            <div className="student-detail-section-heading">
+              <h2>Answer review</h2>
+              <p>See how each response compared with the correct answer.</p>
+            </div>
+            <div className="student-detailed-answer-list">
               {submission.answers.map(a=> (
-                // <div key={a.question._id} className="p-3 border rounded-md">
-                <div key={a.question._id} className={`p-3 border rounded-md ${a.selected === a.question.correctOption ? 'bg-green-50 border-green-300' : 'bg-red-50 border-red-300'}`}>
-                  <div className="font-medium">{a.question.questionText}</div>
-                  {/* <div className="text-sm text-gray-600">Your answer: <strong>{a.selected}</strong> | Correct: <strong>{a.question.correctOption}</strong></div> */}
-                  <div className="text-sm text-gray-600">
-                    Your answer: <strong>{`${a.selected}.${a.question.options?.[a.selected]}` ?? 'No option text'}</strong> | 
-                    Correct: <strong>{`${a.question.correctOption}.${a.question.options?.[a.question.correctOption]}` ?? 'No correct option text'}</strong></div>
-                </div>
+                <article key={a.question._id} className={`student-result-answer ${a.selected === a.question.correctOption ? 'correct' : 'incorrect'}`}>
+                  <h3 className="student-result-question">{a.question.questionText}</h3>
+                  <p className="student-result-answer-text">
+                    Your answer: <strong>{a.selected ? `${a.selected.toUpperCase()}. ${a.question.options?.[a.selected] || 'No option text'}` : 'Not answered'}</strong>
+                  </p>
+                  <p className="student-result-answer-text">
+                    Correct answer: <strong>{a.question.correctOption ? `${a.question.correctOption.toUpperCase()}. ` : ''}{a.question.options?.[a.question.correctOption] || 'No option text'}</strong>
+                  </p>
+                </article>
               ))}
             </div>
-          </div>
+          </section>
         </div>
       </main>
     </div>

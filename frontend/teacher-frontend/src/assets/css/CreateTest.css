@@ -1,145 +1,29 @@
-.create-test-container {
-  min-height: auto;
-  display: flex;
-  position: relative;
-  justify-content: center;
+.assessment-page .subject-card {
+  min-height: 36px;
 }
 
-.test-back {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  background: transparent;
-  border: none;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  color: #61c066;
+.assessment-page .student-item {
+  font-weight: 500;
 }
 
-.test-back:hover {
-  text-decoration: underline;
+.assessment-page .assessment-side-panel .students-list {
+  scrollbar-color: #b8d7cc transparent;
 }
 
-.create-test-card {
-  background: #ffffff;
-  margin-top: 30px;
-  padding: 32px;
-  width: 420px;
-  border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+.assessment-page .assessment-side-panel .students-list::-webkit-scrollbar {
+  width: 7px;
 }
 
-.create-test-card h2 {
-  margin-bottom: 20px;
-  text-align: center;
-  color: #61c066;
+.assessment-page .assessment-side-panel .students-list::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: #c3ddd2;
 }
 
-.create-test-card label {
-  font-size: 14px;
-  font-weight: 600;
-  margin-top: 14px;
-  display: block;
-  color: #555;
-}
-
-.create-test-card input,
-.create-test-card textarea {
+.assessment-page .assessment-side-column > button {
   width: 100%;
-  padding: 10px 12px;
-  margin-top: 6px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  font-size: 14px;
-  transition: border-color 0.2s;
 }
 
-.create-test-card textarea {
-  resize: vertical;
-  min-height: 80px;
+.assessment-page .assessment-retake-settings input:disabled {
+  background: #f1f4f3;
+  color: #93a09b;
 }
-
-.create-test-card input:focus,
-.create-test-card textarea:focus {
-  outline: none;
-  border-color: #61c066;
-}
-
-.students-list {
-  margin-top: 5px;
-  max-height: 200px;
-  overflow-y: auto;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  padding: 5px;
-}
-
-.student-item {
-  padding: 5px 5px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.student-item:hover {
-  background: #bef2c1ba;
-}
-
-.student-item.selected {
-  /* background: #eff6ff; */
-  /* background: #ddecfd; */
-  background-color: #9ddea1ba;
-}
-
-.create-test-card button {
-  width: 100%;
-  margin-top: 20px;
-  padding: 12px;
-  background: #61c066;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.create-test-card button:hover {
-  background: #3ea743;
-}
-
-.subject-grid {
-  display: grid;
-  grid-template-columns: auto auto auto;
-  gap: 5px;
-  margin-bottom: 20px;
-}
-
-.subject-card {
-  border: 1px solid #e5e7eb;
-  padding: 6px 12px;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  background: #fff;
-}
-
-.subject-card:hover {
-  border-color: #bef2c1ba;
-}
-
-.subject-card.active {
-  background: #bef2c1ba;
-  border: none;
-}
-
-/* attempt rules */
-.attempt-rules { display:flex; align-items:center; gap:10px; margin-top:6px }
-.attempt-rules input[type="number"] { width:80px; padding:6px }
-
-/* badges */
-.badge { display:inline-block; font-size:12px; padding:4px 8px; border-radius:999px; background:#f3f4f6; color:#374151 }
-.badge-green { background:#d1fae5; color:#065f46 }
-.badge-indigo { background:#eef2ff; color:#3730a3 }

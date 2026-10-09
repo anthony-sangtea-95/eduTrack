@@ -1,129 +1,27 @@
-.subjects-container {
-  max-width: 480px;
-  margin: 40px auto;
-  padding: 24px;
-  background: #ffffff;
-  border-radius: 10px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+.subjects-card { margin-bottom: 18px; }
+.subject-form { display: flex; align-items: flex-end; flex-wrap: wrap; gap: 14px; padding: 2px 20px 20px; }
+.subject-input-group { display: grid; flex: 1 1 260px; gap: 7px; color: #344155; font-size: .84rem; font-weight: 650; }
+.subject-input-group input { width: 100%; min-height: 44px; padding: 10px 13px; border: 1px solid #d7deea; border-radius: 9px; background: #fff; color: #172033; font-weight: 450; }
+.subject-input-group input:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 14%, transparent); }
+.subject-form-actions { display: flex; gap: 8px; }
+.subject-cancel-button { min-height: 42px; padding: 9px 15px; border: 1px solid var(--line); border-radius: 9px; background: #fff; color: #46536a; font-weight: 650; cursor: pointer; }
+.subject-cancel-button:hover { background: #f7f8fb; }
+.subject-list { margin: 0 20px 20px; padding: 0; overflow: hidden; border: 1px solid var(--line); border-radius: 12px; background: #fff; list-style: none; }
+.subject-item { display: flex; align-items: center; justify-content: space-between; gap: 14px; min-height: 66px; padding: 12px 16px; border-bottom: 1px solid #edf0f5; }
+.subject-item:last-child { border-bottom: 0; }
+.subject-title { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.subject-title > span { display: grid; flex: 0 0 34px; width: 34px; height: 34px; place-items: center; border-radius: 10px; background: var(--accent-soft); color: var(--accent); font-size: .82rem; font-weight: 750; }
+.subject-title strong { overflow-wrap: anywhere; color: #243149; font-size: .92rem; }
+.subject-actions { display: flex; flex: 0 0 auto; gap: 8px; }
+.subject-actions button { min-height: 36px; padding: 7px 12px; border: 0; border-radius: 8px; font-size: .82rem; font-weight: 650; cursor: pointer; }
+.btn-edit { background: #edf2ff; color: #3157c8; }
+.btn-edit:hover { background: #dfe8ff; }
+.btn-delete { background: #fff0f0; color: #b4232e; }
+.btn-delete:hover { background: #ffe2e2; }
+@media (max-width: 520px) {
+  .subject-form { align-items: stretch; flex-direction: column; padding-right: 16px; padding-left: 16px; }
+  .subject-form-actions { flex-wrap: wrap; }
+  .subject-form-actions .button { flex: 1; }
+  .subject-list { margin-right: 16px; margin-left: 16px; }
+  .subject-item { align-items: flex-start; flex-direction: column; }
 }
-
-.subjects-container h2 {
-  text-align: center;
-  margin-bottom: 20px;
-  color: #333;
-}
-
-/* Error message */
-.error {
-  color: #d32f2f;
-  background: #fdecea;
-  padding: 10px;
-  border-radius: 6px;
-  margin-bottom: 15px;
-  font-size: 14px;
-}
-
-/* Form */
-.subject-form {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 20px;
-}
-
-.subject-form input {
-  flex: 1;
-  padding: 10px 12px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  font-size: 14px;
-}
-
-.subject-form input:focus {
-  outline: none;
-  border-color: #66bb6a;
-  box-shadow: 0 0 0 2px rgba(102, 187, 106, 0.25);
-}
-
-.subject-form button {
-  padding: 10px 14px;
-  border-radius: 6px;
-  border: none;
-  font-size: 14px;
-  cursor: pointer;
-}
-
-/* Buttons */
-.btn-primary {
-  background: #66bb6a;
-  color: #fff;
-}
-
-.btn-secondary {
-  background: #e0e0e0;
-  color: #333;
-}
-
-.btn-primary:hover {
-  background: rgb(54, 145, 58);
-}
-
-.btn-secondary:hover {
-  background: #d5d5d5;
-}
-
-/* List */
-.subject-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.subject-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px;
-  border-radius: 6px;
-  background: #f9f9f9;
-  margin-bottom: 8px;
-}
-
-.subject-name {
-  font-weight: 500;
-  color: #333;
-}
-
-.subject-actions {
-  display: flex;
-  gap: 6px;
-}
-
-.btn-edit {
-  background: #2482e0;
-  color: #fff;
-  border: none;
-  padding: 8px 5px;
-}
-
-.btn-delete {
-  background: #d32f2f;
-  color: #fff;
-  border: none;
-  padding: 8px 5px;
-}
-
-.btn-edit:hover {
-  background: #145ea8;
-}
-
-.btn-delete:hover {
-  background: #c52424;
-}
-
-/* Loading */
-.loading {
-  text-align: center;
-  color: #777;
-}
-

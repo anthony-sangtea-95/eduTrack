@@ -1,130 +1,29 @@
-.edit-page {
-  padding: 2rem;
-  display: flex;
-  justify-content: center;
-}
-
-.edit-page .card {
-  background: #fff;
+.edit-page .edit-question-card {
   width: 100%;
-  max-width: 720px;
-  padding: 2rem;
-  border-radius: 14px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  max-width: 850px;
+  padding: clamp(22px, 4vw, 38px);
+  border: 1px solid #e3ebe8;
+  border-radius: 17px;
+  box-shadow: 0 8px 26px rgba(26, 55, 48, 0.06);
 }
 
-.page-title {
-  margin-bottom: 1.5rem;
-  font-size: 1.6rem;
-  font-weight: 600;
+.edit-question-card .teachers-list {
+  max-height: 180px;
 }
 
-.question-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1.4rem;
+.edit-question-card .teacher-item {
+  width: auto;
+  border: 1px solid #dce6e2;
+  background: #fff;
+  color: #52655f;
 }
 
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
+.edit-question-card .teacher-item.selected {
+  border-color: #9ccdb9;
+  background: #e7f5ee;
+  color: #176b59;
 }
 
-label {
-  font-weight: 500;
-  font-size: 0.9rem;
-  color: #444;
-}
-
-input,
-textarea,
-select {
-  padding: 0.65rem 0.8rem;
-  border-radius: 8px;
-  border: 1px solid #ddd;
-  font-size: 0.95rem;
-  transition: border 0.2s, box-shadow 0.2s;
-}
-
-textarea {
-  min-height: 90px;
-  resize: vertical;
-}
-
-.options-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
-}
-
-.option-box {
-  border: 1px solid #e5e7eb;
-  padding: 0.9rem;
-  border-radius: 10px;
-  transition: border 0.2s, background 0.2s;
-}
-
-.option-box.correct {
-  border-color: #16a34a;
-  background: #f0fdf4;
-}
-
-.form-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.7rem;
-  margin-top: 1rem;
-}
-
-.btn {
-  padding: 0.6rem 1.2rem;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  cursor: pointer;
-  border: none;
-}
-
-.btn.primary {
-  background: #16a34acc;
-  color: #fff;
-}
-
-.btn.primary:hover {
-  background: #16a34a;
-}
-
-.btn.ghost {
-  background: transparent;
-  border: 1px solid #ddd;
-  color: #444;
-}
-
-.btn.ghost:hover {
-  background: #f3f4f6;
-}
-
-.teachers-list {
-  margin-top: 10px;
-  max-height: 150px;
-  overflow-y: auto;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  padding: 6px;
-}
-
-.teacher-item {
-  padding: 8px 10px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: background 0.2s;
-}
-
-.teacher-item:hover {
-  background-color: #bef2c1ba;
-}
-
-.teacher-item.selected {
-  background-color: #9ddea1ba;
+.edit-question-card .options-grid {
+  border: 0;
 }

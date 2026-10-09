@@ -3,13 +3,14 @@ import React from 'react'
 export default function SubmitModal({ open, onClose, onConfirm, loading }){
   if (!open) return null
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-[420px] shadow-lg">
-        <h3 className="text-xl font-semibold mb-2">Confirm Submit</h3>
-        <p className="text-sm text-gray-600">Are you sure you want to submit the test? This action cannot be undone.</p>
-        <div className="mt-4 flex justify-end gap-2">
-          <button className="px-4 py-2 rounded-md border" onClick={onClose} disabled={loading}>Cancel</button>
-          <button className="px-4 py-2 rounded-md bg-indigo-600 text-white" onClick={onConfirm} disabled={loading}>{loading? 'Submitting...':'Submit Test'}</button>
+    <div className="student-modal-backdrop">
+      <div className="student-submit-modal" role="dialog" aria-modal="true" aria-labelledby="submit-test-title" aria-describedby="submit-test-description">
+        <span className="student-modal-icon" aria-hidden="true">?</span>
+        <h2 id="submit-test-title">Submit this test?</h2>
+        <p id="submit-test-description">Once submitted, you can’t change your answers. Make sure you’re ready to finish.</p>
+        <div className="student-modal-actions">
+          <button className="student-nav-button secondary" onClick={onClose} disabled={loading}>Keep working</button>
+          <button className="student-nav-button primary" onClick={onConfirm} disabled={loading}>{loading? 'Submitting…':'Submit test'}</button>
         </div>
       </div>
     </div>

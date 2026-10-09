@@ -26,18 +26,21 @@ export default function ResultSummary({ result }){
   }
 
   return (
-    <div className="grid md:grid-cols-2 gap-6 items-center">
-      <div className="flex items-center justify-center">
+    <div className="student-result-summary">
+      <div className="student-result-visual">
         <ProgressCircle size={160} percent={percent} />
       </div>
-      <div className="space-y-3">
-        <h2 className="text-2xl font-semibold">Your Result</h2>
-        <div className="text-lg">Score: <span className="font-medium">{result.score ?? '-'} </span></div>
-        <div className="text-sm text-gray-600">Correct: <strong>{correct}</strong> | Wrong: <strong>{wrong}</strong> | Total: <strong>{total}</strong></div>
-        <div className="mt-2">
-          <span className={`px-3 py-1 rounded-full ${pass? 'bg-green-100 text-green-800':'bg-red-100 text-red-800'}`}>{pass? 'Pass':'Fail'}</span>
+      <div className="student-result-summary-copy">
+        <p className="student-dashboard-eyebrow">Assessment complete</p>
+        <h1>Your result</h1>
+        <p className="student-result-summary-score">Score <strong>{result.score ?? '-'} <span>/ {total}</span></strong></p>
+        <div className="student-result-summary-stats">
+          <span><strong>{correct}</strong> correct</span>
+          <span><strong>{wrong}</strong> wrong</span>
+          <span><strong>{total}</strong> total</span>
         </div>
-        <div className="text-sm text-gray-500 mt-2">Time taken: <strong>{timeTaken(result)}</strong></div>
+        <span className={`student-result-outcome ${pass ? 'passed' : 'failed'}`}>{pass ? 'Passed' : 'Not passed'}</span>
+        <p className="student-result-time">Time taken <strong>{timeTaken(result)}</strong></p>
       </div>
     </div>
   )

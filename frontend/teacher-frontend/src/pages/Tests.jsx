@@ -16,6 +16,8 @@ export default function Tests() {
 
   const fetchTests = async () => {
     try {
+      setError(false)
+      setLoading(true)
       const res = await API.get('teacher/tests')
       setTests(res.data)
     } catch (err) {
@@ -43,27 +45,54 @@ export default function Tests() {
 };
 
   if (loading) return <Loading />
-  if (error) return <p className="error">Failed to load tests</p>
 
   return (
-      <div className='main'>
-         <div className="page" style={{ margin: '0 20px'}}>
-        <h2 className='text-align-c'>My Tests</h2>
-        <div className='text-align-r'>
-          <Link className='create-test-button no-underline' to="/tests/create">
-           + New Test
+      <main className="main">
+         <div className="page tests-page">
+        <div className="page-header">
+          <div>
+            <p className="page-eyebrow">Teaching workspace</p>
+            <h1>My tests</h1>
+            <p className="page-description">Create assessments, manage their questions, and keep an eye on submissions.</p>
+          </div>
+          <Link className="button no-underline" to="/tests/create">
+            + Create test
           </Link>
         </div>
-      {tests.length === 0 ? (
-        <p style={{ opacity: 0.7 }}>No tests created yet.</p>
+      {error ? (
+        <div className="question-empty-state" role="alert">
+          <span className="question-empty-mark" aria-hidden="true">!</span>
+          <div>
+            <h2>Tests could not be loaded</h2>
+            <p>Please check your connection and try again.</p>
+          </div>
+          <button className="button" type="button" onClick={fetchTests}>Try again</button>
+        </div>
+      ) : tests.length === 0 ? (
+        <section className="question-empty-state">
+          <span className="question-empty-mark" aria-hidden="true">+</span>
+          <div>
+            <h2>No tests created yet</h2>
+            <p>Create an assessment, assign students, then add questions to get started.</p>
+          </div>
+          <Link className="button no-underline" to="/tests/create">Create your first test</Link>
+        </section>
       ) : (
-        <ul className="card">
+        <section className="tests-list-card">
+          <div className="question-table-caption">
+            <div>
+              <h2>Your assessments</h2>
+              <p>{tests.length} {tests.length === 1 ? 'test' : 'tests'} total</p>
+            </div>
+          </div>
+        <ul className="tests-list">
           {tests.map(test => (
             <TestList key={test._id} test={test} handleDelete={handleDelete} />
           ))}
         </ul>
+        </section>
       )}
     </div>
-    </div>
+    </main>
   )
 }

@@ -17,6 +17,8 @@ export default function Questions() {
   const fetchQuestions = async () => {
     try {
       setLoading(true);
+      setError("");
+      setSuccess("");
       const res = await API.get(`/teacher/questions`);
       setQuestions(res.data);
     } catch (err) {
@@ -43,22 +45,47 @@ export default function Questions() {
   };
 
   if (loading) return <Loading />;
-  if (error) return <p className="error">{error}</p>;
 
   return (
-    <div className="page">
-      { (error || success) && (<p className={error ? "error" : "success"}>{error ? error : success}</p>) }
+    <main className="main">
+    <div className="page question-bank-page">
+      {error && (
+        <div className="page-feedback page-feedback-error" role="alert">
+          <span>{error}</span>
+          <button className="question-retry" type="button" onClick={fetchQuestions}>Try again</button>
+        </div>
+      )}
+      {success && <p className="success">{success}</p>}
       <div className="page-header">
-        <h2>Questions</h2>
-        <Link to="/questions/create" className="btn">
+        <div>
+          <p className="page-eyebrow">Teaching workspace</p>
+          <h1>Question bank</h1>
+          <p className="page-description">Create and maintain reusable questions for your assessments.</p>
+        </div>
+        <Link to="/questions/create" className="button">
           + New Question
         </Link>
       </div>
 
-      {questions.length === 0 ? (
-        <p>No questions found.</p>
+      {error && questions.length === 0 ? null : questions.length === 0 ? (
+        <section className="question-empty-state">
+          <span className="question-empty-mark" aria-hidden="true">?</span>
+          <div>
+            <h2>Your question bank is empty</h2>
+            <p>Create your first question to start building reusable assessment content.</p>
+          </div>
+          <Link to="/questions/create" className="button">Create a question</Link>
+        </section>
       ) : (
-        <table className="table">
+        <div className="question-table-card">
+        <div className="question-table-caption">
+          <div>
+            <h2>Saved questions</h2>
+            <p>{questions.length} {questions.length === 1 ? 'question' : 'questions'} in your bank</p>
+          </div>
+        </div>
+        <div className="question-table-scroll">
+        <table className="table question-table">
           <thead>
             <tr>
               <th>#</th>
@@ -73,8 +100,8 @@ export default function Questions() {
               <tr key={q._id}>
                 <td>{index + 1}</td>
                 <td>{q.questionText}</td>
-                <td>{q.subject.subjectName}</td>
-                <td>{q.mark}</td>
+                <td>{q.subject?.subjectName || '—'}</td>
+                <td><span className="mark-pill">{q.mark} {q.mark === 1 ? 'mark' : 'marks'}</span></td>
                 <td className="actions">
                   <Link
                     to={`/teacher/questions/${q._id}/edit`}
@@ -93,7 +120,10 @@ export default function Questions() {
             ))}
           </tbody>
         </table>
+        </div>
+        </div>
       )}
     </div>
+    </main>
   );
 }

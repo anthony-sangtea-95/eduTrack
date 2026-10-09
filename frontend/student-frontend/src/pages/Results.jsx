@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams }  from 'react-router-dom'
-import Sidebar from '../components/Sidebar'; 
-import API from '../services/api' 
+import { useNavigate, useParams } from 'react-router-dom';
+import Sidebar from '../components/Sidebar';
+import API from '../services/api';
 
 const Results = () => {
   const { testId } = useParams();
@@ -16,6 +16,7 @@ const Results = () => {
       try {
         const response = await API.get(`/student/submissions/${testId}`);
         setResults(response.data || []);
+        setError(null);
       } catch (err) {
         setError(err.message || 'Unable to fetch results');
       } finally {
@@ -36,114 +37,91 @@ const Results = () => {
 
   return (
     <div className="app-shell">
-        <Sidebar />
-        <main className="main">
-            <div className="min-h-screen bg-gradient-to-br p-6 sm:p-10">
-                <button className="text-slate-600 text-sm hover:underline" onClick={() => navigate("/tests")}>
-                ← Back
-                </button>
-                <div className="mx-auto mb-8 max-w-3xl text-center">
-                    <h1 className="m-0 text-3xl font-semibold tracking-tight sm:text-4xl">
-                        {loading ?
-                            '' :
-                            results[0]?.test?.title || 'No Title'}
-                    </h1>
-                    <p className="mt-3 text-base text-slate-600">
-                        {loading ?
-                            '' :
-                            results[0]?.test?.description || 'No description'}
-                    </p>
+      <Sidebar />
+      <main className="main student-results-page">
+        <div className="student-results-content">
+          <button className="student-back-link" onClick={() => navigate('/tests')} type="button">
+            ← My tests
+          </button>
+          <div className="student-results-heading">
+            <p className="student-dashboard-eyebrow">Assessment history</p>
+            <h1>{loading ? '' : results[0]?.test?.title || 'Test results'}</h1>
+            <p>{loading ? '' : results[0]?.test?.description || 'Review your submissions and answer details.'}</p>
+          </div>
+
+          {loading && <div className="student-results-state" role="status">Loading your results…</div>}
+          {error && <div className="student-results-state error" role="alert">{error}</div>}
+          {!loading && !error && results.length === 0 && (
+            <div className="student-results-state empty">No submitted results are available for this test yet.</div>
+          )}
+
+          <div className="student-results-grid">
+            {results.map((result) => (
+              <article key={result._id || result.id} className="student-result-card">
+                <div className="student-result-card-heading">
+                  <div className="student-result-score">
+                    <span className="student-result-label">Score</span>
+                    <strong>{result.score ?? 'N/A'}<span> / {result.test?.totalMarks ?? 'N/A'}</span></strong>
+                  </div>
+                  <span className={`badge ${result.result === 'Pass' ? 'success' : 'danger'}`}>
+                    {result.result || 'Result pending'}
+                  </span>
                 </div>
-
-                {loading && (
-                    <div className="mx-auto mb-5 max-w-3xl rounded-2xl px-5 py-4 text-center">
-                    Loading results...
-                    </div>
-                )}
-                {error && (
-                    <div className="mx-auto mb-5 max-w-3xl rounded-2xl bg-rose-100 px-5 py-4 text-center text-rose-700">
-                    {error}
-                    </div>
-                )}
-
-                {!loading && !error && results.length === 0 && (
-                    <div className="mx-auto mb-5 max-w-3xl rounded-2xl bg-indigo-100 px-5 py-4 text-center text-indigo-700">
-                    No submission results found.
-                    </div>
-                )}
-
-                <div className="mx-auto grid max-w-6xl gap-6 md:grid-cols-2 xl:grid-cols-3">
-                    {results.map((result) => (
-                    <div
-                        key={result._id || result.id}
-                        className="rounded-[24px] border border-white/70 bg-white p-6 shadow-[0_18px_40px_rgba(15,23,42,0.08)] transition duration-150 hover:-translate-y-1 hover:shadow-[0_20px_45px_rgba(15,23,42,0.12)]"
-                    >
-                        <div className="flex items-center justify-between gap-4">
-                        <div>
-                            <span className="font-semibold text-slate-900">
-                               Score : {result.score ?? 'N/A'}/{result.test?.totalMarks ?? 'N/A'}
-                            </span> &nbsp;
-                            <span className={`px-3 py-1 rounded-full ${result.result === 'Pass' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                                {result.result}
-                            </span>
-                        </div>
-                        </div>
-                        <p className="mb-1 mt-4 min-h-[3rem] leading-7 text-slate-600">
-                            Time Taken: {result.timeTakenInSeconds ? `${Math.floor(result.timeTakenInSeconds / 60)}m ${result.timeTakenInSeconds % 60}s` : 'N/A'}
-                        </p>
-                        <p className="mb-1 min-h-[3rem] leading-7 text-slate-600">
-                            Correct: {result.correct ?? 'N/A'} | Wrong: {result.wrong ?? 'N/A'}
-                        </p>
-                        <div className="flex flex-wrap items-center justify-between gap-4">
-                        <span className="text-sm text-slate-500">Submitted: {formatDate(result.submittedAt || '-')}</span>
-                        <button
-                            className="rounded-full bg-indigo-700 px-4 py-2 font-semibold text-white transition hover:bg-indigo-800"
-                            onClick={() => setSelectedResult(result)}
-                            type="button"
-                        >
-                            View Details
-                        </button>
-                        </div>
-                    </div>
-                    ))}
+                <div className="student-result-metrics">
+                  <div><span>Correct</span><strong>{result.correct ?? 'N/A'}</strong></div>
+                  <div><span>Wrong</span><strong>{result.wrong ?? 'N/A'}</strong></div>
+                  <div>
+                    <span>Time taken</span>
+                    <strong>{result.timeTakenInSeconds ? `${Math.floor(result.timeTakenInSeconds / 60)}m ${result.timeTakenInSeconds % 60}s` : 'N/A'}</strong>
+                  </div>
                 </div>
+                <div className="student-result-card-footer">
+                  <span>Submitted {formatDate(result.submittedAt || '-')}</span>
+                  <button className="student-result-details-button" onClick={() => setSelectedResult(result)} type="button">
+                    Review answers
+                  </button>
+                </div>
+              </article>
+            ))}
+          </div>
 
-                {selectedResult && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/55 p-6" role="dialog" aria-modal="true">
-                    <div className="h-[60vh] w-[60vw] overflow-hidden rounded-[28px] bg-white shadow-[0_26px_70px_rgba(15,23,42,0.18)]">
-                        <div className="flex items-center justify-between gap-5 border-b border-slate-200 px-7 py-6">
-                        <div>
-                            <h2 className="m-0 text-xl font-semibold text-slate-900">
-                            {selectedResult.test?.title || 'Results'}
-                            </h2>
-                            <p className="mt-2 text-sm text-slate-500">
-                            {selectedResult.test?.description || 'No description'}
-                            </p>
-                        </div>
-                        <button className="text-3xl leading-none text-slate-700" onClick={closeModal} type="button">
-                            ×
-                        </button>
-                        </div>
-                        <div className="grid max-h-[calc(60vh-150px)] gap-4 overflow-y-auto px-7 py-6">
-                            {selectedResult.answers.map(a=> (
-                                <div key={a.question._id} className={`p-3 border rounded-md ${a.selected === a.question.correctOption ? 'bg-green-50 border-green-300' : 'bg-red-50 border-red-300'}`}>
-                                <div className="font-medium">{a.question.questionText}</div>
-                                <div className="text-sm text-gray-600">
-                                    Your answer: <strong>{`${a.selected}.${a.question.options?.[a.selected]}` ?? 'No option text'}</strong> |
-                                    Correct: <strong>{`${a.question.correctOption}.${a.question.options?.[a.question.correctOption]}` ?? 'No correct option text'}</strong></div>
-                                </div>
-                            ))}
-                        </div>
-                        <div className="flex justify-end px-7 pb-6">
-                        <button className="rounded-full bg-indigo-600 px-5 py-3 font-bold text-white" onClick={closeModal} type="button">
-                            Close
-                        </button>
-                        </div>
-                    </div>
-                    </div>
-                )}
+          {selectedResult && (
+            <div className="student-modal-backdrop">
+              <section className="student-results-modal" role="dialog" aria-modal="true" aria-labelledby="student-result-modal-title">
+                <div className="student-results-modal-heading">
+                  <div>
+                    <p className="student-dashboard-eyebrow">Answer review</p>
+                    <h2 id="student-result-modal-title">{selectedResult.test?.title || 'Results'}</h2>
+                    <p>{selectedResult.test?.description || 'Review your answers alongside the correct responses.'}</p>
+                  </div>
+                  <button className="student-modal-close" aria-label="Close answer review" onClick={closeModal} type="button">×</button>
+                </div>
+                <div className="student-result-answers">
+                  {selectedResult.answers.map((answer) => {
+                    const isCorrect = answer.selected === answer.question.correctOption;
+                    const selectedText = answer.selected
+                      ? `${answer.selected.toUpperCase()}. ${answer.question.options?.[answer.selected] || 'No option text'}`
+                      : 'Not answered';
+                    const correctOption = answer.question.correctOption || '';
+                    const correctText = `${correctOption ? `${correctOption.toUpperCase()}. ` : ''}${answer.question.options?.[correctOption] || 'No option text'}`;
+
+                    return (
+                      <article key={answer.question._id} className={`student-result-answer ${isCorrect ? 'correct' : 'incorrect'}`}>
+                        <h3 className="student-result-question">{answer.question.questionText}</h3>
+                        <p className="student-result-answer-text">Your answer: <strong>{selectedText}</strong></p>
+                        <p className="student-result-answer-text">Correct answer: <strong>{correctText}</strong></p>
+                      </article>
+                    );
+                  })}
+                </div>
+                <div className="student-results-modal-footer">
+                  <button className="student-result-details-button" onClick={closeModal} type="button">Close review</button>
+                </div>
+              </section>
             </div>
-        </main>
+          )}
+        </div>
+      </main>
     </div>
   );
 };

@@ -145,7 +145,7 @@ export default function TakeTest(){
     }
   },[answers, testId, submittingRef, navigate])
 
-  if (loading) return <div className="app-shell"><Sidebar /><main className="main"><div className="card">Loading...</div></main></div>
+  if (loading) return <div className="app-shell"><Sidebar /><main className="main"><div className="card">Loading test…</div></main></div>
   if (!test) return <div className="app-shell"><Sidebar /><main className="main"><div className="card">Test not found</div></main></div>
 
   const currentQuestion = questions[current]
@@ -154,52 +154,68 @@ export default function TakeTest(){
   return (
     <div className="app-shell">
       <Sidebar />
-      <main className="main">
-        <div className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b">
-          <div className="max-w-6xl mx-auto flex items-center justify-between p-4">
-            <div>
-              <div className="text-lg font-semibold">{test.title}</div>
-              <div className="text-sm text-gray-500">{test.subject?.subjectName || 'No subject'}</div>
+      <main className="main student-take-page">
+        <div className="student-test-topbar">
+          <div className="student-test-topbar-inner">
+            <div className="student-test-heading">
+              <p className="student-test-eyebrow">Assessment in progress</p>
+              <h1>{test.title}</h1>
+              <p>{test.subject?.subjectName || 'No subject'}</p>
             </div>
-            <div className="flex items-center gap-4">
-              <div className="text-sm text-gray-600">Progress: {answeredCount}/{questions.length}</div>
+            <div className="student-test-controls">
+              <div className="student-test-progress">
+                <span>Progress</span>
+                <strong>{answeredCount}<span> / {questions.length}</span></strong>
+              </div>
               <Timer timeLeft={timeLeft} onExpire={()=>doSubmit(true)} />
-              <button className="px-3 py-2 bg-red-500 text-white rounded-md" onClick={()=>setShowModal(true)} disabled={submitted}>Submit</button>
+              <button className="student-submit-button" onClick={()=>setShowModal(true)} disabled={submitted}>Submit test</button>
             </div>
           </div>
         </div>
 
-        <div className="max-w-6xl mx-auto p-4 grid md:grid-cols-4 gap-6">
-          <div className="md:col-span-3 space-y-4">
-            <div className="card">
-              <div className="flex items-center justify-between mb-4">
-                <div className="text-sm text-gray-600">Question {current+1} of {questions.length}</div>
-                <div className="text-sm text-gray-600">Mark for review</div>
+        <div className="student-exam-layout">
+          <div className="student-exam-main">
+            <div className="card student-question-panel">
+              <div className="student-question-meta">
+                <span>Question <strong>{current+1}</strong> of {questions.length}</span>
+                <span className={answers[currentQuestion?._id] ? 'student-answer-state answered' : 'student-answer-state'}>
+                  {answers[currentQuestion?._id] ? 'Answered' : 'Not answered'}
+                </span>
               </div>
               {currentQuestion ? <QuestionCard question={currentQuestion} selected={answers[currentQuestion._id]} onSelect={onSelect} disabled={submitted} /> : <div>No question</div>}
-              <div className="mt-4 flex justify-between">
-                <div>
-                  { current !== 0 ? <button className="px-3 py-2 border rounded-md" onClick={()=>setCurrent(c=>Math.max(0,c-1))}>Previous</button> : '' }
-                </div>
-                <div>
-                  { current !== questions.length-1 ? <button className="px-3 py-2 border rounded-md" onClick={()=>setCurrent(c=>Math.min(questions.length-1,c+1))}>Next</button> : '' }
-                </div>
+              <div className="student-question-navigation">
+                {current !== 0
+                  ? <button className="student-nav-button secondary" onClick={()=>setCurrent(c=>Math.max(0,c-1))}>← Previous</button>
+                  : <span />}
+                {current !== questions.length-1
+                  ? <button className="student-nav-button primary" onClick={()=>setCurrent(c=>Math.min(questions.length-1,c+1))}>Next question →</button>
+                  : <span />}
               </div>
             </div>
 
-            <div className="text-sm text-gray-500">Autosave enabled. Answers saved locally.</div>
+            <div className="student-autosave-note"><span aria-hidden="true">✓</span> Your answers are saved automatically on this device.</div>
           </div>
 
-          <aside className="space-y-4">
-            <div className="card">
-              <h4 className="font-semibold mb-2">Navigation</h4>
+          <aside className="student-exam-aside">
+            <div className="card student-navigation-card">
+              <div className="student-side-heading">
+                <div>
+                  <h2>Question navigator</h2>
+                  <p>Select a question to jump to it.</p>
+                </div>
+              </div>
               <QuestionPalette questions={questions} answers={answers} currentIndex={current} onJump={jumpTo} />
+              <div className="student-palette-legend">
+                <span><i className="current" />Current</span>
+                <span><i className="complete" />Answered</span>
+                <span><i />Unanswered</span>
+              </div>
             </div>
 
-            <div className="card">
-              <h4 className="font-semibold mb-2">Summary</h4>
-              <div className="text-sm">Answered: <strong>{answeredCount}</strong></div>
-              <div className="text-sm">Remaining: <strong>{questions.length - answeredCount}</strong></div>
+            <div className="card student-answer-summary">
+              <h2>Answer summary</h2>
+              <div><span>Answered</span><strong>{answeredCount}</strong></div>
+              <div><span>Remaining</span><strong>{questions.length - answeredCount}</strong></div>
             </div>
           </aside>
         </div>

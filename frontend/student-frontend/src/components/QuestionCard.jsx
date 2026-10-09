@@ -5,14 +5,15 @@ export default function QuestionCard({ question, selected, onSelect, disabled })
   const letters = ['a','b','c','d']
 
   return (
-    <div className="space-y-4">
-      <div className="text-lg font-semibold">{question.questionText}</div>
-      <div className="grid gap-3">
+    <div className="student-question-content">
+      <h2 className="student-question-prompt">{question.questionText}</h2>
+      <div className="student-answer-options">
         {letters.map(l => (
           opts[l] ? (
-            <label key={l} className={`p-3 border rounded-lg cursor-pointer transition ${selected===l? 'border-indigo-500 bg-indigo-50':'bg-white hover:shadow-sm'}`}>
-              <input type="radio" name={question._id} checked={selected===l} onChange={()=>onSelect(l)} disabled={disabled} className="mr-2" />
-              <span className="font-medium">{l.toUpperCase()}.</span> <span className="ml-2">{opts[l]}</span>
+            <label key={l} className={`student-answer-option ${selected===l ? 'selected' : ''} ${disabled ? 'disabled' : ''}`}>
+              <input type="radio" name={question._id} checked={selected===l} onChange={()=>onSelect(l)} disabled={disabled} />
+              <span className="student-answer-letter">{l.toUpperCase()}</span>
+              <span className="student-answer-text">{opts[l]}</span>
             </label>
           ) : null
         ))}

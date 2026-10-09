@@ -3,6 +3,7 @@ import API from "../services/api";
 import "../assets/css/CreateTest.css";
 import { useNavigate, useParams } from "react-router-dom";
 import { showSuccess, showError } from "../../../utils/utils";
+import Loading from "../components/Loading.jsx";
 
 export default function EditTest() {
   const navigate = useNavigate();
@@ -13,11 +14,13 @@ export default function EditTest() {
   const [dueDate, setDueDate] = useState("");
   const [students, setStudents] = useState([]);
   const [selectedStudents, setSelectedStudents] = useState([]);
+  const [studentSearch, setStudentSearch] = useState("");
   const [subjects, setSubjects] = useState([]);
   const [selectedSubject, setSelectedSubject] = useState("");
   const [durationMinutes, setDurationMinutes] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
 
   const [status, setStatus] = useState('draft');
   const [startTime, setStartTime] = useState('');
@@ -31,6 +34,8 @@ export default function EditTest() {
 
   const fetchData = async () => { 
     try {
+      setError("");
+      setLoading(true);
       const [testRes, studentsRes, subjectsRes] = await Promise.all([
         API.get(`/teacher/tests/${testId}`),
         API.get("/teacher/tests/students"),
@@ -75,6 +80,9 @@ export default function EditTest() {
         : [...prev, id]
     );
   };
+  const visibleStudents = students.filter((student) =>
+    student.name.toLowerCase().includes(studentSearch.toLowerCase())
+  );
 
   const submitHandler = async () => {
     try {
@@ -106,25 +114,46 @@ export default function EditTest() {
     }
   };
 
-  if (loading) return <p style={{textAlign:"center"}}>Loading...</p>;
+  if (loading) return <Loading />;
+  if (error) {
+    return (
+      <main className="main">
+        <section className="question-empty-state" role="alert">
+          <span className="question-empty-mark" aria-hidden="true">!</span>
+          <div>
+            <h2>Test details unavailable</h2>
+            <p>{error}</p>
+          </div>
+          <button className="button" type="button" onClick={fetchData}>Try again</button>
+        </section>
+      </main>
+    );
+  }
 
   return (
-    <div className="max-w-5xl mx-auto p-6 bg-slate-50 min-h-screen">
-      <div className="flex items-center justify-between mb-6">
-        <button className="text-slate-600 text-sm hover:underline" onClick={() => navigate("/tests")}>
-          ← Back
+    <div className="assessment-page max-w-5xl mx-auto p-6 bg-slate-50 min-h-screen">
+      <div className="assessment-page-header">
+        <button className="assessment-back-link" type="button" onClick={() => navigate("/tests")}>
+          ← My tests
         </button>
-        <h1 className="text-2xl font-bold text-slate-800">Edit Test</h1>
-        <div></div>
+        <div>
+          <p className="page-eyebrow">Assessment builder</p>
+          <h1>Edit test</h1>
+          <p>Update the assessment details, schedule, and student access.</p>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-6 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
-          <h2 className="text-lg font-semibold text-slate-700">Test Details</h2>
+        <div className="assessment-details-panel lg:col-span-2 space-y-6 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+          <div className="assessment-panel-heading">
+            <h2>Test details</h2>
+            <p>Keep the instructions and schedule up to date.</p>
+          </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Title</label>
+            <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="test-title">Title</label>
             <input
+              id="test-title"
               type="text"
               placeholder="Enter test title"
               className="w-full border rounded-lg p-2.5"
@@ -134,8 +163,9 @@ export default function EditTest() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Description</label>
+            <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="test-description">Description</label>
             <textarea
+              id="test-description"
               placeholder="Describe the test"
               rows={3}
               className="w-full border rounded-lg p-2.5"
@@ -146,8 +176,9 @@ export default function EditTest() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Start Time</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="test-start-time">Start time</label>
               <input
+                id="test-start-time"
                 type="datetime-local"
                 className="w-full border rounded-lg p-2.5 text-sm"
                 value={startTime}
@@ -155,8 +186,9 @@ export default function EditTest() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Due Date</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="test-due-date">Due date</label>
               <input
+                id="test-due-date"
                 type="date"
                 className="w-full border rounded-lg p-2.5 text-sm"
                 value={dueDate}
@@ -167,8 +199,9 @@ export default function EditTest() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Duration (mins)</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="test-duration">Duration (minutes)</label>
               <input
+                id="test-duration"
                 type="number"
                 min="1"
                 placeholder="60"
@@ -178,8 +211,9 @@ export default function EditTest() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Status</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="test-status">Status</label>
               <select
+                id="test-status"
                 className="w-full border rounded-lg p-2.5 bg-white"
                 value={status}
                 onChange={e => setStatus(e.target.value)}
@@ -191,7 +225,7 @@ export default function EditTest() {
             </div>
           </div>
 
-          <div className="p-4 bg-slate-50 rounded-lg border border-slate-200 flex items-center justify-between">
+          <div className="assessment-retake-settings p-4 bg-slate-50 rounded-lg border border-slate-200 flex items-center justify-between">
             <label className="flex items-center gap-2 cursor-pointer">
               <input
                 type="checkbox"
@@ -215,39 +249,52 @@ export default function EditTest() {
           </div>
         </div>
 
-        <div className="space-y-6">
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
-            <h2 className="text-lg font-semibold text-slate-700 mb-3">Subjects</h2>
+        <div className="assessment-side-column space-y-6">
+          <div className="assessment-side-panel bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+            <div className="assessment-panel-heading">
+              <h2>Subject</h2>
+              <p>Select one subject for this test.</p>
+            </div>
             <div className="flex flex-wrap gap-2">
               {subjects.map(subject => (
-                <div
+                <button
                   key={subject._id}
                   className={`text-sm subject-card ${selectedSubject === subject._id ? "active" : ""}`}
                   onClick={() => setSelectedSubject(subject._id)}
+                  type="button"
+                  aria-pressed={selectedSubject === subject._id}
                 >
                   {subject.subjectName}
-                </div>
+                </button>
               ))}
             </div>
           </div>
 
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
-            <h2 className="text-lg font-semibold text-slate-700 mb-3">Assign Students</h2>
+          <div className="assessment-side-panel bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+            <div className="assessment-panel-heading">
+              <h2>Assign students</h2>
+              <p>{selectedStudents.length} selected</p>
+            </div>
             <input
               type="text"
               placeholder="Search students..."
               className="w-full border rounded-lg p-2 text-sm mb-3"
+              value={studentSearch}
+              onChange={e => setStudentSearch(e.target.value)}
+              aria-label="Search students"
             />
             <div className="students-list">
-              {students.map(s => (
-                <div
+              {visibleStudents.length ? visibleStudents.map(s => (
+                <button
                   key={s._id}
                   className={`student-item text-sm ${selectedStudents.includes(s._id) ? "selected" : ""}`}
                   onClick={() => toggleStudent(s._id)}
+                  type="button"
+                  aria-pressed={selectedStudents.includes(s._id)}
                 >
                   {s.name}
-                </div>
-              ))}
+                </button>
+              )) : <p className="selection-empty">No students match your search.</p>}
             </div>
           </div>
 

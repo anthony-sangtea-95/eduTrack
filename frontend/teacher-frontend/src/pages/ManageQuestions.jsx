@@ -12,9 +12,13 @@ export default function ManageQuestions() {
 
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all"); // all | added | not-added
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   const load = async () => {
     try {
+      setLoading(true);
+      setError("");
       const testRes = await API.get(`/teacher/tests/${testId}/questions`);
       const allRes = await API.get(`/teacher/tests/${testId}/accessibleQuestions`); // get all accessible questions by teacher and quiz type
 
@@ -23,6 +27,9 @@ export default function ManageQuestions() {
       setAllQuestions(allRes.data || []);
     } catch (err) {
       console.error(err);
+      setError("Unable to load the questions for this test. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -84,78 +91,125 @@ export default function ManageQuestions() {
     <div className="app-shell">
 
       <main className="main">
-        <div className="header">
-          <h1>{testName}</h1>
-        </div>
-
-        {/* 🔍 Search + Filter */}
-        <div className="card" style={{ marginBottom: 16 }}>
-          <input
-            className="input"
-            placeholder="Search questions..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-
-          <div style={{ marginTop: 10 }}>
-            <button onClick={() => setFilter("all")} className="button small-btn">All</button>
-            <button onClick={() => setFilter("added")} className="button small-btn">Added</button>
-            <button onClick={() => setFilter("not-added")} className="button small-btn">Not Added</button>
-          </div>
-        </div>
-
-        <div className="row">
-          {/* LEFT: ALL QUESTIONS */}
-          <div className="col card scroll-panel">
-            <h3>All Questions</h3>
-
-            {filteredQuestions.map((q) => {
-              const added = isInTest(q._id);
-
-              return (
-                <div key={q._id} className="question-card">
-                  <p><strong>{q.questionText}</strong></p>
-
-                  <div className="small">
-                    A: {q.options?.a} | B: {q.options?.b}
-                  </div>
-
-                  {added ? (
-                    <span className="badge added">Added</span>
-                  ) : (
-                    <button
-                      className="button add-btn"
-                      onClick={() => addQuestion(q._id)}
-                    >
-                      + Add
-                    </button>
-                  )}
-                </div>
-              );
-            })}
+        <div className="manage-questions-page">
+          <div className="page-header">
+            <div>
+              <p className="page-eyebrow">Assessment builder</p>
+              <h1>{testName || 'Manage questions'}</h1>
+              <p className="page-description">Choose which questions belong in this test. Add or remove questions as needed.</p>
+            </div>
+            <div className="selected-question-count">
+              <strong>{testQuestions.length}</strong>
+              <span>in this test</span>
+            </div>
           </div>
 
-          {/* RIGHT: TEST QUESTIONS */}
-          <div className="col card scroll-panel">
-            <h3>Total number of questions: <span className="badge added">{testQuestions.length}</span></h3>
-
-            {testQuestions.map((q) => (
-              <div key={q._id} className="question-card">
-                <p><strong>{q.questionText}</strong></p>
-
-                <div className="small">
-                  A: {q.options?.a} | B: {q.options?.b}
-                </div>
-
+          <section className="question-library-toolbar" aria-label="Find questions">
+            <label className="question-search">
+              <span aria-hidden="true">⌕</span>
+              <span className="sr-only">Search questions</span>
+              <input
+                className="input"
+                placeholder="Search question text..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </label>
+            <div className="question-filter-group" aria-label="Filter questions">
+              {[
+                ["all", "All questions"],
+                ["added", "In this test"],
+                ["not-added", "Not added"],
+              ].map(([value, label]) => (
                 <button
-                  className="button remove-btn"
-                  onClick={() => removeQuestion(q._id)}
+                  key={value}
+                  type="button"
+                  onClick={() => setFilter(value)}
+                  className={`question-filter ${filter === value ? "active" : ""}`}
+                  aria-pressed={filter === value}
                 >
-                  Remove
+                  {label}
                 </button>
+              ))}
+            </div>
+          </section>
+
+          {error ? (
+            <section className="question-empty-state" role="alert">
+              <span className="question-empty-mark" aria-hidden="true">!</span>
+              <div>
+                <h2>Question library unavailable</h2>
+                <p>{error}</p>
               </div>
-            ))}
+              <button type="button" className="button" onClick={load}>Try again</button>
+            </section>
+          ) : loading ? (
+            <div className="question-loading-state" role="status">Loading question library…</div>
+          ) : (
+          <div className="question-builder-grid">
+            <section className="question-builder-panel">
+              <div className="question-builder-heading">
+                <div>
+                  <h2>Question library</h2>
+                  <p>{filteredQuestions.length} {filteredQuestions.length === 1 ? 'question' : 'questions'} shown</p>
+                </div>
+              </div>
+              <div className="question-builder-list">
+                {filteredQuestions.length === 0 ? (
+                  <p className="question-list-empty">{search ? 'No questions match your search.' : 'No questions match this filter.'}</p>
+                ) : filteredQuestions.map((q) => {
+                  const added = isInTest(q._id);
+                  return (
+                    <article key={q._id} className="builder-question-card">
+                      <div className="builder-question-copy">
+                        <p className="builder-question-text">{q.questionText}</p>
+                        <p className="builder-question-meta">
+                          {q.subject?.subjectName || 'General subject'} <span>·</span> {q.mark ?? 0} {q.mark === 1 ? 'mark' : 'marks'}
+                        </p>
+                        <div className="builder-option-preview">
+                          {["a", "b", "c", "d"].filter(key => q.options?.[key]).map(key => (
+                            <span key={key}><strong>{key.toUpperCase()}</strong> {q.options[key]}</span>
+                          ))}
+                        </div>
+                      </div>
+                      {added
+                        ? <span className="question-added-status">Added</span>
+                        : <button type="button" className="button builder-add-button" onClick={() => addQuestion(q._id)}>+ Add</button>}
+                    </article>
+                  );
+                })}
+              </div>
+            </section>
+
+            <section className="question-builder-panel selected-questions-panel">
+              <div className="question-builder-heading">
+                <div>
+                  <h2>In this test</h2>
+                  <p>Questions included in the assessment</p>
+                </div>
+                <span className="selected-question-badge">{testQuestions.length}</span>
+              </div>
+              <div className="question-builder-list">
+                {testQuestions.length === 0 ? (
+                  <div className="question-list-empty">
+                    <strong>No questions added yet</strong>
+                    <span>Use the Add button in the library to build this test.</span>
+                  </div>
+                ) : testQuestions.map((q) => (
+                  <article key={q._id} className="builder-question-card selected">
+                    <div className="builder-question-copy">
+                      <p className="builder-question-text">{q.questionText}</p>
+                      <p className="builder-question-meta">
+                        {q.subject?.subjectName || 'General subject'} <span>·</span> {q.mark ?? 0} {q.mark === 1 ? 'mark' : 'marks'}
+                      </p>
+                    </div>
+                    <button type="button" className="builder-remove-button" onClick={() => removeQuestion(q._id)}>Remove</button>
+                  </article>
+                ))}
+              </div>
+            </section>
           </div>
+          )}
         </div>
       </main>
     </div>

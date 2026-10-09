@@ -6,38 +6,63 @@ export default function TestCard({ test, testStatus, testAccess }){
   const canStart = testAccess && testAccess.canStart
   const canView = testAccess && testAccess.canViewResult
   const canRetake = testAccess && testAccess.canRetake
-  const statusColors = {
-    'bg': testStatus === 'published' ? 'bg-green-100' :
-          testStatus === 'upcoming' ? 'bg-yellow-100':'bg-gray-100',
-    'text': testStatus === 'published' ? 'text-green-800' :
-            testStatus === 'upcoming' ? 'text-yellow-800' :'text-gray-800'
-  }
-  const testDateTime = testStatus === 'upcoming' ?
-                       'Available at: ' + new Date(test.startTime).toLocaleString() :
-                       testStatus === 'published' ?
-                       'Expires at: ' + new Date(test.dueDate).toLocaleString() : '';
-  const statusClassName = `text-xs ${statusColors.bg} ${statusColors.text} px-2 py-0.5 rounded`
+  const statusClassName = testStatus === 'published'
+    ? 'test-status test-status-active'
+    : testStatus === 'upcoming'
+      ? 'test-status test-status-upcoming'
+      : 'test-status test-status-closed'
+  const dateValue = testStatus === 'upcoming' ? test.startTime : testStatus === 'published' ? test.dueDate : null
+  const dateLabel = testStatus === 'upcoming' ? 'Available from' : testStatus === 'published' ? 'Due' : null
+  const testDateTime = dateValue ? new Date(dateValue).toLocaleString() : null
+
   return (
-    <div className="bg-white rounded-xl p-4 shadow-md hover:shadow-lg transition">
-      <div className="flex items-start justify-between">
-        <div>
-          <div className="flex items-center gap-3">
-            <div className="text-lg font-semibold">{test.title}</div> 
-            {testStatus ? <span className={statusClassName}>{testStatus === 'published' ? 'active' : testStatus}</span> : 'No Status'}
+    <article className="student-test-card">
+      <div className="student-test-heading">
+        <div className="student-test-title-group">
+          <span className="test-subject-mark" aria-hidden="true">T</span>
+          <div className="student-test-title-copy">
+            <h3 className="student-test-title">{test.title}</h3>
+            <p className="student-test-subject">{test.subject?.subjectName || 'General subject'}</p>
           </div>
-          <div className="text-sm text-gray-500 mt-1">Subject: {test.subject?.subjectName || 'General'} {testDateTime && <span>| {testDateTime}</span>} </div>
+        </div>
+        <span className={statusClassName}>
+          {testStatus === 'published' ? 'Available' : testStatus || 'No status'}
+        </span>
+      </div>
+
+      {dateLabel && testDateTime && (
+        <p className="student-test-date">
+          <span aria-hidden="true">◷</span>
+          <span>{dateLabel}: <strong>{testDateTime}</strong></span>
+        </p>
+      )}
+
+      <div className="student-test-details">
+        <div className="student-test-detail">
+          <span className="student-test-detail-label">Questions</span>
+          <strong>{test.totalQuestions}</strong>
+        </div>
+        <div className="student-test-detail">
+          <span className="student-test-detail-label">Duration</span>
+          <strong>{test.durationMinutes} min</strong>
+        </div>
+        <div className="student-test-detail">
+          <span className="student-test-detail-label">Attempts</span>
+          <strong>{attemptText}</strong>
         </div>
       </div>
-      <div className="mt-3 grid grid-cols-3 gap-2 text-sm text-gray-600">
-        <div>Total Questions: <span className="font-medium">{test.totalQuestions}</span></div>
-        <div>Duration: <span className="font-medium">{test.durationMinutes}m</span></div>
-        <div>Attempts: <span className="font-medium">{attemptText}</span></div>
+
+      <div className="student-test-actions">
+        {canStart
+          ? <Link to={`/tests/${test._id}/take`} className="student-test-action student-test-action-primary">Start test <span aria-hidden="true">→</span></Link>
+          : <button className="student-test-action student-test-action-disabled" disabled>Start test</button>}
+        {canView
+          ? <Link to={`/tests/${test._id}/results`} className="student-test-action student-test-action-secondary">Results</Link>
+          : <button className="student-test-action student-test-action-disabled" disabled>Results</button>}
+        {canRetake
+          ? <Link to={`/tests/${test._id}/take?retake=1`} className="student-test-action student-test-action-secondary">Retake</Link>
+          : <button className="student-test-action student-test-action-disabled" disabled>Retake</button>}
       </div>
-      <div className="mt-4 flex gap-2">
-        {canStart ? <Link to={`/tests/${test._id}/take`} className="px-3 py-2 bg-indigo-600 text-white rounded-md">Start</Link> : <button className="px-3 py-2 border rounded-md text-gray-400 cursor-not-allowed" disabled>Start</button>}
-        {canView ? <Link to={`/tests/${test._id}/results`} className="px-3 py-2 border rounded-md">Results</Link> : <button className="px-3 py-2 border rounded-md text-gray-400 cursor-not-allowed" disabled>Result</button>}
-        {canRetake ? <Link to={`/tests/${test._id}/take?retake=1`} className="px-3 py-2 border rounded-md">Retake</Link>: <button className="px-3 py-2 border rounded-md text-gray-400 cursor-not-allowed" disabled>Retake</button>}
-      </div>
-    </div>
+    </article>
   )
 }

@@ -11,11 +11,10 @@ export default function Timer({ timeLeft, onExpire }){
   }, [timeLeft, onExpire])
 
   return (
-    <div className={`flex items-center gap-3 font-semibold ${isWarning? 'text-red-500 animate-pulse':''}`}>
-      <div className="bg-white/5 px-3 py-1 rounded-md shadow-sm">
-        {String(mm).padStart(2,'0')}:{String(ss).padStart(2,'0')}
-      </div>
-      {isWarning && <div className="text-sm text-red-400">⚠ Test will auto-submit in 1 minute</div>}
+    <div className={`student-timer ${isWarning ? 'warning' : ''}`} role="timer" aria-live="off" aria-label={`Time remaining ${mm} minutes ${ss} seconds`}>
+      <span className="student-timer-label">Time remaining</span>
+      <strong>{String(mm).padStart(2,'0')}:{String(ss).padStart(2,'0')}</strong>
+      {isWarning && <span className="student-timer-warning">Auto-submit in one minute</span>}
     </div>
   )
 }

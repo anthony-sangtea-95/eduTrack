@@ -1,124 +1,31 @@
-.question-container {
-  min-height: auto;
-  display: flex;
-  position: relative;
-  justify-content: center;
+.main .question-container .create-question-card {
+  min-width: 0;
 }
 
-.question-container h2 {
-  text-align: center;
-  margin-bottom: 20px;
-  color: #61c066;
+.question-container .question-back {
+  position: static;
+  align-self: flex-start;
 }
 
-.create-question-card {
-  background: #ffffff;
-  margin-top: 35px auto;
-  padding: 28px;
-  min-width: 600px;
-  border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+.question-container .correct-options {
+  margin-top: 12px;
 }
 
-.question-form {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+.question-form .teacher-item {
+  width: auto;
+  margin: 0;
+  padding: 8px 11px;
+  border: 1px solid #dce6e2;
+  background: #fff;
+  color: #52655f;
 }
 
-.question-form input,
-.question-form select,
-.question-form textarea {
-  padding: 10px 12px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  font-size: 14px;
+.question-form .teacher-item.selected {
+  border-color: #9ccdb9;
+  background: #e7f5ee;
+  color: #176b59;
 }
 
-.question-form textarea {
-  resize: vertical;
-  min-height: 90px;
-}
-
-.question-form input:focus,
-.question-form select:focus,
-.question-form textarea:focus {
-  outline: none;
-  border-color: #61c066;
-}
-
-/* Correct option */
-.correct-options {
-  display: flex;
-  gap: 16px;
-  margin-top: 6px;
-}
-
-.correct-options label {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-weight: 500;
-}
-
-/* Buttons */
-.question-form button {
-  margin-top: 10px;
-  padding: 12px;
-  border-radius: 8px;
-  border: none;
-  background: #61c066;
-  color: white;
-  font-size: 15px;
-  cursor: pointer;
-}
-
-.question-form button:hover {
-  background: #3ea743;
-}
-
-.question-form button:disabled {
-  background: #9ccc9c;
-  cursor: not-allowed;
-}
-
-.question-back {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  background: transparent;
-  border: none;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  color: #61c066;
-}
-
-.question-back:hover {
-  text-decoration: underline;
-}
-
-.teachers-list {
-  margin-top: 10px;
-  max-height: 150px;
-  overflow-y: auto;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  padding: 6px;
-}
-
-.teacher-item {
-  padding: 8px 10px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: background 0.2s;
-}
-
-.teacher-item:hover {
-  background-color: #bef2c1ba;
-}
-
-.teacher-item.selected {
-  background-color: #9ddea1ba;
+.create-question-card .question-form button[type="submit"] {
+  width: 100%;
 }
