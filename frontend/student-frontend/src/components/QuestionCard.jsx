@@ -6,6 +6,7 @@ export default function QuestionCard({ question, selected, onSelect, disabled })
 
   return (
     <div className="student-question-content">
+      <span className={`difficulty-badge difficulty-${question.difficulty || 'medium'}`}>{question.difficulty || 'medium'}</span>
       <h2 className="student-question-prompt">{question.questionText}</h2>
       <div className="student-answer-options">
         {letters.map(l => (

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 export default function Login() {
   const [email, setEmail] = useState('')
@@ -31,6 +31,7 @@ export default function Login() {
         <input id="student-email" type="email" autoComplete="username" className="input" value={email} onChange={e=>setEmail(e.target.value)} required />
         <label htmlFor="student-password">Password</label>
         <input id="student-password" type="password" autoComplete="current-password" className="input" value={password} onChange={e=>setPassword(e.target.value)} required />
+        <div className="password-reset-login-link"><Link to="/forgot-password">Forgot password?</Link></div>
         <div className="student-login-submit">
           <button className="button" type="submit">Sign in</button>
         </div>

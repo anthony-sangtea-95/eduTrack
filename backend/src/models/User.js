@@ -6,6 +6,9 @@ const userSchema = new mongoose.Schema(
         name: { type: String, required: true },
         email: { type: String, required: true, unique: true },
         password: { type: String, required: true },
+        tokenVersion: { type: Number, default: 0 },
+        passwordResetToken: { type: String, select: false },
+        passwordResetExpires: { type: Date, select: false },
         role: {
             type: String,
             enum: ["admin", "teacher", "student"],

@@ -14,9 +14,9 @@ export const AuthProvider = ({ children }) => {
     })
     const navigate = useNavigate()
 
-    useEffect(()=>{
-        user?.role != 'student' ? logout() : ''
-    }, [])
+    useEffect(() => {
+        if (user && user.role !== 'student') logout()
+    }, [user])
 
     const login = async (email, password) => {
         const res = await API.post('/auth/login', { email, password, role: "student" })

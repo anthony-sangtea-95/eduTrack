@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
 export default function Login() {
@@ -42,6 +42,7 @@ export default function Login() {
           <input id="admin-email" type="email" className="input" autoComplete="username" value={email} onChange={event => setEmail(event.target.value)} required />
           <label htmlFor="admin-password">Password</label>
           <input id="admin-password" type="password" className="input" autoComplete="current-password" value={password} onChange={event => setPassword(event.target.value)} required />
+          <div className="password-reset-login-link"><Link to="/forgot-password">Forgot password?</Link></div>
           <button className="button admin-login-submit" type="submit" disabled={submitting}>
             {submitting ? 'Signing in…' : 'Sign in'}
           </button>

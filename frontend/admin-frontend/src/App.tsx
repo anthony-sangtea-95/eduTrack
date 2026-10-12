@@ -6,12 +6,15 @@ import Subjects from './pages/Subjects.jsx'
 import { AuthProvider } from './context/AuthContext.jsx'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
 import MainLayout from "./layouts/MainLayout.jsx";
+import PasswordReset from "./pages/PasswordReset";
 
 export default function App() {
 return (
 <AuthProvider>
     <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/forgot-password" element={<PasswordReset role="admin" />} />
+        <Route path="/reset-password" element={<PasswordReset role="admin" />} />
 
         <Route
           element={

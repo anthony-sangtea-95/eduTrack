@@ -66,6 +66,24 @@ Student  → Student features
 
 The backend also validates authorization rather than relying only on frontend route protection.
 
+### Password recovery
+
+Admin, teacher, and student sign-in pages include a password reset flow. Reset links are valid for 15 minutes and can only be used once. The backend stores only a hash of each reset token.
+
+For local testing without an email provider, set these variables in `backend/.env`. Console mode prints a one-time reset link in the backend terminal instead of sending email:
+
+```env
+NODE_ENV=development
+PASSWORD_RESET_EMAIL_MODE=console
+ADMIN_FRONTEND_URL=http://localhost:5173
+TEACHER_FRONTEND_URL=http://localhost:5174
+STUDENT_FRONTEND_URL=http://localhost:5175
+```
+
+Start the backend from `backend/` with `node server.js`, then start the frontend you want to test from its own folder using `npm run dev -- --port 5173` for admin, `npm run dev -- --port 5174` for teacher, or `npm run dev -- --port 5175` for student. On the login page, choose **Forgot password?**, submit an existing account's email, then copy the `[DEV PASSWORD RESET]` link from the backend terminal into your browser. Choose a new password before the link expires in 15 minutes.
+
+Console mode is rejected unless `NODE_ENV=development`. Before deploying, unset `PASSWORD_RESET_EMAIL_MODE` or set it to `resend`, and configure `RESEND_API_KEY`, `PASSWORD_RESET_FROM` with a verified sender domain, and each deployed frontend URL. Never enable console mode in production: it writes password-reset links to application logs.
+
 ---
 
 ## 🧪 Test & Assessment Workflow

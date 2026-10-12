@@ -32,6 +32,12 @@ const questionSchema = new mongoose.Schema(
             required: true,
         },
 
+        difficulty: {
+            type: String,
+            enum: ["easy", "medium", "hard"],
+            default: "medium",
+        },
+
         createdBy: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",

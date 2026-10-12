@@ -8,6 +8,7 @@ export default function CreateTest() {
   const navigate = useNavigate();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [difficulty, setDifficulty] = useState("medium");
   const [dueDate, setDueDate] = useState("");
   const [durationMinutes, setDurationMinutes] = useState("");
   const [students, setStudents] = useState([]);
@@ -41,6 +42,7 @@ export default function CreateTest() {
     const payload = {
       title,
       description,
+      difficulty,
       dueDate,
       durationMinutes: Number(durationMinutes),
       subject: selectedSubject,
@@ -93,6 +95,15 @@ export default function CreateTest() {
       <div>
         <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="test-description">Description</label>
         <textarea id="test-description" placeholder="Add instructions or a short overview for students" rows={3} className="w-full border rounded-lg p-2.5" value={description} onChange={e => setDescription(e.target.value)} />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="test-difficulty">Difficulty</label>
+        <select id="test-difficulty" className="w-full border rounded-lg p-2.5 bg-white" value={difficulty} onChange={e => setDifficulty(e.target.value)}>
+          <option value="easy">Easy</option>
+          <option value="medium">Medium</option>
+          <option value="hard">Hard</option>
+        </select>
       </div>
 
       {/* Date & Time Grid */}

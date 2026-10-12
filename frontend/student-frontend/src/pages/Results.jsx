@@ -107,6 +107,7 @@ const Results = () => {
 
                     return (
                       <article key={answer.question._id} className={`student-result-answer ${isCorrect ? 'correct' : 'incorrect'}`}>
+                        <span className={`difficulty-badge difficulty-${answer.question.difficulty || 'medium'}`}>{answer.question.difficulty || 'medium'}</span>
                         <h3 className="student-result-question">{answer.question.questionText}</h3>
                         <p className="student-result-answer-text">Your answer: <strong>{selectedText}</strong></p>
                         <p className="student-result-answer-text">Correct answer: <strong>{correctText}</strong></p>

@@ -19,6 +19,7 @@ export default function EditQuestion() {
     options: { a: "", b: "", c: "", d: "" },
     correctOption: "",
     mark: "",
+    difficulty: "medium",
     allowedTeachers: [],
   });
 
@@ -36,6 +37,7 @@ export default function EditQuestion() {
         options: q.options,
         correctOption: q.correctOption,
         mark: q.mark ?? "",
+        difficulty: q.difficulty || "medium",
         allowedTeachers: q.allowedTeachers || [],
       });
     } catch (err) {
@@ -156,6 +158,21 @@ export default function EditQuestion() {
                       min="1"
                       required
                     />
+                </div>
+
+                <div className="form-group">
+                    <label htmlFor="edit-question-difficulty">Difficulty</label>
+                    <select
+                    id="edit-question-difficulty"
+                    name="difficulty"
+                    value={form.difficulty}
+                    onChange={handleChange}
+                    required
+                    >
+                    <option value="easy">Easy</option>
+                    <option value="medium">Medium</option>
+                    <option value="hard">Hard</option>
+                    </select>
                 </div>
 
                 <div className="form-group">

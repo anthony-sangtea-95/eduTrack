@@ -39,6 +39,7 @@ export default function ViewResult(){
             <div className="student-detailed-answer-list">
               {submission.answers.map(a=> (
                 <article key={a.question._id} className={`student-result-answer ${a.selected === a.question.correctOption ? 'correct' : 'incorrect'}`}>
+                  <span className={`difficulty-badge difficulty-${a.question.difficulty || 'medium'}`}>{a.question.difficulty || 'medium'}</span>
                   <h3 className="student-result-question">{a.question.questionText}</h3>
                   <p className="student-result-answer-text">
                     Your answer: <strong>{a.selected ? `${a.selected.toUpperCase()}. ${a.question.options?.[a.selected] || 'No option text'}` : 'Not answered'}</strong>

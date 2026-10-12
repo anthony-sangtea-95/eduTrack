@@ -15,6 +15,7 @@ export default function CreateQuestion() {
     options: { a: "", b: "", c: "", d: "" },
     correctOption: "",
     mark: "",
+    difficulty: "medium",
     allowedTeachers: [],
   });
 
@@ -86,6 +87,7 @@ const toggleTeacher = (teacherId) => {
         options: { a: "", b: "", c: "", d: "" },
         correctOption: "",
         mark: "",
+        difficulty: "medium",
         allowedTeachers: [],
       });
     } catch (err) {
@@ -121,6 +123,15 @@ const toggleTeacher = (teacherId) => {
                 <label htmlFor="question-mark">Marks</label>
                 <input id="question-mark" type="number" name="mark" placeholder="e.g. 1" value={form.mark} onChange={handleChange} min="1" required />
               </div>
+            </div>
+
+            <div className="question-field">
+              <label htmlFor="question-difficulty">Difficulty</label>
+              <select id="question-difficulty" name="difficulty" value={form.difficulty} onChange={handleChange} required>
+                <option value="easy">Easy</option>
+                <option value="medium">Medium</option>
+                <option value="hard">Hard</option>
+              </select>
             </div>
 
             <div className="question-field">

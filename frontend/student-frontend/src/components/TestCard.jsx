@@ -23,6 +23,7 @@ export default function TestCard({ test, testStatus, testAccess }){
           <div className="student-test-title-copy">
             <h3 className="student-test-title">{test.title}</h3>
             <p className="student-test-subject">{test.subject?.subjectName || 'General subject'}</p>
+            <span className={`difficulty-badge difficulty-${test.difficulty || 'medium'}`}>{test.difficulty || 'medium'}</span>
           </div>
         </div>
         <span className={statusClassName}>

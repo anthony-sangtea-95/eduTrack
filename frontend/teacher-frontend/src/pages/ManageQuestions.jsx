@@ -164,7 +164,7 @@ export default function ManageQuestions() {
                       <div className="builder-question-copy">
                         <p className="builder-question-text">{q.questionText}</p>
                         <p className="builder-question-meta">
-                          {q.subject?.subjectName || 'General subject'} <span>·</span> {q.mark ?? 0} {q.mark === 1 ? 'mark' : 'marks'}
+                          {q.subject?.subjectName || 'General subject'} <span>·</span> {q.mark ?? 0} {q.mark === 1 ? 'mark' : 'marks'} <span>·</span> <span className={`difficulty-badge difficulty-${q.difficulty || 'medium'}`}>{q.difficulty || 'medium'}</span>
                         </p>
                         <div className="builder-option-preview">
                           {["a", "b", "c", "d"].filter(key => q.options?.[key]).map(key => (
@@ -200,7 +200,7 @@ export default function ManageQuestions() {
                     <div className="builder-question-copy">
                       <p className="builder-question-text">{q.questionText}</p>
                       <p className="builder-question-meta">
-                        {q.subject?.subjectName || 'General subject'} <span>·</span> {q.mark ?? 0} {q.mark === 1 ? 'mark' : 'marks'}
+                        {q.subject?.subjectName || 'General subject'} <span>·</span> {q.mark ?? 0} {q.mark === 1 ? 'mark' : 'marks'} <span>·</span> <span className={`difficulty-badge difficulty-${q.difficulty || 'medium'}`}>{q.difficulty || 'medium'}</span>
                       </p>
                     </div>
                     <button type="button" className="builder-remove-button" onClick={() => removeQuestion(q._id)}>Remove</button>

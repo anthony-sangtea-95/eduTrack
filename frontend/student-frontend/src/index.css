@@ -196,7 +196,12 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .student-test-heading { min-width: 0; }
 .student-test-eyebrow { margin: 0 0 4px; color: #087f8c; font-size: .66rem; font-weight: 750; letter-spacing: .1em; text-transform: uppercase; }
 .student-test-heading h1 { overflow: hidden; margin: 0; color: #193740; font-size: 1.1rem; letter-spacing: -.02em; text-overflow: ellipsis; white-space: nowrap; }
-.student-test-heading > p:last-child { margin: 4px 0 0; color: #75888e; font-size: .78rem; }
+.student-test-heading > p:last-of-type { margin: 4px 0 0; color: #75888e; font-size: .78rem; }
+.difficulty-badge { display: inline-flex; align-items: center; width: fit-content; padding: 4px 9px; border-radius: 999px; font-size: .7rem; font-weight: 700; text-transform: capitalize; white-space: nowrap; }
+.difficulty-easy { background: #e6f5ed; color: #176c49; }
+.difficulty-medium { background: #fff4df; color: #94600b; }
+.difficulty-hard { background: #fff0ee; color: #b5473f; }
+.student-test-title-copy > .difficulty-badge { margin-top: 8px; }
 .student-test-controls { display: flex; flex: 0 0 auto; align-items: center; gap: 14px; }
 .student-test-progress { display: grid; gap: 3px; color: #71838a; font-size: .68rem; }
 .student-test-progress strong { color: #314c54; font-size: .9rem; }
@@ -217,6 +222,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .student-answer-state { padding: 5px 9px; border-radius: 999px; background: #f0f3f5; color: #61717a; font-size: .69rem; font-weight: 700; }
 .student-answer-state.answered { background: #e6f5ed; color: #20704d; }
 .student-question-content { display: grid; gap: 20px; }
+.student-question-content > .difficulty-badge { margin-bottom: -12px; }
 .student-question-prompt { margin: 0; color: #213840; font-size: clamp(1.1rem, 2vw, 1.35rem); font-weight: 650; line-height: 1.55; }
 .student-answer-options { display: grid; gap: 10px; }
 .student-answer-option { display: flex; min-height: 58px; align-items: center; gap: 12px; padding: 12px 14px; border: 1px solid #e0e9eb; border-radius: 11px; background: #fff; cursor: pointer; transition: border-color .15s, background .15s, box-shadow .15s; }
@@ -297,6 +303,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .student-result-answers { display: grid; gap: 10px; padding: 18px 24px; overflow-y: auto; }
 .student-result-answer { padding: 14px; border: 1px solid #dcebe2; border-radius: 11px; background: #f7fbf8; }
 .student-result-answer.incorrect { border-color: #f0ddda; background: #fff9f8; }
+.student-result-answer > .difficulty-badge { margin-bottom: 9px; }
 .student-result-question { margin: 0 0 11px; color: #2b4149; font-size: .87rem; line-height: 1.5; }
 .student-result-answer-text { margin: 6px 0 0; color: #718087; font-size: .78rem; line-height: 1.45; }
 .student-result-answer-text strong { color: #3d575e; font-weight: 650; }
@@ -359,3 +366,17 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .student-result-summary { gap: 12px; padding: 17px; }
   .student-progress-circle { width: 128px; height: 128px; }
 }
+
+.password-reset-login-link { margin-top: 10px; text-align: right; font-size: .84rem; }
+.password-reset-login-link a, .password-reset-secondary-link { color: var(--accent); font-weight: 650; text-decoration: none; }
+.password-reset-login-link a:hover, .password-reset-secondary-link:hover { text-decoration: underline; }
+.password-reset-page { display: grid; min-height: 100vh; place-items: center; padding: 24px; background: #f3f8fa; }
+.password-reset-card { width: min(440px, 100%); padding: clamp(25px, 4vw, 38px); border: 1px solid var(--line); border-radius: 20px; background: #fff; box-shadow: 0 24px 70px rgba(23,61,68,.12); }
+.password-reset-eyebrow { margin: 0 0 10px; color: var(--accent); font-size: .72rem; font-weight: 750; letter-spacing: .11em; text-transform: uppercase; }
+.password-reset-card h1 { margin: 0; color: #172033; font-size: 1.7rem; letter-spacing: -.04em; }
+.password-reset-description { margin: 9px 0 22px; color: var(--muted); font-size: .9rem; line-height: 1.55; }
+.password-reset-form label { display: block; margin: 18px 0 7px; color: #344155; font-size: .88rem; font-weight: 650; }
+.password-reset-form .input { margin: 0; }
+.password-reset-submit { width: 100%; margin-top: 22px; }
+.password-reset-secondary-link { display: inline-block; margin-top: 20px; font-size: .88rem; }
+.password-reset-error { margin: 0 0 15px; padding: 10px 12px; border: 1px solid #f0d3d0; border-radius: 9px; background: #fff7f6; color: #a43c35; font-size: .86rem; }

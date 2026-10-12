@@ -92,6 +92,7 @@ export default function Questions() {
               <th>Question</th>
               <th>Subject</th>
               <th>Mark</th>
+              <th>Difficulty</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -102,6 +103,7 @@ export default function Questions() {
                 <td>{q.questionText}</td>
                 <td>{q.subject?.subjectName || '—'}</td>
                 <td><span className="mark-pill">{q.mark} {q.mark === 1 ? 'mark' : 'marks'}</span></td>
+                <td><span className={`difficulty-badge difficulty-${q.difficulty || 'medium'}`}>{q.difficulty || 'medium'}</span></td>
                 <td className="actions">
                   <Link
                     to={`/teacher/questions/${q._id}/edit`}

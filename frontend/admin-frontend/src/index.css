@@ -140,6 +140,21 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .admin-user-name { display: flex; align-items: center; gap: 11px; }
 .admin-user-name > span { display: grid; flex: 0 0 34px; width: 34px; height: 34px; place-items: center; border-radius: 50%; background: var(--accent-soft); color: var(--accent); font-size: .8rem; font-weight: 750; }
 .admin-user-name strong { color: #26334a; font-weight: 650; }
+.admin-users-table { min-width: 760px; }
+.admin-user-form-card { margin-bottom: 22px; }
+.admin-user-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: 16px; padding: 20px; }
+.admin-user-form > .admin-login-error { grid-column: 1 / -1; margin: 0; }
+.admin-user-form > label { display: grid; gap: 7px; color: #344155; font-size: .86rem; font-weight: 650; }
+.admin-user-form .input { margin: 0; }
+.admin-user-form-hint { color: var(--muted); font-size: .78rem; font-weight: 400; }
+.admin-user-form-actions { display: flex; align-items: center; gap: 10px; grid-column: 1 / -1; }
+.admin-user-success { margin: -8px 0 18px; color: #176c49; font-size: .9rem; font-weight: 650; }
+.admin-user-cancel { min-height: 42px; padding: 9px 14px; border: 1px solid #dfe5ef; border-radius: 9px; background: #fff; color: #46536a; font-weight: 650; cursor: pointer; }
+.admin-user-actions { display: flex; gap: 8px; }
+.admin-user-edit, .admin-user-delete { min-height: 34px; padding: 6px 11px; border: 0; border-radius: 8px; font-size: .8rem; font-weight: 650; cursor: pointer; }
+.admin-user-edit { background: #edf2ff; color: #3157c8; }
+.admin-user-delete { background: #fff0f0; color: #b4232e; }
+.admin-user-delete:disabled { cursor: not-allowed; opacity: .5; }
 .admin-role-badge { display: inline-flex; align-items: center; min-height: 25px; padding: 3px 9px; border-radius: 999px; background: #f0f2f6; color: #566176; font-size: .73rem; font-weight: 700; text-transform: capitalize; }
 .admin-role-badge.admin-role-admin { background: #edf2ff; color: #3157c8; }
 .admin-role-badge.admin-role-teacher { background: #eaf7f2; color: #187653; }
@@ -170,6 +185,19 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .admin-login-card .input { margin: 0; }
 .admin-login-submit { width: 100%; margin-top: 24px; }
 .admin-login-error { margin: 0 0 15px; padding: 10px 12px; border: 1px solid #f2d8d8; border-radius: 9px; background: #fff5f5; color: #a3212b; font-size: .86rem; }
+.password-reset-login-link { margin-top: 10px; text-align: right; font-size: .84rem; }
+.password-reset-login-link a, .password-reset-secondary-link { color: var(--accent); font-weight: 650; text-decoration: none; }
+.password-reset-login-link a:hover, .password-reset-secondary-link:hover { text-decoration: underline; }
+.password-reset-page { display: grid; min-height: 100vh; place-items: center; padding: 24px; background: radial-gradient(ellipse at 12% 15%, #e5ecff 0, transparent 37%), #f4f7fb; }
+.password-reset-card { width: min(440px, 100%); padding: clamp(25px, 4vw, 38px); border: 1px solid rgba(220,227,238,.9); border-radius: 20px; background: #fff; box-shadow: 0 24px 70px rgba(26,43,77,.12); }
+.password-reset-eyebrow { margin: 0 0 10px; color: var(--accent); font-size: .72rem; font-weight: 750; letter-spacing: .11em; text-transform: uppercase; }
+.password-reset-card h1 { margin: 0; color: #172033; font-size: 1.7rem; letter-spacing: -.04em; }
+.password-reset-description { margin: 9px 0 22px; color: var(--muted); font-size: .9rem; line-height: 1.55; }
+.password-reset-form label { display: block; margin: 18px 0 7px; color: #344155; font-size: .88rem; font-weight: 650; }
+.password-reset-form .input { margin: 0; }
+.password-reset-submit { width: 100%; margin-top: 22px; }
+.password-reset-secondary-link { display: inline-block; margin-top: 20px; font-size: .88rem; }
+.password-reset-error { margin: 0 0 15px; padding: 10px 12px; border: 1px solid #f2d8d8; border-radius: 9px; background: #fff5f5; color: #a3212b; font-size: .86rem; }
 
 @media (max-width: 760px) {
   .app-layout { display: block; }
@@ -197,6 +225,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .admin-count-card { align-self: flex-start; }
   .admin-data-toolbar { align-items: stretch; flex-direction: column; }
   .admin-search { width: 100%; }
+  .admin-user-form { grid-template-columns: 1fr; padding: 16px; }
+  .admin-user-form-actions { grid-column: auto; }
   .admin-state-card, .admin-empty-state { align-items: flex-start; flex-wrap: wrap; padding: 18px 14px; }
   .admin-state-card > div, .admin-empty-state > div { flex-basis: calc(100% - 54px); }
   .admin-state-card .button { margin-left: 52px; }

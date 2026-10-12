@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import API from '../services/api'
+import { useAuth } from '../context/AuthContext'
 
 
 export default function ManageUsers() {
@@ -7,6 +8,13 @@ export default function ManageUsers() {
   const [search, setSearch] = useState('')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [actionError, setActionError] = useState('')
+  const [actionMessage, setActionMessage] = useState('')
+  const [editingId, setEditingId] = useState(null)
+  const [saving, setSaving] = useState(false)
+  const [deletingId, setDeletingId] = useState(null)
+  const [form, setForm] = useState({ name: '', email: '', role: 'student', password: '' })
+  const { user: currentUser } = useAuth()
 
   const load = async () => {
     setLoading(true)
@@ -23,6 +31,71 @@ export default function ManageUsers() {
   }
 
   useEffect(() => { load() }, [])
+
+  const resetForm = () => {
+    setEditingId(null)
+    setActionError('')
+    setActionMessage('')
+    setForm({ name: '', email: '', role: 'student', password: '' })
+  }
+
+  const submitUser = async event => {
+    event.preventDefault()
+    setActionError('')
+    setActionMessage('')
+    setSaving(true)
+
+    const payload = {
+      name: form.name.trim(),
+      email: form.email.trim(),
+      role: form.role,
+      ...(form.password ? { password: form.password } : {}),
+    }
+
+    try {
+      if (editingId) {
+        const response = await API.put(`/admin/users/${editingId}`, payload)
+        setUsers(previous => previous.map(user => user._id === editingId ? response.data : user))
+        resetForm()
+        setActionMessage('Account updated successfully.')
+      } else {
+        const response = await API.post('/admin/users', payload)
+        setUsers(previous => [...previous, response.data])
+        resetForm()
+        setActionMessage('Account added successfully.')
+      }
+    } catch (requestError) {
+      setActionError(requestError.response?.data?.message || 'Unable to save this account. Please try again.')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const editUser = user => {
+    setEditingId(user._id)
+    setActionError('')
+    setActionMessage('')
+    setForm({ name: user.name || '', email: user.email || '', role: user.role || 'student', password: '' })
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const deleteUser = async user => {
+    if (!window.confirm(`Delete ${user.name || user.email}'s account? This cannot be undone.`)) return
+
+    setActionError('')
+    setActionMessage('')
+    setDeletingId(user._id)
+    try {
+      await API.delete(`/admin/users/${user._id}`)
+      setUsers(previous => previous.filter(account => account._id !== user._id))
+      if (editingId === user._id) resetForm()
+      setActionMessage('Account deleted successfully.')
+    } catch (requestError) {
+      setActionError(requestError.response?.data?.message || 'Unable to delete this account. Please try again.')
+    } finally {
+      setDeletingId(null)
+    }
+  }
 
   const filteredUsers = useMemo(() => {
     const query = search.trim().toLowerCase()
@@ -48,6 +121,47 @@ export default function ManageUsers() {
             </div>
           )}
         </header>
+
+        {actionMessage && <p className="admin-user-success" role="status">{actionMessage}</p>}
+
+        <section className="admin-data-card admin-user-form-card">
+          <div className="admin-data-toolbar">
+            <div>
+              <h2>{editingId ? 'Update account' : 'Add an account'}</h2>
+              <p>{editingId ? 'Update account details. Leave the password blank to keep it unchanged.' : 'Create an administrator, teacher, or student account.'}</p>
+            </div>
+          </div>
+          <form className="admin-user-form" onSubmit={submitUser}>
+            {actionError && <div className="admin-login-error" role="alert">{actionError}</div>}
+            <label>
+              <span>Full name</span>
+              <input className="input" type="text" value={form.name} onChange={event => setForm(previous => ({ ...previous, name: event.target.value }))} maxLength={100} autoComplete="name" required />
+            </label>
+            <label>
+              <span>Email address</span>
+              <input className="input" type="email" value={form.email} onChange={event => setForm(previous => ({ ...previous, email: event.target.value }))} maxLength={254} autoComplete="email" required />
+            </label>
+            <label>
+              <span>Role</span>
+              <select className="input" value={form.role} onChange={event => setForm(previous => ({ ...previous, role: event.target.value }))} disabled={editingId === currentUser?._id} required>
+                <option value="admin">Admin</option>
+                <option value="teacher">Teacher</option>
+                <option value="student">Student</option>
+              </select>
+              {editingId === currentUser?._id && <small className="admin-user-form-hint">Your account must remain an administrator.</small>}
+            </label>
+            <label>
+              <span>{editingId ? 'New password (optional)' : 'Password'}</span>
+              <input className="input" type="password" value={form.password} onChange={event => setForm(previous => ({ ...previous, password: event.target.value }))} minLength={8} maxLength={72} autoComplete="new-password" required={!editingId} />
+            </label>
+            <div className="admin-user-form-actions">
+              <button className="button" type="submit" disabled={saving || loading}>
+                {saving ? 'Saving…' : editingId ? 'Save changes' : 'Add account'}
+              </button>
+              {editingId && <button className="admin-user-cancel" type="button" disabled={saving} onClick={resetForm}>Cancel</button>}
+            </div>
+          </form>
+        </section>
 
         {error ? (
           <section className="admin-state-card admin-error-card" role="alert">
@@ -94,7 +208,7 @@ export default function ManageUsers() {
               <div className="admin-table-scroll">
                 <table className="table admin-users-table">
                   <thead>
-                    <tr><th>Name</th><th>Email address</th><th>Role</th></tr>
+                    <tr><th>Name</th><th>Email address</th><th>Role</th><th>Actions</th></tr>
                   </thead>
                   <tbody>
                     {filteredUsers.map(user => (
@@ -107,6 +221,20 @@ export default function ManageUsers() {
                         </td>
                         <td>{user.email || '—'}</td>
                         <td><span className={`admin-role-badge admin-role-${(user.role || 'unknown').toLowerCase()}`}>{user.role || 'Unknown'}</span></td>
+                        <td>
+                          <div className="admin-user-actions">
+                            <button className="admin-user-edit" type="button" onClick={() => editUser(user)}>Edit</button>
+                            <button
+                              className="admin-user-delete"
+                              type="button"
+                              disabled={user._id === currentUser?._id || deletingId === user._id}
+                              title={user._id === currentUser?._id ? 'You cannot delete your own account' : undefined}
+                              onClick={() => deleteUser(user)}
+                            >
+                              {deletingId === user._id ? 'Deleting…' : 'Delete'}
+                            </button>
+                          </div>
+                        </td>
                       </tr>
                     ))}
                   </tbody>

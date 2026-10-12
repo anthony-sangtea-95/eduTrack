@@ -9,6 +9,7 @@ export default function TestList({ test, handleDelete }) {
           <div className="test-title-row">
             <strong className="test-title">{test.title}</strong>
             <span className={statusClassName}>{test.status || 'draft'}</span>
+            <span className={`difficulty-badge difficulty-${test.difficulty || 'medium'}`}>{test.difficulty || 'medium'}</span>
             {test.totalQuestions > 0
               ? <span className="test-question-count">{test.totalQuestions} questions</span>
               : <span className="test-question-count test-question-count-empty">No questions</span>}

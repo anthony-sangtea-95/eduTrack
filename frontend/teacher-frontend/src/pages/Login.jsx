@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 
 export default function Login() {
@@ -32,6 +32,7 @@ return (
 <input id="teacher-email" type="email" autoComplete="username" className="input" value={email} onChange={e=>setEmail(e.target.value)} required />
 <label htmlFor="teacher-password">Password</label>
 <input id="teacher-password" type="password" autoComplete="current-password" className="input" value={password} onChange={e=>setPassword(e.target.value)} required />
+<div className="password-reset-login-link"><Link to="/forgot-password">Forgot password?</Link></div>
 <div style={{marginTop:12}}>
 <button className="button" type="submit">Sign in</button>
 </div>

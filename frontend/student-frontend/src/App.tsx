@@ -4,6 +4,7 @@ import Dashboard from './pages/Dashboard.jsx'
 import MyTests from './pages/MyTests.jsx'
 import TakeTest from './pages/TakeTest.jsx'
 import ViewResult from './pages/ViewResult.jsx'
+import PasswordReset from './pages/PasswordReset'
 import Results from './pages/Results.jsx'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
 
@@ -11,6 +12,8 @@ export default function App() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
+      <Route path="/forgot-password" element={<PasswordReset role="student" />} />
+      <Route path="/reset-password" element={<PasswordReset role="student" />} />
 
       <Route path="/" element={<ProtectedRoute><Navigate to="/dashboard" replace /></ProtectedRoute>} />
 

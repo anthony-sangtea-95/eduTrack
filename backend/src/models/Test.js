@@ -4,6 +4,11 @@ const testSchema = new mongoose.Schema(
   {
     title: { type: String, required: true },
     description: String,
+    difficulty: {
+      type: String,
+      enum: ["easy", "medium", "hard"],
+      default: "medium",
+    },
 
     dueDate: Date,
 

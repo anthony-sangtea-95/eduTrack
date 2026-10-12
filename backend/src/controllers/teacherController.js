@@ -27,12 +27,18 @@ export const createTest = async (req, res) => {
           assignedStudents,
           status,
           startTime,
+          difficulty = "medium",
           attemptRules = {}
         } = req.body;
+
+        if (!["easy", "medium", "hard"].includes(difficulty)) {
+            return res.status(400).json({ success: false, message: "Difficulty must be easy, medium, or hard" });
+        }
 
         const test = await Test.create({
             title,
             description,
+            difficulty,
             dueDate,
             durationMinutes,
             subject,
@@ -86,8 +92,13 @@ export const updateTest = async (req, res) => {
           assignedStudents,
           status,
           startTime,
+          difficulty,
           attemptRules = {}
         } = req.body;
+
+        if (difficulty !== undefined && !["easy", "medium", "hard"].includes(difficulty)) {
+            return res.status(400).json({ message: "Difficulty must be easy, medium, or hard" });
+        }
 
         const test = await Test.findOne({
             _id: req.params.testId,
@@ -104,6 +115,7 @@ export const updateTest = async (req, res) => {
         test.durationMinutes = durationMinutes;
         test.subject = subject;
         test.assignedStudents = assignedStudents;
+        if (difficulty !== undefined) test.difficulty = difficulty;
 
         // persist new fields
         test.status = status || test.status;
@@ -265,7 +277,11 @@ export const getQuestionsByTest = async (req, res) => {
 // @desc Add question to a test
 export const createQuestion = async (req, res) => {
     try {
-        const { subject: subjectId, questionText, options, correctOption, mark,allowedTeachers = [] } = req.body;
+        const { subject: subjectId, questionText, options, correctOption, mark, difficulty = "medium", allowedTeachers = [] } = req.body;
+
+        if (!["easy", "medium", "hard"].includes(difficulty)) {
+            return res.status(400).json({ message: "Difficulty must be easy, medium, or hard" });
+        }
 
         const subjectExists = await Subject.findById(subjectId);
 
@@ -279,6 +295,7 @@ export const createQuestion = async (req, res) => {
             options,
             correctOption,
             mark,
+            difficulty,
             createdBy: req.user._id,
             allowedTeachers,
         });
@@ -397,17 +414,30 @@ export const getQuestionById = async (req, res) => {
 }
 
 export const updateQuestion = async (req, res) => {
+    let session;
+    let questionNotFound = false;
     try {
-        const session = await mongoose.startSession();
-        const { questionText, options, correctOption, mark,allowedTeachers } = req.body;
+        const { questionText, options, correctOption, mark, difficulty, allowedTeachers } = req.body;
         const { questionId } = req.params;
+        if (!mongoose.Types.ObjectId.isValid(questionId)) {
+            return res.status(400).json({ message: "Invalid question ID" });
+        }
+        if (difficulty !== undefined && !["easy", "medium", "hard"].includes(difficulty)) {
+            return res.status(400).json({ message: "Difficulty must be easy, medium, or hard" });
+        }
+        session = await mongoose.startSession();
         await session.withTransaction(async () => {
-            const question = await Question.findById(questionId);
+            const question = await Question.findById(questionId).session(session);
+            if (!question) {
+                questionNotFound = true;
+                throw new Error("Question not found");
+            }
             const oldMark = question.mark;
             question.questionText = questionText;
             question.options = options;
             question.correctOption = correctOption;
             question.mark = mark;
+            if (difficulty !== undefined) question.difficulty = difficulty;
             question.allowedTeachers = allowedTeachers;
             await question.save();
             const delta = question.mark - oldMark;
@@ -416,9 +446,14 @@ export const updateQuestion = async (req, res) => {
                 { $inc: { totalMarks: delta } }
             );
         });
-        res.status(200).json({ success: true });
+        return res.status(200).json({ success: true });
     } catch (error) {
+        if (questionNotFound) {
+            return res.status(404).json({ message: "Question not found" });
+        }
         return res.status(500).json({ message: error.message })
+    } finally {
+        if (session) await session.endSession();
     }
 }
 
