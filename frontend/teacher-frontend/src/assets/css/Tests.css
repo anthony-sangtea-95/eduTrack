@@ -11,3 +11,32 @@
   outline: 3px solid rgba(22, 131, 111, 0.3);
   outline-offset: 2px;
 }
+
+.tests-filter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  padding: 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.tests-filter-field {
+  display: grid;
+  gap: 6px;
+  color: #52645e;
+  font-size: .78rem;
+  font-weight: 650;
+}
+
+.tests-filter-field .input {
+  min-width: 0;
+  margin: 0;
+}
+
+.tests-filter-empty {
+  margin: 0;
+  padding: 24px 16px;
+  color: #71817b;
+  font-size: .88rem;
+  text-align: center;
+}

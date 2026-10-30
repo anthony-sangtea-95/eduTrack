@@ -6,8 +6,12 @@ const testSchema = new mongoose.Schema(
     description: String,
     difficulty: {
       type: String,
-      enum: ["easy", "medium", "hard"],
+      enum: ["easy", "medium", "hard", "mixed"],
       default: "medium",
+    },
+    difficultyTags: {
+      type: [{ type: String, enum: ["easy", "medium", "hard"] }],
+      default: [],
     },
 
     dueDate: Date,

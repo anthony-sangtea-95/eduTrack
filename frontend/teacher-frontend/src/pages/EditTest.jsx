@@ -12,6 +12,7 @@ export default function EditTest() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [difficulty, setDifficulty] = useState("medium");
+  const [difficultyTags, setDifficultyTags] = useState([]);
   const [dueDate, setDueDate] = useState("");
   const [students, setStudents] = useState([]);
   const [selectedStudents, setSelectedStudents] = useState([]);
@@ -48,6 +49,7 @@ export default function EditTest() {
       setTitle(test.title);
       setDescription(test.description || "");
       setDifficulty(test.difficulty || "medium");
+      setDifficultyTags(test.difficultyTags || []);
       setDueDate(
         test.dueDate
           ? new Date(test.dueDate).toISOString().split("T")[0]
@@ -87,6 +89,11 @@ export default function EditTest() {
   );
 
   const submitHandler = async () => {
+    if (difficulty === "mixed" && difficultyTags.length < 2) {
+      showError("Select at least two difficulty tags for a mixed test");
+      return;
+    }
+
     try {
       setSaving(true);
 
@@ -94,6 +101,7 @@ export default function EditTest() {
         title,
         description,
         difficulty,
+        difficultyTags,
         dueDate,
         durationMinutes: Number(durationMinutes),
         subject: selectedSubject,
@@ -187,8 +195,30 @@ export default function EditTest() {
             >
               <option value="easy">Easy</option>
               <option value="medium">Medium</option>
-              <option value="hard">Hard</option>
+              <option value="hard">Difficult</option>
+              <option value="mixed">Mixed</option>
             </select>
+            {difficulty === "mixed" && (
+              <fieldset className="mt-3 flex flex-wrap gap-4">
+                <legend className="mb-2 text-sm text-slate-600">Select at least two difficulty tags</legend>
+                {[
+                  ["easy", "Easy"],
+                  ["medium", "Medium"],
+                  ["hard", "Difficult"],
+                ].map(([value, label]) => (
+                  <label key={value} className="flex items-center gap-2 text-sm text-slate-700">
+                    <input
+                      type="checkbox"
+                      checked={difficultyTags.includes(value)}
+                      onChange={() => setDifficultyTags(current => current.includes(value)
+                        ? current.filter(tag => tag !== value)
+                        : [...current, value])}
+                    />
+                    {label}
+                  </label>
+                ))}
+              </fieldset>
+            )}
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

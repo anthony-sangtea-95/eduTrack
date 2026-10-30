@@ -3,13 +3,16 @@ import { Link } from 'react-router-dom'
 export default function TestList({ test, handleDelete }) {
     const statusClassName = `test-status-badge test-status-${test.status || 'draft'}`
     const createdDate = test.createdAt ? new Date(test.createdAt).toLocaleDateString() : '—'
+    const difficultyLabel = test.difficulty === 'mixed'
+      ? `Mixed (${(test.difficultyTags || []).map(tag => tag === 'hard' ? 'Difficult' : tag).join(' + ')})`
+      : test.difficulty === 'hard' ? 'Difficult' : test.difficulty || 'medium'
     return (
       <li className="test-item">
         <div className="test-info">
           <div className="test-title-row">
             <strong className="test-title">{test.title}</strong>
             <span className={statusClassName}>{test.status || 'draft'}</span>
-            <span className={`difficulty-badge difficulty-${test.difficulty || 'medium'}`}>{test.difficulty || 'medium'}</span>
+            <span className={`difficulty-badge difficulty-${test.difficulty || 'medium'}`}>{difficultyLabel}</span>
             {test.totalQuestions > 0
               ? <span className="test-question-count">{test.totalQuestions} questions</span>
               : <span className="test-question-count test-question-count-empty">No questions</span>}

@@ -3,6 +3,8 @@ import { protect } from "../middleware/authMiddleware.js";
 import { requireRole } from "../middleware/roleMiddleware.js";
 import {
     getAllUsers,
+    getAdminAnalytics,
+    getAdminReport,
     createUser,
     updateUser,
     deleteUser,
@@ -16,6 +18,8 @@ const router = express.Router();
 
 router.use(protect, requireRole("admin"));
 
+router.get("/analytics", getAdminAnalytics);
+router.get("/reports", getAdminReport);
 router.get("/users", getAllUsers);
 router.post("/users", createUser);
 router.put("/users/:id", updateUser);

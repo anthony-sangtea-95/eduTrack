@@ -161,7 +161,11 @@ export default function TakeTest(){
               <p className="student-test-eyebrow">Assessment in progress</p>
               <h1>{test.title}</h1>
               <p>{test.subject?.subjectName || 'No subject'}</p>
-              <span className={`difficulty-badge difficulty-${test.difficulty || 'medium'}`}>{test.difficulty || 'medium'} difficulty</span>
+              <span className={`difficulty-badge difficulty-${test.difficulty || 'medium'}`}>
+                {test.difficulty === 'mixed'
+                  ? `Mixed (${(test.difficultyTags || []).map(tag => tag === 'hard' ? 'Difficult' : tag).join(' + ')})`
+                  : `${test.difficulty === 'hard' ? 'Difficult' : test.difficulty || 'medium'} difficulty`}
+              </span>
             </div>
             <div className="student-test-controls">
               <div className="student-test-progress">

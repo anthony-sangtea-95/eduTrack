@@ -168,8 +168,12 @@ const handleEdit = (subject) => {
                 <li className="subject-item" key={subject._id}>
                   <div className="subject-title">
                     <span aria-hidden="true">S</span>
-                    <strong>{subject.subjectName}</strong>
+                    <div className="subject-title-copy">
+                      <strong>{subject.subjectName}</strong>
+                      <small>{subject.testsCount} {subject.testsCount === 1 ? "test" : "tests"} · {subject.questionsCount} {subject.questionsCount === 1 ? "question" : "questions"}</small>
+                    </div>
                   </div>
+                  {subject.testsCount === 0 && subject.questionsCount === 0 && <span className="subject-unused-badge">Unused</span>}
                   <div className="subject-actions">
                     <button className="btn-edit" type="button" onClick={() => handleEdit(subject)}>Edit</button>
                     <button className="btn-delete" type="button" onClick={() => handleDelete(subject._id)}>Delete</button>

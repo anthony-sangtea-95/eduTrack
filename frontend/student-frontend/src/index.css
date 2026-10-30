@@ -201,6 +201,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .difficulty-easy { background: #e6f5ed; color: #176c49; }
 .difficulty-medium { background: #fff4df; color: #94600b; }
 .difficulty-hard { background: #fff0ee; color: #b5473f; }
+.difficulty-mixed { background: #eeeaff; color: #5b46a8; }
 .student-test-title-copy > .difficulty-badge { margin-top: 8px; }
 .student-test-controls { display: flex; flex: 0 0 auto; align-items: center; gap: 14px; }
 .student-test-progress { display: grid; gap: 3px; color: #71838a; font-size: .68rem; }

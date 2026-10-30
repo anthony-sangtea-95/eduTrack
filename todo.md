@@ -51,6 +51,5 @@
 - [ ] Restrict test management while test is in used (e.g delete/lock while published)
 - [ ] Set up real mail provider (RESEND_API_KEY)
 - [x] Question/Test tagging (e.g., difficulty level)
-- [ ] Mixed tagging (e.g., easy + medium + difficult)
-- [ ] Question/Test subtype/title (e.g., Algebra, Polygon in Math Subject)
-- [ ] Filter Question/Test by tagging, Question/Test subtype
+- [x] Mixed tagging (e.g., easy + medium + difficult)
+- [x] Add filters to Question/Test

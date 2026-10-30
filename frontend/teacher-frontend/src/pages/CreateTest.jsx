@@ -9,6 +9,7 @@ export default function CreateTest() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [difficulty, setDifficulty] = useState("medium");
+  const [difficultyTags, setDifficultyTags] = useState([]);
   const [dueDate, setDueDate] = useState("");
   const [durationMinutes, setDurationMinutes] = useState("");
   const [students, setStudents] = useState([]);
@@ -39,10 +40,16 @@ export default function CreateTest() {
   );
 
   const submitHandler = async () => {
+    if (difficulty === "mixed" && difficultyTags.length < 2) {
+      showError("Select at least two difficulty tags for a mixed test");
+      return;
+    }
+
     const payload = {
       title,
       description,
       difficulty,
+      difficultyTags,
       dueDate,
       durationMinutes: Number(durationMinutes),
       subject: selectedSubject,
@@ -102,8 +109,30 @@ export default function CreateTest() {
         <select id="test-difficulty" className="w-full border rounded-lg p-2.5 bg-white" value={difficulty} onChange={e => setDifficulty(e.target.value)}>
           <option value="easy">Easy</option>
           <option value="medium">Medium</option>
-          <option value="hard">Hard</option>
+          <option value="hard">Difficult</option>
+          <option value="mixed">Mixed</option>
         </select>
+        {difficulty === "mixed" && (
+          <fieldset className="mt-3 flex flex-wrap gap-4">
+            <legend className="mb-2 text-sm text-slate-600">Select at least two difficulty tags</legend>
+            {[
+              ["easy", "Easy"],
+              ["medium", "Medium"],
+              ["hard", "Difficult"],
+            ].map(([value, label]) => (
+              <label key={value} className="flex items-center gap-2 text-sm text-slate-700">
+                <input
+                  type="checkbox"
+                  checked={difficultyTags.includes(value)}
+                  onChange={() => setDifficultyTags(current => current.includes(value)
+                    ? current.filter(tag => tag !== value)
+                    : [...current, value])}
+                />
+                {label}
+              </label>
+            ))}
+          </fieldset>
+        )}
       </div>
 
       {/* Date & Time Grid */}

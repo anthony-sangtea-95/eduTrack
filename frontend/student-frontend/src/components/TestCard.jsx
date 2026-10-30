@@ -14,6 +14,9 @@ export default function TestCard({ test, testStatus, testAccess }){
   const dateValue = testStatus === 'upcoming' ? test.startTime : testStatus === 'published' ? test.dueDate : null
   const dateLabel = testStatus === 'upcoming' ? 'Available from' : testStatus === 'published' ? 'Due' : null
   const testDateTime = dateValue ? new Date(dateValue).toLocaleString() : null
+  const difficultyLabel = test.difficulty === 'mixed'
+    ? `Mixed (${(test.difficultyTags || []).map(tag => tag === 'hard' ? 'Difficult' : tag).join(' + ')})`
+    : test.difficulty === 'hard' ? 'Difficult' : test.difficulty || 'medium'
 
   return (
     <article className="student-test-card">
@@ -23,7 +26,7 @@ export default function TestCard({ test, testStatus, testAccess }){
           <div className="student-test-title-copy">
             <h3 className="student-test-title">{test.title}</h3>
             <p className="student-test-subject">{test.subject?.subjectName || 'General subject'}</p>
-            <span className={`difficulty-badge difficulty-${test.difficulty || 'medium'}`}>{test.difficulty || 'medium'}</span>
+            <span className={`difficulty-badge difficulty-${test.difficulty || 'medium'}`}>{difficultyLabel}</span>
           </div>
         </div>
         <span className={statusClassName}>

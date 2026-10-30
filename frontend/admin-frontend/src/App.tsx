@@ -3,6 +3,7 @@ import Login from './pages/Login.jsx'
 import Dashboard from './pages/Dashboard.jsx'
 import ManageUsers from './pages/ManageUsers.jsx'
 import Subjects from './pages/Subjects.jsx'
+import Reports from './pages/Reports.jsx'
 import { AuthProvider } from './context/AuthContext.jsx'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
 import MainLayout from "./layouts/MainLayout.jsx";
@@ -27,6 +28,7 @@ return (
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/manage-users" element={<ManageUsers />} />
         <Route path="/subjects" element={<Subjects />} />
+        <Route path="/reports" element={<Reports />} />
         <Route path="*" element={<Navigate to="/login" replace />} />
         </Route>
     </Routes>

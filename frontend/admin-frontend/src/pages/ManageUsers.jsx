@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext'
 export default function ManageUsers() {
   const [users, setUsers] = useState([])
   const [search, setSearch] = useState('')
+  const [roleFilter, setRoleFilter] = useState('all')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [actionError, setActionError] = useState('')
@@ -99,11 +100,15 @@ export default function ManageUsers() {
 
   const filteredUsers = useMemo(() => {
     const query = search.trim().toLowerCase()
-    if (!query) return users
-    return users.filter(user =>
-      `${user.name || ''} ${user.email || ''} ${user.role || ''}`.toLowerCase().includes(query)
-    )
-  }, [users, search])
+    return users.filter(user => {
+      if (roleFilter !== 'all' && user.role !== roleFilter) return false
+      return !query || `${user.name || ''} ${user.email || ''} ${user.role || ''}`.toLowerCase().includes(query)
+    })
+  }, [users, search, roleFilter])
+  const roleCounts = useMemo(() => users.reduce((counts, user) => {
+    counts[user.role] = (counts[user.role] || 0) + 1
+    return counts
+  }, { admin: 0, teacher: 0, student: 0 }), [users])
 
   return (
     <main className="main">
@@ -121,6 +126,21 @@ export default function ManageUsers() {
             </div>
           )}
         </header>
+
+        {!loading && !error && (
+          <section className="admin-role-summary" aria-label="Account totals by role">
+            {[
+              ['all', 'All accounts', users.length],
+              ['student', 'Students', roleCounts.student],
+              ['teacher', 'Teachers', roleCounts.teacher],
+              ['admin', 'Admins', roleCounts.admin],
+            ].map(([role, label, count]) => (
+              <button className={`admin-role-summary-card ${roleFilter === role ? 'active' : ''}`} type="button" key={role} onClick={() => setRoleFilter(role)}>
+                <span>{label}</span><strong>{count}</strong>
+              </button>
+            ))}
+          </section>
+        )}
 
         {actionMessage && <p className="admin-user-success" role="status">{actionMessage}</p>}
 
@@ -189,6 +209,15 @@ export default function ManageUsers() {
                   onChange={event => setSearch(event.target.value)}
                 />
               </label>
+              <label className="admin-role-filter">
+                <span className="sr-only">Filter by role</span>
+                <select className="input" value={roleFilter} onChange={event => setRoleFilter(event.target.value)} aria-label="Filter users by role">
+                  <option value="all">All roles</option>
+                  <option value="student">Students</option>
+                  <option value="teacher">Teachers</option>
+                  <option value="admin">Admins</option>
+                </select>
+              </label>
             </div>
 
             {loading ? (
@@ -200,9 +229,9 @@ export default function ManageUsers() {
                 <span className="admin-state-icon" aria-hidden="true">⌕</span>
                 <div>
                   <h2>{users.length ? 'No matching accounts' : 'No user accounts found'}</h2>
-                  <p>{users.length ? 'Try a different name, email, or role.' : 'User accounts will appear here when they are available.'}</p>
+                  <p>{users.length ? 'Try a different search or role filter.' : 'User accounts will appear here when they are available.'}</p>
                 </div>
-                {search && <button className="admin-clear-search" type="button" onClick={() => setSearch('')}>Clear search</button>}
+                {(search || roleFilter !== 'all') && <button className="admin-clear-search" type="button" onClick={() => { setSearch(''); setRoleFilter('all') }}>Clear filters</button>}
               </div>
             ) : (
               <div className="admin-table-scroll">

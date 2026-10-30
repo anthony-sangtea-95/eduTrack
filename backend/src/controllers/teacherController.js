@@ -28,17 +28,27 @@ export const createTest = async (req, res) => {
           status,
           startTime,
           difficulty = "medium",
+          difficultyTags = [],
           attemptRules = {}
         } = req.body;
 
-        if (!["easy", "medium", "hard"].includes(difficulty)) {
-            return res.status(400).json({ success: false, message: "Difficulty must be easy, medium, or hard" });
+        if (!["easy", "medium", "hard", "mixed"].includes(difficulty)) {
+            return res.status(400).json({ success: false, message: "Difficulty must be easy, medium, hard, or mixed" });
+        }
+        if (difficulty === "mixed" && (
+            !Array.isArray(difficultyTags) ||
+            difficultyTags.length < 2 ||
+            new Set(difficultyTags).size !== difficultyTags.length ||
+            difficultyTags.some(tag => !["easy", "medium", "hard"].includes(tag))
+        )) {
+            return res.status(400).json({ success: false, message: "Mixed difficulty requires at least two unique difficulty tags" });
         }
 
         const test = await Test.create({
             title,
             description,
             difficulty,
+            difficultyTags: difficulty === "mixed" ? difficultyTags : [],
             dueDate,
             durationMinutes,
             subject,
@@ -93,11 +103,20 @@ export const updateTest = async (req, res) => {
           status,
           startTime,
           difficulty,
+          difficultyTags,
           attemptRules = {}
         } = req.body;
 
-        if (difficulty !== undefined && !["easy", "medium", "hard"].includes(difficulty)) {
-            return res.status(400).json({ message: "Difficulty must be easy, medium, or hard" });
+        if (difficulty !== undefined && !["easy", "medium", "hard", "mixed"].includes(difficulty)) {
+            return res.status(400).json({ message: "Difficulty must be easy, medium, hard, or mixed" });
+        }
+        if (difficulty === "mixed" && (
+            !Array.isArray(difficultyTags) ||
+            difficultyTags.length < 2 ||
+            new Set(difficultyTags).size !== difficultyTags.length ||
+            difficultyTags.some(tag => !["easy", "medium", "hard"].includes(tag))
+        )) {
+            return res.status(400).json({ message: "Mixed difficulty requires at least two unique difficulty tags" });
         }
 
         const test = await Test.findOne({
@@ -115,7 +134,10 @@ export const updateTest = async (req, res) => {
         test.durationMinutes = durationMinutes;
         test.subject = subject;
         test.assignedStudents = assignedStudents;
-        if (difficulty !== undefined) test.difficulty = difficulty;
+        if (difficulty !== undefined) {
+            test.difficulty = difficulty;
+            test.difficultyTags = difficulty === "mixed" ? difficultyTags : [];
+        }
 
         // persist new fields
         test.status = status || test.status;
@@ -142,7 +164,17 @@ export const addQuestionToTest = async (req, res) => {
     const rtn = await session.withTransaction(async () => {
       const question = await Question.findById(questionId).session(session);
       if (!question) {
-        throw new Error("Question not found");
+        throw Object.assign(new Error("Question not found"), { statusCode: 404 });
+      }
+      const test = await Test.findById(testId).session(session);
+      if (!test) {
+        throw Object.assign(new Error("Test not found"), { statusCode: 404 });
+      }
+      const allowedDifficulties = test.difficulty === "mixed"
+        ? ["easy", "medium", "hard"]
+        : [test.difficulty];
+      if (!allowedDifficulties.includes(question.difficulty)) {
+        throw Object.assign(new Error("Question difficulty does not match the test"), { statusCode: 400 });
       }
       // already added?
       const testExists = await Test.findOne({
@@ -174,7 +206,7 @@ export const addQuestionToTest = async (req, res) => {
       message: rtn === 1 ? "Added Successfully" : "Already Added"
     });
   } catch (error) {
-        res.status(500).json({
+        res.status(error.statusCode || 500).json({
         message: error.message
         });
   } finally {
@@ -243,6 +275,7 @@ export const getAccessibleQuestions = async (req, res) => {
         }
         const questions = await Question.find({
             subject: test.subject._id,
+            ...(test.difficulty === "mixed" ? {} : { difficulty: test.difficulty }),
             $or: [
                 { createdBy: req.user._id },
                 { allowedTeachers: req.user._id }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import  API  from '../services/api'
 import Loading from '../components/Loading.jsx'
@@ -7,8 +7,13 @@ import "../assets/css/Tests.css"
 
 export default function Tests() {
   const [tests, setTests] = useState([])
+  const [subjects, setSubjects] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
+  const [titleFilter, setTitleFilter] = useState('')
+  const [difficultyFilter, setDifficultyFilter] = useState('all')
+  const [subjectFilter, setSubjectFilter] = useState('all')
+  const [availabilityFilter, setAvailabilityFilter] = useState('all')
 
   useEffect(() => {
     fetchTests()
@@ -18,8 +23,12 @@ export default function Tests() {
     try {
       setError(false)
       setLoading(true)
-      const res = await API.get('teacher/tests')
-      setTests(res.data)
+      const [testsRes, subjectsRes] = await Promise.all([
+        API.get('teacher/tests'),
+        API.get('teacher/subjects')
+      ])
+      setTests(testsRes.data)
+      setSubjects(subjectsRes.data)
     } catch (err) {
       console.error('Failed to load tests', err)
       setError(true)
@@ -27,6 +36,32 @@ export default function Tests() {
       setLoading(false)
     }
   }
+
+  const filteredTests = useMemo(() => {
+    const now = new Date()
+    const normalizedTitle = titleFilter.trim().toLowerCase()
+
+    return tests.filter(test => {
+      if (normalizedTitle && !test.title.toLowerCase().includes(normalizedTitle)) return false
+      if (difficultyFilter !== 'all' && test.difficulty !== difficultyFilter) return false
+      if (subjectFilter !== 'all' && test.subject !== subjectFilter) return false
+
+      if (availabilityFilter === 'all') return true
+
+      let testAvailability = test.status
+      if (test.startTime && now < new Date(test.startTime)) {
+        testAvailability = 'upcoming'
+      } else if (test.status === 'closed') {
+        testAvailability = 'closed'
+      } else if (test.status === 'draft') {
+        testAvailability = 'draft'
+      } else if (test.status === 'published') {
+        testAvailability = 'available'
+      }
+
+      return testAvailability === availabilityFilter
+    })
+  }, [tests, titleFilter, difficultyFilter, subjectFilter, availabilityFilter])
 
   const handleDelete = async (id) => {
     const confirmDelete = window.confirm("Are you sure you want to delete this test?");
@@ -79,17 +114,62 @@ export default function Tests() {
         </section>
       ) : (
         <section className="tests-list-card">
+          <div className="tests-filter-grid" aria-label="Filter tests">
+            <label className="tests-filter-field">
+              <span>Title</span>
+              <input
+                className="input"
+                type="search"
+                placeholder="Search by title"
+                value={titleFilter}
+                onChange={event => setTitleFilter(event.target.value)}
+              />
+            </label>
+            <label className="tests-filter-field">
+              <span>Difficulty</span>
+              <select className="input" value={difficultyFilter} onChange={event => setDifficultyFilter(event.target.value)}>
+                <option value="all">All difficulties</option>
+                <option value="easy">Easy</option>
+                <option value="medium">Medium</option>
+                <option value="hard">Difficult</option>
+                <option value="mixed">Mixed</option>
+              </select>
+            </label>
+            <label className="tests-filter-field">
+              <span>Subject</span>
+              <select className="input" value={subjectFilter} onChange={event => setSubjectFilter(event.target.value)}>
+                <option value="all">All subjects</option>
+                {subjects.map(subject => (
+                  <option key={subject._id} value={subject._id}>{subject.subjectName}</option>
+                ))}
+              </select>
+            </label>
+            <label className="tests-filter-field">
+              <span>Availability</span>
+              <select className="input" value={availabilityFilter} onChange={event => setAvailabilityFilter(event.target.value)}>
+                <option value="all">All statuses</option>
+                <option value="closed">Closed</option>
+                <option value="available">Available</option>
+                <option value="draft">Draft</option>
+                <option value="upcoming">Upcoming</option>
+              </select>
+            </label>
+          </div>
           <div className="question-table-caption">
             <div>
               <h2>Your assessments</h2>
-              <p>{tests.length} {tests.length === 1 ? 'test' : 'tests'} total</p>
+              <p>Showing {filteredTests.length} of {tests.length} {tests.length === 1 ? 'test' : 'tests'}</p>
             </div>
           </div>
-        <ul className="tests-list">
-          {tests.map(test => (
-            <TestList key={test._id} test={test} handleDelete={handleDelete} />
-          ))}
-        </ul>
+          {filteredTests.length > 0 ? (
+            <ul className="tests-list">
+              {filteredTests.map(test => (
+                <TestList key={test._id} test={test} handleDelete={handleDelete} />
+              ))}
+            </ul>
+          ) : (
+            <p className="tests-filter-empty">No tests match the selected filters.</p>
+          )}
         </section>
       )}
     </div>
